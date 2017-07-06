@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Project-v2</string>
+    <string name="name">name</string>
+    <string name="phone">phone</string>
+    <string name="address">address</string>
+    <string name="birthday">birthday</string>
+    <string name="instruction_name">enter name</string>
+    <string name="instruction_birth">enter birthday</string>
+    <string name="phone_number">0123456789</string>
+    <string name="instruction_phone">enter phone</string>
+    <string name="instruction_addr">enter address</string>
+    <string name="title_activity_sos_gps">Map</string>
+</resources>

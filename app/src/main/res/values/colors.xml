@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ef6262</color>
+    <color name="colorPrimaryDark">#910534</color>
+    <color name="colorAccent">#ad053e</color>
+
+    <color name="colorToolbar">#ed7b7b</color>
+    <color name="colorIcon">#e18888</color>
+    <color name="colorIcon2">#FFFFFF</color>
+
+    <color name="colorBG">#f1cccc</color>
+    <color name="colorToolbarText">#FFFFFF</color>
+
+    <color name="colorEdit">#df6e6e</color>
+
+    <!--done or cancel-->
+    <color name="colorDone">#8fb947</color>
+    <color name="colorCancel">#b46363</color>
+
+    <color name="cursorAccent">#f1b25b</color>
+    <color name="controlNormal">#eda17b</color>
+    <color name="controlActivated">#edc77b</color>
+</resources>
