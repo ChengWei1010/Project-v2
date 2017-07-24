@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.project.chengwei.project_v2">
+
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -48,7 +49,15 @@
         <activity
             android:name=".SosGpsActivity"
             android:label="@string/title_activity_sos_gps" />
-        <activity android:name=".SosActivity"></activity>
+        <activity android:name=".SosActivity" />
+        <activity android:name=".PhoneActivity" />
+        <activity android:name=".ContactPopUpActivity" />
+        <activity
+            android:name=".ContactModifyActivity"
+            android:label=".ContactModifyActivity"
+            android:theme="@style/AppTheme"></activity>
+        <activity android:name=".ContactAddActivity" />
+        <activity android:name=".ContactListActivity"></activity>
     </application>
 
 </manifest>

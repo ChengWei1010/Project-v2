@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -133,7 +134,61 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 //        //Log.d("success insert:", name + "," + phone + "," + address + "," + birthday);
 //    }
 
-    //The database manager for android from github
+    //-------------------------------------------------------------------------------------//
+    //--------------------------------------About Contacts---------------------------------//
+    //-------------------------------------------------------------------------------------//
+    public void queryContactData(String sql){
+        SQLiteDatabase database = getWritableDatabase();
+        database.execSQL(sql);
+    }
+
+    public void insertContactData(String name, String phone, String image){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "INSERT INTO PERSON VALUES (NULL, ?, ?, ?)";
+
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.clearBindings();
+
+        statement.bindString(1, name);
+        statement.bindString(2, phone);
+        statement.bindString(3, image);
+
+        statement.executeInsert();
+        database.close();
+    }
+
+    public void updateContactData(String name, String phone, String image, int id) {
+        SQLiteDatabase database = getWritableDatabase();
+
+        String sql = "UPDATE PERSON SET name = ?, phone = ?, image = ? WHERE id = ?";
+        SQLiteStatement statement = database.compileStatement(sql);
+
+        statement.bindString(1, name);
+        statement.bindString(2, phone);
+        statement.bindString(3, image);
+        statement.bindDouble(4, (double)id);
+
+        statement.execute();
+        database.close();
+    }
+
+    public  void deleteContactData(int id) {
+        SQLiteDatabase database = getWritableDatabase();
+
+        String sql = "DELETE FROM PERSON WHERE id = ?";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.clearBindings();
+        statement.bindDouble(1, (double)id);
+
+        statement.execute();
+        database.close();
+    }
+
+    public Cursor getContactData(String sql){
+        SQLiteDatabase database = getReadableDatabase();
+        return database.rawQuery(sql, null);
+    }
+    //The database manager tool for android from github
     public ArrayList<Cursor> getData(String Query){
         //get writable database
         SQLiteDatabase sqlDB = this.getWritableDatabase();

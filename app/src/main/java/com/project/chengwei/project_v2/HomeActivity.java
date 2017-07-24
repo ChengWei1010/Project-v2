@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -90,6 +91,9 @@ public class HomeActivity extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.btn_phone:
                     Toast.makeText(HomeActivity.this, "phone !", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.setClass(HomeActivity.this , ContactListActivity.class);
+                    startActivity(intent);
                     //startActivity(new Intent(HomeActivity.this, PhoneActivity.class));
                     break;
                 case R.id.btn_video:
