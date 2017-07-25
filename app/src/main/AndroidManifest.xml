@@ -44,7 +44,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="AIzaSyDW4PEot69itn_8Q4vupIzWFbXzCeP1Mvs" />
 
         <activity
             android:name=".SosGpsActivity"
@@ -55,9 +55,12 @@
         <activity
             android:name=".ContactModifyActivity"
             android:label=".ContactModifyActivity"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity android:name=".ContactAddActivity" />
-        <activity android:name=".ContactListActivity"></activity>
+        <activity android:name=".ContactListActivity" />
+        <activity android:name=".MapsNavActivity" />
+        <activity android:name=".NavigationActivity" />
+        <activity android:name=".VideoActivity"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_map2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.project.chengwei.project_v2.NavigationActivity" >
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        tools:context="com.project.chengwei.project_v2.MapsNavActivity"
+        map:uiZoomControls="false" />
+
+    <include
+        layout="@layout/toolbar_main"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/include"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+    <Button
+        android:text="start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/map"
+        android:layout_toStartOf="@+id/zoomin"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="55dp"
+        android:id="@+id/start" />
+
+    <Button
+        android:text="HOME"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignEnd="@+id/start"
+        android:layout_marginTop="11dp"
+        android:id="@+id/homebutton" />
+
+    <Button
+        android:text="GPS"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/gps"
+        android:layout_below="@+id/map"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="-"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/zoomout"
+        android:textSize="30sp"
+        android:layout_alignTop="@+id/zoomin"
+        android:layout_toEndOf="@+id/zoomin" />
+
+    <Button
+        android:text="+"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/zoomin"
+        android:textSize="30sp"
+        android:layout_marginStart="62dp"
+        android:layout_below="@+id/map"
+        android:layout_toEndOf="@+id/gps" />
+
+    <Button
+        android:text="rotation"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/rotation"
+        android:layout_alignBaseline="@+id/start"
+        android:layout_alignBottom="@+id/start"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text=""
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:id="@+id/distance"
+        android:textSize="30sp"
+        android:textColor="@color/colorToolbarText"
+        android:layout_below="@+id/homebutton"
+        android:layout_alignEnd="@+id/zoomout" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+        android:id="@+id/imageView"
+        android:layout_above="@+id/start"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="77dp" />
+
+
+</RelativeLayout>

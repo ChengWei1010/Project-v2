@@ -25,7 +25,7 @@ import java.util.TimerTask;
 
 public class AddProfileActivity extends AppCompatActivity {
     private static final int SELECT_PICTURE = 100;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "HomeActivity";
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
     private EditText editTextName;

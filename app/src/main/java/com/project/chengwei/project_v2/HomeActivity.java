@@ -1,26 +1,19 @@
 package com.project.chengwei.project_v2;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class HomeActivity extends AppCompatActivity {
+    private final int REQUEST_PERMISSION = 10;
     private SQLiteDBHelper dbHelper;
     private ImageButton btn_phone;
     private ImageButton btn_video;
@@ -33,6 +26,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        if (Build.VERSION.SDK_INT >= 23) {
+            checkPermission();
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_home);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_person_white);
@@ -90,19 +86,18 @@ public class HomeActivity extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.btn_phone:
-                    Toast.makeText(HomeActivity.this, "phone !", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(HomeActivity.this, "phone !", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.setClass(HomeActivity.this , ContactListActivity.class);
                     startActivity(intent);
-                    //startActivity(new Intent(HomeActivity.this, PhoneActivity.class));
                     break;
                 case R.id.btn_video:
-                    Toast.makeText(HomeActivity.this, "video !", Toast.LENGTH_SHORT).show();
-                    //startActivity(new Intent(HomeActivity.this, VideoActivity.class));
+                    //Toast.makeText(HomeActivity.this, "video !", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(HomeActivity.this, VideoActivity.class));
                     break;
                 case R.id.btn_map:
-                    Toast.makeText(HomeActivity.this, "map !", Toast.LENGTH_SHORT).show();
-                    //startActivity(new Intent(HomeActivity.this, MapActivity.class));
+                    //Toast.makeText(HomeActivity.this, "map !", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(HomeActivity.this, NavigationActivity.class));
                     break;
                 case R.id.btn_magnifier:
                     Toast.makeText(HomeActivity.this, "mag !", Toast.LENGTH_SHORT).show();
@@ -125,6 +120,51 @@ public class HomeActivity extends AppCompatActivity {
         Intent homeIntent = new Intent(HomeActivity.this, SosActivity.class);
         startActivity(homeIntent);
     }
+
+    // 位置情報許可の確認
+    public void checkPermission() {
+        // 既に許可している
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        }
+        // 拒否していた場合
+        else {
+            requestLocationPermission();
+        }
+    }
+
+    // 許可を求める
+    private void requestLocationPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(HomeActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
+
+        } else {
+            Toast toast = Toast.makeText(this, "必須要許可GPS", Toast.LENGTH_SHORT);
+            toast.show();
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,}, REQUEST_PERMISSION);
+
+        }
+    }
+
+    // 結果の受け取り
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION) {
+            // 使用が許可された
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                return;
+
+            } else {
+                // それでも拒否された時の対応
+                Toast toast = Toast.makeText(this, "無法使用地圖", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+    }
+
+
 
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Database -------------------------------------------//
