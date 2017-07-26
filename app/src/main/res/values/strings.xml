@@ -10,4 +10,5 @@
     <string name="instruction_phone">enter phone</string>
     <string name="instruction_addr">enter address</string>
     <string name="title_activity_sos_gps">Map</string>
+    <string name="SetUpInstruction">請選擇您的使用者身份</string>
 </resources>

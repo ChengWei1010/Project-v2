@@ -62,7 +62,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     //SQL : create first row
     byte[] ByteExample = "abc".getBytes();
     private String sql_firstRow;{
-        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (name, phone, address, birthday,image) VALUES ('姓名', '電話', '住址', '2000-01-01', '"+ByteExample+"')");
+        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (name, phone, address, birthday,image) VALUES ('姓名', '電話', '高雄市蓮海路70號', '2000-01-01', '"+ByteExample+"')");
     }
 
     //Database : updateProfileData to the table

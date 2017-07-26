@@ -22,13 +22,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".HomeActivity">
+        <activity android:name=".SetUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".HomeActivity"></activity>
         <activity
             android:name=".AndroidDatabaseManager"
             android:label="@string/app_name" />
@@ -47,7 +48,7 @@
             android:value="AIzaSyDW4PEot69itn_8Q4vupIzWFbXzCeP1Mvs" />
 
         <activity
-            android:name=".SosGpsActivity"
+            android:name=".MapsFragSos"
             android:label="@string/title_activity_sos_gps" />
         <activity android:name=".SosActivity" />
         <activity android:name=".PhoneActivity" />
@@ -58,9 +59,9 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".ContactAddActivity" />
         <activity android:name=".ContactListActivity" />
-        <activity android:name=".MapsNavActivity" />
+        <activity android:name=".MapsFragNav" />
         <activity android:name=".NavigationActivity" />
-        <activity android:name=".VideoActivity"></activity>
+        <activity android:name=".VideoActivity" />
     </application>
 
 </manifest>

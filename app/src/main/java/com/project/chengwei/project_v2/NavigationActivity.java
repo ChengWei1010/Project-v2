@@ -2,6 +2,7 @@ package com.project.chengwei.project_v2;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Geocoder;
 import android.location.Location;
@@ -55,6 +56,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+    private SQLiteDBHelper dbHelper;
+    private Cursor cursor;
     private final int REQUEST_PERMISSION = 10;
     //カメラとの距離は１７に統一
     private GoogleMap mMap;
@@ -68,8 +71,9 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     private double zoomcounter = 17;
     private int updata = 0;
     private LatLng gpspos;
+    private String HomeAddress;
     //private Button zoom=(Button)findViewById(R.id.zoomin);
-    // final Button zoomo=(Button)findViewById(R.id.zoomout);
+    //final Button zoomo=(Button)findViewById(R.id.zoomout);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +140,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        getAddressFromDB();
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);//航空写真
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -143,7 +149,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         buttonZoom();
         buttonGps();
         buttonCameraRotation();
-        //buttonHome();
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
@@ -205,9 +210,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                                      // }
                                  }
         );
-
-
-
         mMap.setMyLocationEnabled(true);//gps表示
 
         //test address
@@ -219,24 +221,22 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
     }
 
-    public void buttonHome(){
-        final Button homebutton=(Button)findViewById(R.id.homebutton);
-        homebutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-    }
-
-
     private double homeLat;
     private double homeLon;
 
+    private void getAddressFromDB(){
+        //get home address from DB
+        initDB();
+        cursor = dbHelper.getProfileData();
+        cursor.moveToPosition(0);
+        HomeAddress = cursor.getString(cursor.getColumnIndex("address"));
+        closeDB();
+    }
+
     private void homeAddress() {
 
-        //home address
-        String Address = " 高雄市鼓山區臨海二路50號";//住所入力　高雄市鹽埕區中正四路272號　高雄市鼓山區臨海二路50號
+        String Address = HomeAddress;
+        //HomeAddress = " 高雄市鼓山區臨海二路50號";//住所入力　高雄市鹽埕區中正四路272號　高雄市鼓山區臨海二路50號
 
         try {
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -254,6 +254,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
             e.printStackTrace();
         }
     }
+
     private void buttonZoom() {
         final Button zoom = (Button) findViewById(R.id.zoomin);
         final Button zoomout = (Button) findViewById(R.id.zoomout);
@@ -591,5 +592,12 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 }
             }
         }
+    }
+    private void initDB(){
+        dbHelper = new SQLiteDBHelper(getApplicationContext());
+    }
+    //Database : close database
+    private void closeDB(){
+        dbHelper.close();
     }
 }
