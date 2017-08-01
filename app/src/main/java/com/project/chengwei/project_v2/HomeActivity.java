@@ -1,20 +1,27 @@
 package com.project.chengwei.project_v2;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.AppLaunchChecker;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
 
 public class HomeActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSION = 10;
@@ -115,13 +122,6 @@ public class HomeActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //-------------------------- Version and Permission ------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
     private void SosActivity(){
         Intent homeIntent = new Intent(HomeActivity.this, SosActivity.class);
         startActivity(homeIntent);
@@ -169,8 +169,54 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
+    //--------------------------------------------------------------------------------------------//
+    //----------------------------------- Options Item -------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.help:
+                openHelpGuide();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+//    public void openHelpGuide(){
+//        Toast.makeText(HomeActivity.this, "guide !", Toast.LENGTH_SHORT).show();
+//        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//    }
+    private void openHelpGuide(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+        AlertDialog dialog = builder.create();
 
+        String positiveText = getString(android.R.string.ok);
+        builder.setPositiveButton(positiveText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // positive button logic
+                    }
+                });
+
+        String negativeText = getString(android.R.string.cancel);
+        builder.setNegativeButton(negativeText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // negative button logic
+                    }
+                });
+        // display dialog
+        dialog.show();
+        dialog.show();
+    }
 
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Database -------------------------------------------//

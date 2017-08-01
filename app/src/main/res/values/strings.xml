@@ -11,4 +11,6 @@
     <string name="instruction_addr">enter address</string>
     <string name="title_activity_sos_gps">Map</string>
     <string name="SetUpInstruction">請選擇您的使用者身份</string>
+    <string name="dialog_title" />
+    <string name="dialog_message" />
 </resources>

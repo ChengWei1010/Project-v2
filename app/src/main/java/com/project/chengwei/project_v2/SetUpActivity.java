@@ -24,6 +24,7 @@ public class SetUpActivity extends AppCompatActivity {
         }
         else {
             //Toast.makeText(SetUpActivity.this, "not first time", Toast.LENGTH_SHORT).show();
+            finish();
             Intent setUpIntent = new Intent(SetUpActivity.this, HomeActivity.class);
             startActivity(setUpIntent);
         }

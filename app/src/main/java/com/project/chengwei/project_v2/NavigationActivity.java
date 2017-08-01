@@ -88,8 +88,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent homeIntent = new Intent(NavigationActivity.this, HomeActivity.class);
-                startActivity(homeIntent);
+            finish();
             }
         });
 

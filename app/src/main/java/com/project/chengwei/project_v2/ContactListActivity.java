@@ -46,9 +46,7 @@ public class ContactListActivity extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(ContactListActivity.this , HomeActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
