@@ -5,13 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.AppLaunchChecker;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -19,12 +14,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextClock;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.GoogleMap;
 
 public class HomeActivity extends AppCompatActivity {
@@ -117,7 +110,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case R.id.btn_video:
                     //Toast.makeText(HomeActivity.this, "video !", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(HomeActivity.this, VideoActivity.class));
+                    startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
                     break;
                 case R.id.btn_map:
                     //Toast.makeText(HomeActivity.this, "map !", Toast.LENGTH_SHORT).show();
@@ -206,6 +199,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void openGuide(){
         help_guide.setVisibility(View.VISIBLE);
+        btn_sos.setClickable(false);
         btn_phone.setClickable(false);
         btn_video.setClickable(false);
         btn_map.setClickable(false);
@@ -215,6 +209,7 @@ public class HomeActivity extends AppCompatActivity {
     private void closeGuide(){
         help_guide.setVisibility(View.GONE);
         textClock.setVisibility(View.VISIBLE);
+        btn_sos.setClickable(true);
         btn_phone.setClickable(true);
         btn_video.setClickable(true);
         btn_map.setClickable(true);

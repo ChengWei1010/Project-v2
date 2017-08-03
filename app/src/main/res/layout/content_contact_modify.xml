@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
     tools:context="com.project.chengwei.project_v2.ContactModifyActivity"
     tools:showIn="@layout/activity_contact_modify">
 
 </android.support.constraint.ConstraintLayout>
+
+    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->

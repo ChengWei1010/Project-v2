@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -35,14 +36,15 @@ public class ProfileActivity extends AppCompatActivity {
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent homeIntent = new Intent(ProfileActivity.this, HomeActivity.class);
-                startActivity(homeIntent);
+                finish();
+//                Intent homeIntent = new Intent(ProfileActivity.this, HomeActivity.class);
+//                startActivity(homeIntent);
             }
         });
         btn_editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent Intent = new Intent(ProfileActivity.this, AddProfileActivity.class);
+                Intent Intent = new Intent(ProfileActivity.this, ProfileAddActivity.class);
                 startActivity(Intent);
             }
         });
@@ -92,5 +94,17 @@ public class ProfileActivity extends AppCompatActivity {
     //Database : close database
     private void closeDB(){
         dbHelper.close();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Database -------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

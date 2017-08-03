@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class AddProfileActivity extends AppCompatActivity {
+public class ProfileAddActivity extends AppCompatActivity {
     private static final int SELECT_PICTURE = 100;
     private static final String TAG = "HomeActivity";
     private SQLiteDBHelper dbHelper;
@@ -48,7 +48,7 @@ public class AddProfileActivity extends AppCompatActivity {
         //Manage the Database by clicking a button
         btn_manageDB.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent dbManager = new Intent(AddProfileActivity.this, AndroidDatabaseManager.class);
+                Intent dbManager = new Intent(ProfileAddActivity.this, AndroidDatabaseManager.class);
                 startActivity(dbManager);
             }
         });
@@ -126,7 +126,7 @@ public class AddProfileActivity extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.btn_manageDB:
-                    Intent dbManager = new Intent(AddProfileActivity.this,AndroidDatabaseManager.class);
+                    Intent dbManager = new Intent(ProfileAddActivity.this,AndroidDatabaseManager.class);
                     startActivity(dbManager);
                     break;
                 case R.id.btn_editPhoto:
@@ -260,8 +260,9 @@ public class AddProfileActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Intent ProfileIntent = new Intent(AddProfileActivity.this, ProfileActivity.class);
-                startActivity(ProfileIntent);
+                finish();
+//                Intent ProfileIntent = new Intent(ProfileAddActivity.this, ProfileActivity.class);
+//                startActivity(ProfileIntent);
             }
         }, 2 * 1000);
     }

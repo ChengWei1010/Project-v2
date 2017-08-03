@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "98576665704",
+    "firebase_url": "https://elderlyproject-46505.firebaseio.com",
+    "project_id": "elderlyproject-46505",
+    "storage_bucket": "elderlyproject-46505.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98576665704:android:f2bb44a1b2b1580e",
+        "android_client_info": {
+          "package_name": "com.project.chengwei.project_v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98576665704-i7p1obt193gtfvmtnft7b6r3vcr8ktls.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.chengwei.project_v2",
+            "certificate_hash": "ce377f0808c3daf69eec2310451266d60cb1b05e"
+          }
+        },
+        {
+          "client_id": "98576665704-n9kn9p8f1m3k1fga8jvsteten3ritc5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu0019-q6h6svgfWDw_nnQwY8SDMLkjRg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98576665704-n9kn9p8f1m3k1fga8jvsteten3ritc5i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
