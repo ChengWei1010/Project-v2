@@ -80,6 +80,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
+
+
         //Toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
         setSupportActionBar(myToolbar);

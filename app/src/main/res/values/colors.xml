@@ -15,8 +15,8 @@
     <color name="colorEdit">#df6e6e</color>
 
     <!--done or cancel-->
-    <color name="colorDone">#8fb947</color>
-    <color name="colorCancel">#b46363</color>
+    <color name="colorDone">#9bd23b</color>
+    <color name="colorCancel">#c64949</color>
 
     <color name="cursorAccent">#f1b25b</color>
     <color name="controlNormal">#eda17b</color>

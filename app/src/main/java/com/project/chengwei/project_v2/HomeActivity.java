@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.AppLaunchChecker;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,7 +19,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextClock;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -31,6 +35,9 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton btn_map;
     private ImageButton btn_magnifier;
     private ImageButton btn_sos;
+    private ImageButton btn_guide_ok;
+    private FrameLayout help_guide;
+    private TextClock textClock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +86,9 @@ public class HomeActivity extends AppCompatActivity {
         btn_map = (ImageButton)findViewById(R.id.btn_map);
         btn_magnifier = (ImageButton)findViewById(R.id.btn_magnifier);
         btn_sos = (ImageButton)findViewById(R.id.btn_sos);
+        btn_guide_ok = (ImageButton)findViewById(R.id.btn_guide_ok);
+        help_guide =(FrameLayout)findViewById(R.id.help_guide);
+        textClock =(TextClock)findViewById(R.id.textClock);
     }
 
     //--------------------------------------------------------------------------------------------//
@@ -89,6 +99,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_video.setOnClickListener(ImageBtnListener);
         btn_map.setOnClickListener(ImageBtnListener);
         btn_magnifier.setOnClickListener(ImageBtnListener);
+        btn_guide_ok.setOnClickListener(ImageBtnListener);
     }
 
     //--------------------------------------------------------------------------------------------//
@@ -116,9 +127,13 @@ public class HomeActivity extends AppCompatActivity {
                     Toast.makeText(HomeActivity.this, "mag !", Toast.LENGTH_SHORT).show();
                     //startActivity(new Intent(HomeActivity.this, MagnifierActivity.class));
                     break;
+                case R.id.btn_guide_ok:
+                    closeGuide();
+                    break;
             }
         }
     };
+
     //--------------------------------------------------------------------------------------------//
     //-------------------------- Version and Permission ------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -182,40 +197,28 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.help:
-                openHelpGuide();
+                openGuide();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-//    public void openHelpGuide(){
-//        Toast.makeText(HomeActivity.this, "guide !", Toast.LENGTH_SHORT).show();
-//        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//    }
-    private void openHelpGuide(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
-        AlertDialog dialog = builder.create();
 
-        String positiveText = getString(android.R.string.ok);
-        builder.setPositiveButton(positiveText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // positive button logic
-                    }
-                });
-
-        String negativeText = getString(android.R.string.cancel);
-        builder.setNegativeButton(negativeText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // negative button logic
-                    }
-                });
-        // display dialog
-        dialog.show();
-        dialog.show();
+    private void openGuide(){
+        help_guide.setVisibility(View.VISIBLE);
+        btn_phone.setClickable(false);
+        btn_video.setClickable(false);
+        btn_map.setClickable(false);
+        btn_magnifier.setClickable(false);
+        textClock.setVisibility(View.INVISIBLE);
+    }
+    private void closeGuide(){
+        help_guide.setVisibility(View.GONE);
+        textClock.setVisibility(View.VISIBLE);
+        btn_phone.setClickable(true);
+        btn_video.setClickable(true);
+        btn_map.setClickable(true);
+        btn_magnifier.setClickable(true);
     }
 
     //--------------------------------------------------------------------------------------------//
