@@ -31,6 +31,7 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton btn_guide_ok;
     private FrameLayout help_guide;
     private TextClock textClock;
+    private String groupNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,9 @@ public class HomeActivity extends AppCompatActivity {
 
         findViews();
         setListeners();
+
+        groupNum = getIntent().getExtras().get("groupNum").toString();
+        Toast.makeText(HomeActivity.this, "enter" + groupNum, Toast.LENGTH_SHORT).show();
 
         // SOS Button
         btn_sos.setOnLongClickListener(new View.OnLongClickListener() {
@@ -110,7 +114,10 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case R.id.btn_video:
                     //Toast.makeText(HomeActivity.this, "video !", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
+                    Intent homeIntent = new Intent(getApplicationContext(),WatchVideoActivity.class);
+                    homeIntent.putExtra("groupNum",groupNum);
+                    finish();
+                    startActivity(homeIntent);
                     break;
                 case R.id.btn_map:
                     //Toast.makeText(HomeActivity.this, "map !", Toast.LENGTH_SHORT).show();

@@ -23,6 +23,7 @@ public class WatchVideoActivity extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
     private Button btnLogin;
     private FirebaseAuth mAuth;
+    private String groupNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,9 @@ public class WatchVideoActivity extends AppCompatActivity {
 
 //        String id = UUID.randomUUID().toString();
 //        Toast.makeText(WatchVideoActivity.this, id, Toast.LENGTH_SHORT).show();
+
+        groupNum = getIntent().getExtras().get("groupNum").toString();
+        Toast.makeText(WatchVideoActivity.this, "enter" + groupNum, Toast.LENGTH_SHORT).show();
 
         btnLogin = (Button) findViewById(R.id.btnLogin);
 
