@@ -9,5 +9,3 @@
     tools:showIn="@layout/activity_contact_modify">
 
 </android.support.constraint.ConstraintLayout>
-
-    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->

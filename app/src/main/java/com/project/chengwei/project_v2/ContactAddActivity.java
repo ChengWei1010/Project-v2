@@ -1,14 +1,12 @@
 package com.project.chengwei.project_v2;
 
-import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -16,17 +14,28 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 
 public class ContactAddActivity extends AppCompatActivity {
 
     EditText edtName, edtPhone;
-    Button btnChoose, btnAdd, btnBack;
+    Button btnCamera, btnChoose, btnAdd, btnBack;
     ImageView imageView;
     String uriString;
+    Intent cropIntent;
+    Uri uri, uri_crop;
+    ByteArrayOutputStream bytearrayoutputstream;
+    FileOutputStream fileoutputstream;
+    File file;
+    Bitmap bitmap;
+    String addName, addPhone;
 
-    final int REQUEST_CODE_GALLERY = 999;
+
+    final int REQUEST_EXTERNAL_STORAGE = 999;
+    final int REQUEST_IMAGE_CAPTURE = 99;
+    final int REQUEST_CROP_IMAGE = 9;
 
     //try
     //public static SQLiteDBHelper sqLiteDBHelper;
@@ -42,33 +51,77 @@ public class ContactAddActivity extends AppCompatActivity {
 
         //sqLiteDBHelper.queryData("CREATE TABLE IF NOT EXISTS PERSON(Id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, image TEXT)");
 
+        btnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(camIntent,REQUEST_IMAGE_CAPTURE);
+            }
+        });
+
         btnChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActivityCompat.requestPermissions(
-                        ContactAddActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_CODE_GALLERY
-                );
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, REQUEST_EXTERNAL_STORAGE);
             }
         });
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try{
-                    ContactListActivity.sqLiteDBHelper.insertContactData(
-                            edtName.getText().toString().trim(),
-                            edtPhone.getText().toString().trim(),
-                            uriString
-                    );
-                    Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
-                    edtName.setText("");
-                    edtPhone.setText("");
-                    imageView.setImageResource(R.mipmap.ic_launcher);
-                }
-                catch (Exception e){
-                    e.printStackTrace();
+                //檢查輸入的值是否為空白
+                addName = edtName.getText().toString().trim();
+                addPhone = edtPhone.getText().toString().trim();
+
+                if(addName.equals("") || addPhone.equals("") || bitmap == null){
+                    if(addName.equals("") || addPhone.equals("")){
+                        Toast.makeText(ContactAddActivity.this,"請填寫欄位",Toast.LENGTH_SHORT).show();
+                    }
+                    if(bitmap == null){
+                        Toast.makeText(ContactAddActivity.this,"請選擇照片",Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    //儲存剪裁後的照片到外部空間
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytearrayoutputstream);
+
+                    file = new File(Environment.getExternalStorageDirectory(),
+                            "crop_image"+String.valueOf(System.currentTimeMillis())+".jpg");
+
+                    uri_crop = Uri.fromFile(file);
+                    uriString = uri_crop.toString();
+
+                    try{
+                        file.createNewFile();
+                        fileoutputstream = new FileOutputStream(file);
+                        fileoutputstream.write(bytearrayoutputstream.toByteArray());
+                        fileoutputstream.close();
+                        Toast.makeText(ContactAddActivity.this, "Image Saved Successfully", Toast.LENGTH_SHORT).show();
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    //儲存名字,電話號碼,照片進去資料庫
+                    try{
+                        ContactListActivity.sqLiteDBHelper.insertContactData(
+                                addName,
+                                addPhone,
+                                uriString
+                        );
+
+                        Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent();
+                        intent.setClass(ContactAddActivity.this , ContactListActivity.class);
+                        startActivity(intent);
+                        //edtName.setText("");
+                        //edtPhone.setText("");
+                        //imageView.setImageResource(R.mipmap.ic_launcher);
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -86,6 +139,7 @@ public class ContactAddActivity extends AppCompatActivity {
     private void init(){
         edtName = (EditText) findViewById(R.id.name);
         edtPhone = (EditText) findViewById(R.id.phone);
+        btnCamera = (Button) findViewById(R.id.cameraBtn);
         btnChoose = (Button) findViewById(R.id.chooseBtn);
         btnAdd = (Button) findViewById(R.id.enterBtn);
         btnBack = (Button) findViewById(R.id.backBtn);
@@ -93,42 +147,47 @@ public class ContactAddActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        if(requestCode == REQUEST_CODE_GALLERY){
-            if(grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent, REQUEST_CODE_GALLERY);
-            }
-            else {
-                Toast.makeText(getApplicationContext(), "You don't have permission to access file location!", Toast.LENGTH_SHORT).show();
-            }
-            return;
-        }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //選擇相簿裡的照片
+        if(requestCode == REQUEST_EXTERNAL_STORAGE && resultCode == RESULT_OK && data != null){
+            uri = data.getData();
+            cropImage();
+        }
+        //相機拍的照片
+        else if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK && data != null){
+            uri = data.getData();
+            cropImage();
+        }
+        //裁剪照片後顯示
+        else if(requestCode == REQUEST_CROP_IMAGE && resultCode == RESULT_OK && data != null){
+            bytearrayoutputstream = new ByteArrayOutputStream();
 
-        if(requestCode == REQUEST_CODE_GALLERY && resultCode == RESULT_OK && data != null){
-            Uri uri = data.getData();
-            uriString = uri.toString();
-
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(uri);
-
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                imageView.setImageBitmap(bitmap);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            Bundle bundle = data.getExtras();
+            bitmap = bundle.getParcelable("data");
+            imageView.setImageBitmap(bitmap);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-}
 
+    private void cropImage() {
+        try{
+            cropIntent = new Intent("com.android.camera.action.CROP");
+            cropIntent.setDataAndType(uri,"image/*");
+
+            cropIntent.putExtra("crop","true");
+            cropIntent.putExtra("outputX",1000);
+            cropIntent.putExtra("outputY",1000);
+            cropIntent.putExtra("aspectX",1);
+            cropIntent.putExtra("aspectY",1);
+            cropIntent.putExtra("noFaceDetection", true);
+            cropIntent.putExtra("scaleUpIfNeeded",true);
+            cropIntent.putExtra("return-data",true);
+
+            startActivityForResult(cropIntent,REQUEST_CROP_IMAGE);
+        }
+        catch (ActivityNotFoundException ex){
+        }
+    }
+
+}

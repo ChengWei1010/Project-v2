@@ -18,14 +18,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".SetUpActivity"
-            android:screenOrientation="portrait" >
+
+        <!-- Google API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDW4PEot69itn_8Q4vupIzWFbXzCeP1Mvs" />
+        <!-- Activity -->
+        <activity android:name=".WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SetUpActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".HomeActivity"
             android:screenOrientation="portrait" />
@@ -34,24 +42,14 @@
             android:label="@string/app_name" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".ProfileAddActivity" />
-        <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
-        -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDW4PEot69itn_8Q4vupIzWFbXzCeP1Mvs" />
-
         <activity
             android:name=".MapsFragSos"
             android:label="@string/title_activity_sos_gps" />
         <activity android:name=".SosActivity" />
-        <activity android:name=".PhoneActivity" />
-        <activity android:name=".ContactPopUpActivity" />
+        <activity
+            android:name=".ContactPopUpActivity"
+            android:label=".ContactModifyActivity"
+            android:theme="@style/AppTheme.CustomTheme" />
         <activity
             android:name=".ContactModifyActivity"
             android:label=".ContactModifyActivity"
@@ -61,7 +59,8 @@
         <activity android:name=".MapsFragNav" />
         <activity android:name=".NavigationActivity" />
         <activity android:name=".VideoActivity" />
-        <activity android:name=".WatchVideoActivity"></activity>
+        <activity android:name=".WatchVideoActivity" />
+        <activity android:name=".FamilyActivity"></activity>
     </application>
 
 </manifest>
