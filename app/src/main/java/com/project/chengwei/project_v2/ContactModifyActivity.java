@@ -30,7 +30,6 @@ public class ContactModifyActivity extends AppCompatActivity {
     EditText modify_name, modify_phone;
     ImageView modify_imageView;
     Button cameraBtn, chooseBtn, modifyBtn, deleteBtn;
-
     String uriString, uriString_crop;
     Intent cropIntent;
     Uri uri, uri_crop;
@@ -117,9 +116,8 @@ public class ContactModifyActivity extends AppCompatActivity {
                                 getId
                         );
                         Toast.makeText(getApplicationContext(), "Updated successfully!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent();
-                        intent.setClass(ContactModifyActivity.this , ContactListActivity.class);
-                        startActivity(intent);
+                        startActivity(new Intent(ContactModifyActivity.this, ContactListActivity.class));
+                        finish();
                     }
                     catch (Exception e){
                         Log.e("Update error", e.getMessage());
@@ -282,13 +280,14 @@ public class ContactModifyActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     private void setToolbar(){
         setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
 
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ContactModifyActivity.this, HomeActivity.class));
-                finish();
+            startActivity(new Intent(ContactModifyActivity.this, HomeActivity.class));
+            finish();
             }
         });
     }

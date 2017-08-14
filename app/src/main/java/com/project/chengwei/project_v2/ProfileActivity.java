@@ -109,9 +109,8 @@ public class ProfileActivity extends AppCompatActivity {
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
-//                Intent homeIntent = new Intent(ProfileActivity.this, HomeActivity.class);
-//                startActivity(homeIntent);
+            startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
+            finish();
             }
         });
     }
