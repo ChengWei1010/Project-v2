@@ -56,6 +56,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+    private Toolbar myToolbar;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
     private final int REQUEST_PERMISSION = 10;
@@ -72,6 +73,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     private int updata = 0;
     private LatLng gpspos;
     private String HomeAddress;
+
     //private Button zoom=(Button)findViewById(R.id.zoomin);
     //final Button zoomo=(Button)findViewById(R.id.zoomout);
 
@@ -80,23 +82,9 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
+        findViews();
+        setToolbar();
 
-
-        //Toolbar
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
-        setSupportActionBar(myToolbar);
-        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
-        //Go to home page
-        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            finish();
-            }
-        });
-
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-        }
         // Initializing
         MarkerPoints = new ArrayList<>();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -593,6 +581,28 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 }
             }
         }
+    }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- initial Views ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void findViews(){
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Toolbar --------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void setToolbar(){
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
+
+        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(NavigationActivity.this, HomeActivity.class));
+                finish();
+            }
+        });
     }
     private void initDB(){
         dbHelper = new SQLiteDBHelper(getApplicationContext());

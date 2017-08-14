@@ -33,15 +33,16 @@
         </activity>
         <activity
             android:name=".SetUpActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".HomeActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".AndroidDatabaseManager"
             android:label="@string/app_name" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".ProfileAddActivity" />
+        <activity android:name=".ProfileAddActivity"/>
         <activity
             android:name=".MapsFragSos"
             android:label="@string/title_activity_sos_gps" />
@@ -49,17 +50,18 @@
         <activity
             android:name=".ContactPopUpActivity"
             android:label=".ContactModifyActivity"
-            android:theme="@style/AppTheme.CustomTheme" />
+            android:theme="@style/AppTheme.PopUpTheme"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ContactModifyActivity"
             android:label=".ContactModifyActivity"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".ContactAddActivity" />
-        <activity android:name=".ContactListActivity" />
-        <activity android:name=".MapsFragNav" />
-        <activity android:name=".NavigationActivity" />
-        <activity android:name=".VideoActivity" />
-        <activity android:name=".WatchVideoActivity" />
+            android:screenOrientation="portrait" />
+        <activity android:name=".ContactAddActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ContactListActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".MapsFragNav" android:screenOrientation="portrait"/>
+        <activity android:name=".NavigationActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".VideoActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".WatchVideoActivity" android:screenOrientation="portrait"/>
         <activity android:name=".FamilyActivity"></activity>
     </application>
 

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,7 +32,7 @@ public class ContactPopUpActivity extends Activity {
             int width = dm.widthPixels;
             int height = dm.heightPixels;
 
-            getWindow().setLayout((int)(width*.8),(int)(height*.6));
+            getWindow().setLayout((int)(width*.9),(int)(height*.75));
 
             //接收PersonList傳過來的資料
             final int getId = getIntent().getIntExtra("ID",0);
@@ -78,7 +79,7 @@ public class ContactPopUpActivity extends Activity {
             });
 
             //跳到修改那頁
-            modifyBtn = (Button) findViewById(R.id.enterBtn);
+            modifyBtn = (Button) findViewById(R.id.editBtn);
             modifyBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent intent = new Intent(ContactPopUpActivity.this,ContactModifyActivity.class);
@@ -90,4 +91,8 @@ public class ContactPopUpActivity extends Activity {
                 }
             });
         }
-    }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- Set Window Size -------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+
+}

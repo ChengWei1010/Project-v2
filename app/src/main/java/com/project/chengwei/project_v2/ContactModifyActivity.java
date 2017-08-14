@@ -13,8 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -24,9 +26,10 @@ import java.io.FileOutputStream;
 
 public class ContactModifyActivity extends AppCompatActivity {
 
+    Toolbar myToolbar;
     EditText modify_name, modify_phone;
     ImageView modify_imageView;
-    Button cameraBtn, chooseBtn, modifyBtn, backBtn, deleteBtn;
+    Button cameraBtn, chooseBtn, modifyBtn, deleteBtn;
 
     String uriString, uriString_crop;
     Intent cropIntent;
@@ -45,17 +48,9 @@ public class ContactModifyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_modify);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        modify_name = (EditText) findViewById(R.id.name);
-        modify_phone = (EditText) findViewById(R.id.phone);
-        modify_imageView = (ImageView) findViewById(R.id.imageView);
-        cameraBtn = (Button) findViewById(R.id.cameraBtn);
-        chooseBtn = (Button) findViewById(R.id.chooseBtn);
-        modifyBtn = (Button) findViewById(R.id.enterBtn);
-        backBtn = (Button) findViewById(R.id.backBtn);
-        deleteBtn = (Button) findViewById(R.id.deleteBtn);
+        findViews();
+        setToolbar();
 
         //接收從PopUp傳過來的資料
         final int getId = getIntent().getIntExtra("ID",0);
@@ -130,16 +125,6 @@ public class ContactModifyActivity extends AppCompatActivity {
                         Log.e("Update error", e.getMessage());
                     }
                 }
-            }
-        });
-
-        //按返回的按鈕
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(ContactModifyActivity.this , ContactListActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -279,7 +264,34 @@ public class ContactModifyActivity extends AppCompatActivity {
         catch (ActivityNotFoundException ex){
         }
     }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- initial Views ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void findViews(){
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        modify_name = (EditText) findViewById(R.id.name);
+        modify_phone = (EditText) findViewById(R.id.phone);
+        modify_imageView = (ImageView) findViewById(R.id.imageView);
+        cameraBtn = (Button) findViewById(R.id.cameraBtn);
+        chooseBtn = (Button) findViewById(R.id.chooseBtn);
+        modifyBtn = (Button) findViewById(R.id.editBtn);
+        deleteBtn = (Button) findViewById(R.id.deleteBtn);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Toolbar --------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void setToolbar(){
+        setSupportActionBar(myToolbar);
+        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
 
+        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ContactModifyActivity.this, HomeActivity.class));
+                finish();
+            }
+        });
+    }
 }
 
 

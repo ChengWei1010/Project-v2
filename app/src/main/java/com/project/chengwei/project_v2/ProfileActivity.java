@@ -15,6 +15,7 @@ import android.widget.TextView;
 public class ProfileActivity extends AppCompatActivity {
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
+    private Toolbar myToolbar;
     private TextView textViewName;
     private TextView textViewPhone;
     private TextView textViewAddress;
@@ -27,20 +28,27 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         findViews();
-
-        //Toolbar
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
-        setSupportActionBar(myToolbar);
-        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
-        //Go to home page
-        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-//                Intent homeIntent = new Intent(ProfileActivity.this, HomeActivity.class);
-//                startActivity(homeIntent);
-            }
-        });
+        setToolbar();
+        setListeners();
+        initDB();
+        closeDB();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- initial Views ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void findViews(){
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        textViewName = (TextView) findViewById(R.id.textViewName);
+        textViewPhone = (TextView) findViewById(R.id.textViewPhone);
+        textViewAddress = (TextView) findViewById(R.id.textViewAddress);
+        textViewBirthday = (TextView) findViewById(R.id.textViewBirthday);
+        profileImg = (ImageView) findViewById(R.id.profileImg);
+        btn_editProfile = (ImageButton) findViewById(R.id.btn_editProfile);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- initial Views ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public void setListeners() {
         btn_editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,9 +56,13 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(Intent);
             }
         });
-
-        //Database : initial and insert profile data
-        initDB();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Database -------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    //Database : initial database and show the profile saved in the database
+    private void initDB(){
+        dbHelper = new SQLiteDBHelper(getApplicationContext());
         //Database : get data from database profile_tbl
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
@@ -71,32 +83,13 @@ public class ProfileActivity extends AppCompatActivity {
             //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
             dbHelper.close();
         }
-        closeDB();
-    }
-    //--------------------------------------------------------------------------------------------//
-    //-------------------------------------- initial Views ---------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    private void findViews(){
-        textViewName = (TextView) findViewById(R.id.textViewName);
-        textViewPhone = (TextView) findViewById(R.id.textViewPhone);
-        textViewAddress = (TextView) findViewById(R.id.textViewAddress);
-        textViewBirthday = (TextView) findViewById(R.id.textViewBirthday);
-        profileImg = (ImageView) findViewById(R.id.profileImg);
-        btn_editProfile = (ImageButton) findViewById(R.id.btn_editProfile);
-    }
-    //--------------------------------------------------------------------------------------------//
-    //--------------------------------------- Database -------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    //Database : initial database and show the profile saved in the database
-    private void initDB(){
-        dbHelper = new SQLiteDBHelper(getApplicationContext());
     }
     //Database : close database
     private void closeDB(){
         dbHelper.close();
     }
     //--------------------------------------------------------------------------------------------//
-    //--------------------------------------- Database -------------------------------------------//
+    //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
@@ -106,5 +99,20 @@ public class ProfileActivity extends AppCompatActivity {
             finish();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void setToolbar(){
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
+
+        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+//                Intent homeIntent = new Intent(ProfileActivity.this, HomeActivity.class);
+//                startActivity(homeIntent);
+            }
+        });
     }
 }

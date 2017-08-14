@@ -21,7 +21,7 @@ import java.io.FileOutputStream;
 public class ContactAddActivity extends AppCompatActivity {
 
     EditText edtName, edtPhone;
-    Button btnCamera, btnChoose, btnAdd, btnBack;
+    Button btnCamera, btnChoose, btn_cancel, btn_add;
     ImageView imageView;
     String uriString;
     Intent cropIntent;
@@ -68,7 +68,7 @@ public class ContactAddActivity extends AppCompatActivity {
             }
         });
 
-        btnAdd.setOnClickListener(new View.OnClickListener() {
+        btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //檢查輸入的值是否為空白
@@ -125,15 +125,6 @@ public class ContactAddActivity extends AppCompatActivity {
                 }
             }
         });
-
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(ContactAddActivity.this , ContactListActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     private void init(){
@@ -141,8 +132,8 @@ public class ContactAddActivity extends AppCompatActivity {
         edtPhone = (EditText) findViewById(R.id.phone);
         btnCamera = (Button) findViewById(R.id.cameraBtn);
         btnChoose = (Button) findViewById(R.id.chooseBtn);
-        btnAdd = (Button) findViewById(R.id.enterBtn);
-        btnBack = (Button) findViewById(R.id.backBtn);
+        btn_add = (Button) findViewById(R.id.btn_add);
+        btn_cancel = (Button) findViewById(R.id.btn_cancel);
         imageView = (ImageView) findViewById(R.id.imageView);
     }
 
@@ -189,5 +180,11 @@ public class ContactAddActivity extends AppCompatActivity {
         catch (ActivityNotFoundException ex){
         }
     }
-
+    //--------------------------------------------------------------------------------------------//
+    //----------------------------------- bottom button ------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public void cancel(View v){
+        startActivity(new Intent(ContactAddActivity.this, ContactListActivity.class));
+        finish();
+    }
 }
