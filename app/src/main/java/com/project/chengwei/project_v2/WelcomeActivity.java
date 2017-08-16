@@ -10,9 +10,8 @@ import android.widget.Toast;
 public class WelcomeActivity extends AppCompatActivity {
     static final String KEY_IS_FIRST_TIME =  "com.<your_app_name>.first_time";
     static final String KEY =  "com.<your_app_name>";
-    private SharedPreferences settings;
-    private static final String data = "DATA";
-    private static final String elderlyMode = "ELDERLY_MODE";
+    static final String ELDERLY_MODE = "ELDERLY_MODE";
+    private SQLiteDBHelper dbHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +30,8 @@ public class WelcomeActivity extends AppCompatActivity {
                 } finally {
                     //if its first time, got to setUpActivity
                     if(isFirstTime()){
+                        initDB(); //Database : initial and insert profile data
+                        closeDB(); //Database : get data from database profile_tbl
                         getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(KEY_IS_FIRST_TIME, false).commit();
                         Intent i = new Intent(WelcomeActivity.this, SetUpActivity.class);
                         startActivity(i);
@@ -39,13 +40,11 @@ public class WelcomeActivity extends AppCompatActivity {
                     //if else, check the mode stored in the Shared Preferences
                     else {
                         if(isElder()){
-                            Intent homeIntent = new Intent(WelcomeActivity.this, HomeActivity.class);
-                            startActivity(homeIntent);
+                            startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
                             finish();
                         }
                         else if(!isElder()){
-                            Intent Intent = new Intent(WelcomeActivity.this, FamilyActivity.class);
-                            startActivity(Intent);
+                            startActivity(new Intent(WelcomeActivity.this, FamilyActivity.class));
                             finish();
                         }
                     }
@@ -59,15 +58,29 @@ public class WelcomeActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     public boolean isFirstTime(){
         return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(KEY_IS_FIRST_TIME, true);
+//        Boolean shared = getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(KEY_IS_FIRST_TIME, true);
+//        Boolean sqlHasValue = ;
+//        if(shared==true||sqlHasValue==true)return true;
     }
     public boolean isElder() {
-        settings = getSharedPreferences(data,0);
-        return settings.getBoolean(elderlyMode,false);
+        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
+        //settings = getSharedPreferences(data,0);
+        //return settings.getBoolean(elderlyMode,false);
     }
-//    public void readSharedPreferences(){
-//        String myName = "";
-//        settings = getSharedPreferences(data,0);
-//        myName = settings.getString(name, "");
-//        Toast.makeText(WelcomeActivity.this, "is elder", Toast.LENGTH_SHORT).show();
-//    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Database -------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    //Database : initial database and show the profile saved in the database
+    private void initDB(){
+        dbHelper = new SQLiteDBHelper(getApplicationContext());
+//        cursor = dbHelper.getProfileData();
+//        cursor.moveToPosition(0);
+//        text_group_name.setText( cursor.getString(cursor.getColumnIndex("room")) );
+    }
+
+    //Database : close database
+    private void closeDB() {
+        dbHelper.close();
+    }
+
 }

@@ -26,6 +26,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     private final static String FEILD_PHONE = "phone";
     private final static String FEILD_ADDRESS = "address";
     private final static String FEILD_BIRTHDAY = "birthday";
+    private final static String FIELD_ROOM = "room";
     private static final String IMAGE = "image";
 
     public SQLiteDBHelper(Context context)
@@ -54,6 +55,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         sql_createTbl = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 "(" + FEILD_ID + " INTEGER PRIMARY KEY autoincrement, " +
                 FEILD_NAME + " TEXT, " +
+                FIELD_ROOM + " TEXT, " +
                 FEILD_PHONE + " TEXT, " +
                 FEILD_ADDRESS + " TEXT, " +
                 FEILD_BIRTHDAY + " TEXT, " +
@@ -62,17 +64,18 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     //SQL : create first row
     byte[] ByteExample = "abc".getBytes();
     private String sql_firstRow;{
-        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (name, phone, address, birthday,image) VALUES ('姓名', '電話', '高雄市蓮海路70號', '2000-01-01', '"+ByteExample+"')");
+        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (name, phone, address, birthday, room, image) VALUES ('姓名', '電話', '高雄市蓮海路70號', '2000-01-01', '0000','"+ByteExample+"')");
     }
 
     //Database : updateProfileData to the table
-    public long editProfileData(String name, String phone, String address, String birthday){
+    public long editProfileData(String name, String phone, String address, String birthday, String room){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(FEILD_NAME, name);
         cv.put(FEILD_PHONE, phone);
         cv.put(FEILD_ADDRESS, address);
         cv.put(FEILD_BIRTHDAY, birthday);
+        cv.put(FIELD_ROOM, room);
 
         return db.update(TABLE_NAME, cv, "_id=1", null);
     }
@@ -81,7 +84,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public Cursor getProfileData()
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] cols = new String[] {FEILD_NAME, FEILD_PHONE, FEILD_ADDRESS, FEILD_BIRTHDAY};
+        String[] cols = new String[] {FEILD_NAME, FEILD_PHONE, FEILD_ADDRESS, FEILD_BIRTHDAY,FIELD_ROOM};
         Cursor mCursor = db.query(true,TABLE_NAME,cols, null, null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -101,6 +104,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
         db.update(TABLE_NAME, cv, "_id=1", null);
     }
+
     // Database : retrieve image from database
     //We will just get the last image we just saved for convenience...
 
@@ -188,6 +192,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = getReadableDatabase();
         return database.rawQuery(sql, null);
     }
+
     //The database manager tool for android from github
     public ArrayList<Cursor> getData(String Query){
         //get writable database

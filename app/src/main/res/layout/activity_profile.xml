@@ -28,15 +28,15 @@
 
     <ImageView
         android:id="@+id/profileImg"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/include"
-        app:srcCompat="@mipmap/ic_launcher"
-        android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include"
+        app:srcCompat="@mipmap/ic_launcher" />
 
     <TextView
         android:id="@+id/textViewName"
@@ -58,41 +58,52 @@
         android:layout_height="38dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="32dp"
         android:gravity="center"
         android:text="@string/phone"
         android:textSize="28sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewName" />
-
-    <TextView
-        android:id="@+id/textViewAddress"
-        android:layout_width="180dp"
-        android:layout_height="150dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="35dp"
-        android:gravity="center|top"
-        android:text="@string/address"
-        android:textSize="28sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBirthday" />
-
     <TextView
         android:id="@+id/textViewBirthday"
         android:layout_width="180dp"
         android:layout_height="35dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="32dp"
         android:gravity="center"
         android:text="@string/birthday"
         android:textSize="28sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewPhone" />
+    <TextView
+        android:id="@+id/textViewRoom"
+        android:layout_width="180dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:text="room"
+        android:textSize="28sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewBirthday" />
+    <TextView
+        android:id="@+id/textViewAddress"
+        android:layout_width="180dp"
+        android:layout_height="100dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:gravity="center|top"
+        android:text="@string/address"
+        android:textSize="28sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewRoom" />
 
     <ImageView
         android:id="@+id/ImgName"
@@ -101,7 +112,7 @@
         app:srcCompat="@drawable/ic_namecard"
         android:layout_marginStart="40dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         app:layout_constraintTop_toBottomOf="@+id/profileImg" />
 
     <ImageView
@@ -111,19 +122,8 @@
         android:layout_marginStart="40dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:srcCompat="@drawable/ic_phone"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         app:layout_constraintTop_toBottomOf="@+id/ImgName" />
-
-    <ImageView
-        android:id="@+id/ImgHome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:srcCompat="@drawable/ic_home"
-        android:layout_marginTop="25dp"
-        app:layout_constraintTop_toBottomOf="@+id/ImgBirth" />
-
     <ImageView
         android:id="@+id/ImgBirth"
         android:layout_width="wrap_content"
@@ -131,7 +131,25 @@
         android:layout_marginStart="40dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:srcCompat="@drawable/ic_cake"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         app:layout_constraintTop_toBottomOf="@+id/ImgPhone" />
+    <ImageView
+        android:id="@+id/ImgGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:srcCompat="@drawable/ic_group"
+        android:layout_marginTop="18dp"
+        app:layout_constraintTop_toBottomOf="@+id/ImgBirth" />
+    <ImageView
+        android:id="@+id/ImgHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:srcCompat="@drawable/ic_home"
+        android:layout_marginTop="18dp"
+        app:layout_constraintTop_toBottomOf="@+id/ImgGroup" />
 
 </android.support.constraint.ConstraintLayout>

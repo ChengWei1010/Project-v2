@@ -35,6 +35,7 @@ public class SosActivity extends AppCompatActivity
         LocationListener {
     private String phoneNo = "0929181248";
     private String sos_message = "緊急通知！";
+    private TextView locationText;
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -48,8 +49,9 @@ public class SosActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sos);
 
-        TextView lat = (TextView)findViewById(R.id.lat);
-        TextView lng = (TextView)findViewById(R.id.lng);
+        //TextView lat = (TextView)findViewById(R.id.lat);
+        //TextView lng = (TextView)findViewById(R.id.lng);
+        locationText = (TextView)findViewById(R.id.locationText);
 
         //sendSMS();
         //callPhone();
@@ -109,8 +111,8 @@ public class SosActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
-        TextView lat=(TextView)findViewById(R.id.lng);
-        TextView lng=(TextView)findViewById(R.id.lat);
+        //TextView lat=(TextView)findViewById(R.id.lng);
+        //TextView lng=(TextView)findViewById(R.id.lat);
 
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -119,8 +121,12 @@ public class SosActivity extends AppCompatActivity
         Log.e("my location is:",valueOf(lat_gps)+", "+(valueOf(lng_gps)));
         sos_message = "緊急通知！位置：http://maps.google.com/maps?q=" + valueOf(lat_gps) + "," + (valueOf(lng_gps));
 
-        lat.setText(valueOf(lat_gps));
-        lng.setText(valueOf(lng_gps));
+//        lat.setText(valueOf(lat_gps));
+//        lng.setText(valueOf(lng_gps));
+        String lat = valueOf(lat_gps);
+        String lng = valueOf(lng_gps);
+        String locaiton = lat + "/n"+ lng;
+        locationText.setText(locaiton);
     }
 
     @Override

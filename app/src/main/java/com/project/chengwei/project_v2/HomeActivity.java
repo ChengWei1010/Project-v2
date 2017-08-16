@@ -7,7 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -18,13 +20,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextClock;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 
 public class HomeActivity extends AppCompatActivity {
+    static final String KEY =  "com.<your_app_name>";
+    static final String GROUP_NUM =  "0000";
+    private SQLiteDBHelper dbHelper;
+    private Cursor cursor;
     private Toolbar myToolbar;
     final int RequestCameraCode = 1;
     final int RequestCallCode = 2;
@@ -32,7 +40,6 @@ public class HomeActivity extends AppCompatActivity {
     final int RequestLocationCode = 4;
     final int RequestPermissionCode = 999;
     private final int REQUEST_PERMISSION = 10;
-    private SQLiteDBHelper dbHelper;
     private ImageButton btn_phone;
     private ImageButton btn_video;
     private ImageButton btn_map;
@@ -41,12 +48,12 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton btn_guide_ok;
     private FrameLayout help_guide;
     private TextClock textClock;
-    private String groupNum;
+    private TextView text_group_name;
+    private String groupNum, myName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_home);
 
         if (Build.VERSION.SDK_INT >= 23) {
@@ -54,23 +61,10 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         findViews();
-        setListeners();
         setToolbar();
-
-        //groupNum = getIntent().getExtras().get("groupNum").toString();
-        //Toast.makeText(HomeActivity.this, "enter" + groupNum, Toast.LENGTH_SHORT).show();
-
-        // SOS Button
-        btn_sos.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                SosActivity();
-                return true;
-            }
-        });
-
-        initDB(); //Database : initial and insert profile data
-        closeDB(); //Database : get data from database profile_tbl
+        setListeners();
+        initDB();
+        closeDB();
     }
 
     //--------------------------------------------------------------------------------------------//
@@ -84,8 +78,9 @@ public class HomeActivity extends AppCompatActivity {
         btn_magnifier = (ImageButton)findViewById(R.id.btn_magnifier);
         btn_sos = (ImageButton)findViewById(R.id.btn_sos);
         btn_guide_ok = (ImageButton)findViewById(R.id.btn_guide_ok);
-        help_guide =(FrameLayout)findViewById(R.id.help_guide);
-        textClock =(TextClock)findViewById(R.id.textClock);
+        help_guide = (FrameLayout)findViewById(R.id.help_guide);
+        textClock = (TextClock)findViewById(R.id.textClock);
+        text_group_name = (TextView)findViewById(R.id.text_group_name);
     }
 
     //--------------------------------------------------------------------------------------------//
@@ -97,6 +92,14 @@ public class HomeActivity extends AppCompatActivity {
         btn_map.setOnClickListener(ImageBtnListener);
         btn_magnifier.setOnClickListener(ImageBtnListener);
         btn_guide_ok.setOnClickListener(ImageBtnListener);
+        // SOS Button
+        btn_sos.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                SosActivity();
+                return true;
+            }
+        });
     }
 
     //--------------------------------------------------------------------------------------------//
@@ -112,11 +115,11 @@ public class HomeActivity extends AppCompatActivity {
                     finish();
                     break;
                 case R.id.btn_video:
-                    //Toast.makeText(HomeActivity.this, "video !", Toast.LENGTH_SHORT).show();
-                    Intent homeIntent = new Intent(getApplicationContext(),WatchVideoActivity.class);
-                    homeIntent.putExtra("groupNum",groupNum);
+                    //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
+                    Intent intent = new Intent(getApplicationContext(),WatchVideoActivity.class);
+                    intent.putExtra("room_name",groupNum);
+                    startActivity(intent);
                     finish();
-                    startActivity(homeIntent);
                     break;
                 case R.id.btn_map:
                     //Toast.makeText(HomeActivity.this, "map !", Toast.LENGTH_SHORT).show();
@@ -299,7 +302,7 @@ public class HomeActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    public void setToolbar(){
+    private void setToolbar(){
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_person_white);
@@ -310,6 +313,21 @@ public class HomeActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Database -------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    //Database : initial database
+    private void initDB(){
+        dbHelper = new SQLiteDBHelper(getApplicationContext());
+        cursor = dbHelper.getProfileData();
+        cursor.moveToPosition(0);
+        groupNum = cursor.getString(cursor.getColumnIndex("room"));
+        text_group_name.setText(groupNum);
+    }
+    //Database : close database
+    private void closeDB(){
+        dbHelper.close();
     }
     //--------------------------------------------------------------------------------------------//
     //----------------------------------- Options Item -------------------------------------------//
@@ -340,6 +358,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_magnifier.setClickable(false);
         textClock.setVisibility(View.INVISIBLE);
     }
+
     private void closeGuide(){
         help_guide.setVisibility(View.GONE);
         textClock.setVisibility(View.VISIBLE);
@@ -350,16 +369,4 @@ public class HomeActivity extends AppCompatActivity {
         btn_magnifier.setClickable(true);
     }
 
-    //--------------------------------------------------------------------------------------------//
-    //--------------------------------------- Database -------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    //Database : initial database and show the profile saved in the database
-    private void initDB(){
-        dbHelper = new SQLiteDBHelper(getApplicationContext());
-    }
-
-    //Database : close database
-    private void closeDB() {
-        dbHelper.close();
-    }
 }

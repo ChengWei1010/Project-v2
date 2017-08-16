@@ -28,9 +28,7 @@ public class ProfileAddActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
-    private EditText editTextName;
-    private EditText editTextPhone;
-    private EditText editTextAddress;
+    private EditText editTextName,editTextPhone,editTextAddress,editTextRoom;
     private DatePicker pickBirthday;
     private ImageButton btn_manageDB;
     private ImageButton btn_editPhoto;
@@ -63,6 +61,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         editTextName.setSelectAllOnFocus(true);
         editTextPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
         editTextAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
+        editTextRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
 
         String birthday = cursor.getString(cursor.getColumnIndex("birthday"));
         String[] parts = birthday.split("-");
@@ -105,6 +104,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         editTextName = (EditText) findViewById(R.id.editTextName);
         editTextPhone = (EditText) findViewById(R.id.editTextPhone);
         editTextAddress = (EditText) findViewById(R.id.editTextAddress);
+        editTextRoom = (EditText) findViewById(R.id.editTextRoom);
         pickBirthday = (DatePicker) findViewById(R.id.pickBirthday);
 
         btn_manageDB = (ImageButton) findViewById(R.id.btn_manageDB);
@@ -219,6 +219,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         String strPhone = editTextPhone.getText().toString();
         String strName = editTextName.getText().toString();
         String strAddr = editTextAddress.getText().toString();
+        String strRoom = editTextRoom.getText().toString();
         String birthday;
         initDB();
         Cursor cursor = dbHelper.getProfileData();
@@ -230,7 +231,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         birthday =  year + "-" + month + "-" + date;
 
         if(isValidPhoneNum(strPhone)==true){
-            dbHelper.editProfileData(strName, strPhone ,strAddr, birthday);
+            dbHelper.editProfileData(strName, strPhone ,strAddr, birthday,strRoom);
             closeDB();
             alertSuccess();
         }

@@ -2,12 +2,12 @@ package com.project.chengwei.project_v2;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -20,10 +20,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 
 public class WatchVideoActivity extends AppCompatActivity {
+    static final String ELDERLY_MODE = "ELDERLY_MODE";
+    static final String KEY =  "com.<your_app_name>";
+
     private FirebaseAnalytics mFirebaseAnalytics;
-    private Button btnLogin;
     private FirebaseAuth mAuth;
     private String groupNum;
+    private Button btnLogin;
+    private Toolbar myToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,18 +37,50 @@ public class WatchVideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_watch_video);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+        findViews();
+        setToolbar();
 //        String id = UUID.randomUUID().toString();
 //        Toast.makeText(WatchVideoActivity.this, id, Toast.LENGTH_SHORT).show();
 
-        groupNum = getIntent().getExtras().get("groupNum").toString();
-        Toast.makeText(WatchVideoActivity.this, "enter" + groupNum, Toast.LENGTH_SHORT).show();
 
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        groupNum = getIntent().getExtras().get("room_name").toString();
+        WatchVideoActivity.this.setTitle(" Room - " + groupNum);
+        Toast.makeText(this, "You are in Room "+groupNum, Toast.LENGTH_SHORT).show();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- initial Views ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void findViews(){
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Toolbar --------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            startActivity(new Intent(WatchVideoActivity.this, HomeActivity.class));
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+    public void setToolbar(){
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
+
+        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signIn();
+                if(isElder()) {
+                    startActivity(new Intent(WatchVideoActivity.this, HomeActivity.class));
+                    finish();
+                }else{
+                    startActivity(new Intent(WatchVideoActivity.this, FamilyActivity.class));
+                    finish();
+                }
             }
         });
     }
@@ -81,8 +117,15 @@ public class WatchVideoActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
     }
-    private void updateUI(FirebaseUser user) {
+    private void updateUI(FirebaseUser user) {}
+    //--------------------------------------------------------------------------------------------//
+    //------------------------------------ CheckPreferences ----------------------------------------//
+    //--------------------------------------------------------------------------------------------//
 
+    public boolean isElder() {
+        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
+        //settings = getSharedPreferences(data,0);
+        //return settings.getBoolean(elderlyMode,false);
     }
 }
 
