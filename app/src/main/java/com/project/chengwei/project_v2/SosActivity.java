@@ -125,7 +125,7 @@ public class SosActivity extends AppCompatActivity
 //        lng.setText(valueOf(lng_gps));
         String lat = valueOf(lat_gps);
         String lng = valueOf(lng_gps);
-        String locaiton = lat + "/n"+ lng;
+        String locaiton = lat + " , "+ lng;
         locationText.setText(locaiton);
     }
 

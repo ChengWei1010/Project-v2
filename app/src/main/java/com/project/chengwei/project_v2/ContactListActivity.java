@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -116,6 +117,15 @@ public class ContactListActivity extends AppCompatActivity {
             finish();
             }
         });
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            startActivity(new Intent(ContactListActivity.this, HomeActivity.class));
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
     //--------------------------------------------------------------------------------------------//
     //----------------------------------- Options Item -------------------------------------------//

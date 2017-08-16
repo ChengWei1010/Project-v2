@@ -43,10 +43,7 @@
             android:label="@string/app_name" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".ProfileAddActivity"/>
-        <activity
-            android:name=".MapsFragSos"
-            android:label="@string/title_activity_sos_gps" />
-        <activity android:name=".SosActivity" />
+        <activity android:name=".MapsFragSos" android:label="@string/title_activity_sos_gps" />
         <activity
             android:name=".ContactPopUpActivity"
             android:label=".ContactModifyActivity"
@@ -56,13 +53,14 @@
             android:name=".ContactModifyActivity"
             android:label=".ContactModifyActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".SosActivity" android:screenOrientation="portrait" />
         <activity android:name=".ContactAddActivity" android:screenOrientation="portrait"/>
         <activity android:name=".ContactListActivity" android:screenOrientation="portrait"/>
         <activity android:name=".MapsFragNav" android:screenOrientation="portrait"/>
         <activity android:name=".NavigationActivity" android:screenOrientation="portrait"/>
         <activity android:name=".VideoActivity" android:screenOrientation="portrait"/>
         <activity android:name=".WatchVideoActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".FamilyActivity"></activity>
+        <activity android:name=".FamilyActivity" android:screenOrientation="portrait" ></activity>
     </application>
 
 </manifest>
