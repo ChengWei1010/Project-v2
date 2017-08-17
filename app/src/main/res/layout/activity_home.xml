@@ -70,17 +70,17 @@
 
     <ImageButton
         android:id="@+id/btn_video"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginLeft="70dp"
+        android:layout_marginLeft="80dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/btn_video"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/btn_phone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include"
-        app:layout_constraintVertical_bias="0.893" />
+        app:layout_constraintVertical_bias="0.766" />
 
     <ImageButton
         android:id="@+id/btn_map"
@@ -130,15 +130,6 @@
             android:scaleType="fitXY"
             android:src="@drawable/guide_home_0"></ImageView>
 
-        <ImageView
-            android:id="@+id/guide1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:alpha="1"
-            android:scaleType="fitXY"
-            android:src="@drawable/guide_home_1"
-            android:layout_gravity="bottom"></ImageView>
         <ImageButton
             android:id="@+id/btn_guide_ok"
             android:layout_width="50dp"
@@ -147,5 +138,15 @@
             android:layout_marginEnd="0dp"
             android:layout_marginStart="100dp"
             android:background="@drawable/ic_check_24dp"/>
+
+        <ImageView
+            android:id="@+id/guide1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:adjustViewBounds="true"
+            android:alpha="1"
+            android:scaleType="fitXY"
+            android:src="@drawable/guide_home_1"></ImageView>
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>
