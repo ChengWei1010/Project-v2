@@ -54,11 +54,11 @@ public class VideoElderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_elder);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        mStorage = FirebaseStorage.getInstance();
-        mStorageRef = mStorage.getReference();
-        mUri = mStorageRef.child("videos/test.mp4").getDownloadUrl().getResult();
 
-        setDownloadBtn();
+//        mStorage = FirebaseStorage.getInstance();
+//        mStorageRef = mStorage.getReference();
+//        mUri = mStorageRef.child("videos/test.mp4").getDownloadUrl().getResult();
+        //setDownloadBtn();
         findViews();
         setToolbar();
 //        String id = UUID.randomUUID().toString();
@@ -108,17 +108,17 @@ public class VideoElderActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Download --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    private void setDownloadBtn() {
-        downloadBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                //這裡的uri就抓你存在聊天室裡msg的downloadUri
-                DownloadManager.Request request = new DownloadManager.Request(mUri);
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                downloadManager.enqueue(request);
-            }
-        });
-    }
+//    private void setDownloadBtn() {
+//        downloadBtn.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+//                //這裡的uri就抓你存在聊天室裡msg的downloadUri
+//                DownloadManager.Request request = new DownloadManager.Request(mUri);
+//                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+//                downloadManager.enqueue(request);
+//            }
+//        });
+//    }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ FireBase sign In --------------------------------------//
     //--------------------------------------------------------------------------------------------//

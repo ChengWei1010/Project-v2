@@ -5,6 +5,6 @@
         android:id="@+id/help"
         android:icon="@drawable/ic_help_white"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="help"/>
 </menu>

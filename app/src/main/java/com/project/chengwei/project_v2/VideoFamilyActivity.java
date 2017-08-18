@@ -347,6 +347,8 @@ public class VideoFamilyActivity extends AppCompatActivity {
                 @Override
                 public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
                     Toast.makeText(getApplicationContext(),"Unable to setup camera preview.",Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(VideoFamilyActivity.this, FamilyActivity.class));
+                    finish();
                 }
             },null );
         } catch (CameraAccessException e) {
@@ -515,7 +517,8 @@ public class VideoFamilyActivity extends AppCompatActivity {
                         mIsRecording = false;
                         mRecordImageButton.setImageResource(R.mipmap.video_off );
                         mMediaRecorder.stop();
-                        //mMediaRecorder.reset();
+                        mMediaRecorder.reset();
+                        mMediaRecorder = new MediaRecorder();
                         startPreview();
                     }
                 }
@@ -532,7 +535,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
     }
 
     private void startRecord(){
-
         try {
             setupMediaRecorder();
             SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture(); //What's different?
@@ -560,7 +562,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
 
                         @Override
                         public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-
                         }
                     },null);
         } catch (Exception e) {
