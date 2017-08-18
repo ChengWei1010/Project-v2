@@ -1,7 +1,10 @@
 package com.project.chengwei.project_v2;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -12,82 +15,83 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextClock;
+import android.widget.TextView;
 import android.widget.Toast;
+
+
+import com.coremedia.iso.boxes.Container;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.Track;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+import com.kbeanie.multipicker.api.Picker;
+import com.kbeanie.multipicker.api.VideoPicker;
+import com.kbeanie.multipicker.api.callbacks.VideoPickerCallback;
+import com.kbeanie.multipicker.api.entity.ChosenVideo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.SurfaceTexture;
-import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.Image;
-import android.media.MediaRecorder;
-import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-//import android.support.annotation.Size;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.os.EnvironmentCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.hardware.camera2.*;
-import android.util.Log;
-import android.util.SparseIntArray;
-import android.view.Surface;
-import android.view.TextureView;
-import android.util.Size;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
+public class VideoFamilyActivity extends AppCompatActivity {
+    static final String ELDERLY_MODE = "ELDERLY_MODE";
+    static final String KEY =  "com.<your_app_name>";
+    private ProgressDialog progressDialog ;
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private FirebaseStorage mStorage;
+    private StorageReference mStorageRef;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+    private Toolbar myToolbar;
+    private Button mSelectButton;
+    private ImageButton mRecordImageButton;
 
-// https://www.youtube.com/watch?v=LskL8OipkKE&t=103s 上次看到的最後位置
-
-public class VideoActivity extends AppCompatActivity {
-
+    VideoPicker GlobalPicker;
     private File mVideoFolder;
     private String mVideoFileName;
-
-    private ImageButton mRecordImageButton;
     private boolean mIsRecording = false;
-
     private static final int REQUEST_CAMERA_PERMISSION_RESULT = 0;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT = 1;
     private TextureView mTextureView;
@@ -114,10 +118,7 @@ public class VideoActivity extends AppCompatActivity {
         }
     };
 
-
     private CameraDevice mCameraDevice;
-
-    //根據camera回傳的狀態進行調整
     private CameraDevice.StateCallback mCameraDeviceStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
@@ -132,6 +133,9 @@ public class VideoActivity extends AppCompatActivity {
                 }
                 startRecord();
                 mMediaRecorder.start();
+                mChronometer.setBase(SystemClock.elapsedRealtime());
+                mChronometer.setVisibility(View.VISIBLE);
+                mChronometer.start();
             }else {
                 startPreview();
             }
@@ -151,13 +155,12 @@ public class VideoActivity extends AppCompatActivity {
             mCameraDevice = null;
         }
     };
-
     private String mCameraId;
     private Size mPreviewSize;
     private Size mVideoSize;
 
     private MediaRecorder mMediaRecorder; //What does it do?
-
+    private Chronometer mChronometer;
     private int mTotalRotation;
 
     private CaptureRequest.Builder mCaptureRequestBuilder;
@@ -168,7 +171,77 @@ public class VideoActivity extends AppCompatActivity {
         ORIENTAIONS.append(Surface.ROTATION_180,180);
         ORIENTAIONS.append(Surface.ROTATION_270,270);
     }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_video_family);
+        mTextureView = (TextureView)findViewById(R.id.textureView);
 
+        findViews();
+        setToolbar();
+        createVideoFolder();
+
+        mMediaRecorder = new MediaRecorder();
+        mChronometer = (Chronometer)findViewById(R.id.chronometer);
+
+        mRecordImageButton = (ImageButton) findViewById(R.id.recordButton);
+        mRecordImageButton.setImageResource(R.mipmap.video_off );
+        mRecordImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mIsRecording){
+                    mChronometer.stop();
+                    mChronometer.setVisibility(View.INVISIBLE);
+                    mIsRecording = false;
+                    mRecordImageButton.setImageResource(R.mipmap.video_off );
+                    mMediaRecorder.stop();
+                    mMediaRecorder.reset();
+                    startPreview();
+                }else{
+                    Log.d("start_check_permission","Start check permission");
+                    checkWriteStoragePermission();
+                }
+            }
+        });
+
+        mSelectButton = (Button) findViewById(R.id.btn_select);
+        mSelectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                VideoPicker videoPicker =  new VideoPicker(VideoFamilyActivity.this);
+                GlobalPicker = videoPicker;
+                GlobalPicker.setVideoPickerCallback(new VideoPickerCallback() {
+                    @Override
+                    public void onVideosChosen(List<ChosenVideo> list) {
+                        List<String> filePathList = new ArrayList<String>();
+                        for(ChosenVideo a_chosen:list){
+                            String temp = a_chosen.toString();
+                            String[] tempList = temp.split(",");
+                            String path = tempList[2].substring(16);
+                            filePathList.add(path);
+                        }
+                        Log.d("Path List","Path List is:"+filePathList.toString());
+                        doMp4Append(filePathList);
+                    }
+
+                    @Override
+                    public void onError(String s) {
+
+                    }
+                });
+                videoPicker.allowMultiple();
+                videoPicker.pickVideo();
+            }
+        });
+    }
+    //根據camera回傳的狀態進行調整
+
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- initial Views ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void findViews(){
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+    }
 
     //當camera存在時關閉camera
     private void closeCamera(){
@@ -205,7 +278,7 @@ public class VideoActivity extends AppCompatActivity {
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE); //CameraManager用來管理所有的設備
         try {
             for(String cameraId : cameraManager.getCameraIdList()){
-                CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
+                CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId); //用來控制相機的屬性
                 if(cameraCharacteristics.get(cameraCharacteristics.LENS_FACING) ==   //LENS_FACING是用來取得當前相機的位置
                         cameraCharacteristics.LENS_FACING_FRONT){
                     continue;
@@ -358,19 +431,29 @@ public class VideoActivity extends AppCompatActivity {
 
     private void createVideoFolder(){
         File movieFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);//取得裝置預設的影片存放位置。
-        mVideoFolder = new File(movieFile,"camera2Video");//在影片資料夾下再創一個專屬於此app的資料夾。
+        mVideoFolder = new File(movieFile,"MergeInput");//在影片資料夾下再創一個專屬於此app的資料夾。
         if(!mVideoFolder.exists()){ //如果影片資料夾中沒有這個資料夾則自己重創一個。
             mVideoFolder.mkdirs();
         }
     }
 
     private File createVideoFileName() throws IOException{
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String prepend = "Video_"+timestamp+"_";
         File videoFile = File.createTempFile(prepend,".mp4",mVideoFolder); //創造mp4格式的檔案;
         mVideoFileName = videoFile.getAbsolutePath();
+        //mVideoFileName = "test01";
         return videoFile;
 
+    }
+
+    private File createVideoMergeFileName() throws IOException{
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String prepend = "Merge_"+timestamp+"_";
+        File videoFile = File.createTempFile(prepend,".mp4",mVideoFolder); //創造mp4格式的檔案;
+        mVideoFileName = videoFile.getAbsolutePath();
+        //mVideoFileName = "test01";
+        return videoFile;
     }
 
     private void checkWriteStoragePermission(){
@@ -388,6 +471,9 @@ public class VideoActivity extends AppCompatActivity {
                 }
                 startRecord();
                 mMediaRecorder.start();
+                mChronometer.setBase(SystemClock.elapsedRealtime());
+                mChronometer.setVisibility(View.VISIBLE);
+                mChronometer.start();
             }else{
                 Log.d("Permission","Permission denied!");
                 if(shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
@@ -406,6 +492,9 @@ public class VideoActivity extends AppCompatActivity {
             }
             startRecord();
             mMediaRecorder.start();
+            mChronometer.setBase(SystemClock.elapsedRealtime());
+            mChronometer.setVisibility(View.VISIBLE);
+            mChronometer.start();
         }
     }
 
@@ -413,6 +502,26 @@ public class VideoActivity extends AppCompatActivity {
     private void setupMediaRecorder()throws IOException{
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mMediaRecorder.setMaxDuration(5000); //500ms 先設定五秒
+        //設定時間到要做什麼
+        mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+            @Override
+            public void onInfo(MediaRecorder mediaRecorder, int i, int i1) {
+                if(i == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED){
+                    Toast.makeText(getApplicationContext(),"已達到最長錄製時間",Toast.LENGTH_SHORT).show();
+                    if(mMediaRecorder!=null){
+                        mChronometer.stop();
+                        mChronometer.setVisibility(View.INVISIBLE);
+                        mIsRecording = false;
+                        mRecordImageButton.setImageResource(R.mipmap.video_off );
+                        mMediaRecorder.stop();
+                        //mMediaRecorder.reset();
+                        startPreview();
+                    }
+                }
+            }
+        });
+
         mMediaRecorder.setOutputFile(mVideoFileName);
         mMediaRecorder.setVideoEncodingBitRate(1000000);
         mMediaRecorder.setVideoFrameRate(30);
@@ -458,33 +567,154 @@ public class VideoActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video);
-        mTextureView = (TextureView)findViewById(R.id.textureView);
 
-        createVideoFolder();
+    public static void appendMp4List(List<String> mp4PathList, String outPutPath) throws IOException{
+        List<Movie> mp4MovieList = new ArrayList<>();
+        for (String mp4Path : mp4PathList){
+            mp4MovieList.add(MovieCreator.build(mp4Path));
+        }
 
-        mMediaRecorder = new MediaRecorder();
+        List<Track> audioTracks = new LinkedList<>();
+        List<Track> videoTracks = new LinkedList<>();
 
-        mRecordImageButton = (ImageButton) findViewById(R.id.recordButton);
-        mRecordImageButton.setImageResource(R.mipmap.video_off );
-        mRecordImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mIsRecording){
-                    mIsRecording = false;
-                    mRecordImageButton.setImageResource(R.mipmap.video_off );
-                    mMediaRecorder.stop();
-                    mMediaRecorder.reset();
-                    startPreview();
-                }else{
-                    Log.d("start_check_permission","Start check permission");
-                    checkWriteStoragePermission();
+        for (Movie mp4Movie : mp4MovieList){
+            for (Track inMovieTrack : mp4Movie.getTracks()){
+                if("soun".equals(inMovieTrack.getHandler())){
+                    audioTracks.add(inMovieTrack);
                 }
+                if("vide".equals(inMovieTrack.getHandler())){
+                    videoTracks.add(inMovieTrack);
+                }
+            }
+        }
+
+        Movie resultMovie = new Movie();
+        if(!audioTracks.isEmpty()){
+            resultMovie.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+        }
+        if(!videoTracks.isEmpty()){
+            resultMovie.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
+        }
+
+        Container outContainer = new DefaultMp4Builder().build(resultMovie);
+        FileChannel fileChannel = new RandomAccessFile(String.format(outPutPath),"rw").getChannel();
+        outContainer.writeContainer(fileChannel);
+        fileChannel.close();
+    }
+
+    //用來進行影片的Merge
+    private void doMp4Append(List<String> mp4PathList){
+        try{
+            File moviePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+
+            mVideoFolder = new File(moviePath,"MergeOutput");//在影片資料夾下再創一個專屬於此app的資料夾。
+            if(!mVideoFolder.exists()){ //如果影片資料夾中沒有這個資料夾則自己重創一個。
+                mVideoFolder.mkdirs();
+            }
+            String outputPath =createVideoMergeFileName().toString();
+            Log.d("new one", "Path is:" + outputPath);
+            //String outputPath = moviePath+"/MergeOutput/test02.mp4";
+
+            appendMp4List(mp4PathList,outputPath);
+            Toast.makeText(getApplicationContext(),"Merge Success!",Toast.LENGTH_LONG).show();
+            uploadVideo(outputPath);
+            //Log.d("The Path","The Path is:"+outputPath);
+
+        }catch(IOException e){
+            e.printStackTrace();
+            Log.e("doMp4Append error","Error!");
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(resultCode == RESULT_OK){
+            if(requestCode == Picker.PICK_VIDEO_DEVICE){
+                GlobalPicker.submit(data);
+                Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_LONG ).show();
+                //uploadVideo(uploadFile);
+            }
+        }
+    }
+
+    private void uploadVideo(String mergePath){
+        progressDialog = new ProgressDialog(this);
+        //這裡就是Upload的code
+        //String mergePath //就放明倫傳過來的檔案路徑
+        //String file = "/storage/emulated/0/Movies/Instagram/VID_176010131_012946_851.mp4";
+        File tmpFile = new File(mergePath);
+
+        Uri filePath = Uri.fromFile(tmpFile);
+
+        if (filePath != null) {
+            //displaying a progress dialog while upload is going on
+            progressDialog.setTitle("Uploading");
+            progressDialog.show();
+            mStorage = FirebaseStorage.getInstance();
+            mStorageRef = mStorage.getReference();
+            StorageReference ref = mStorageRef.child("videos").child(filePath.getLastPathSegment());
+            ref.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //if the upload is successfull, hide the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying a success toast
+                            Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+
+                            //sendMsg你就寫一個function把firebase的downloadUri存到聊天室的msg裡，之後要用來下載用的Uri
+                            Uri downloadUri = taskSnapshot.getDownloadUrl();
+                            //sendMsg(downloadUri.toString());
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            //if the upload is not successfull, hide the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying error message
+                            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            //calculating progress percentage
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                            //displaying percentage in progress dialog
+                            progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
+                        }
+                    });
+        }
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Toolbar --------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            startActivity(new Intent(VideoFamilyActivity.this, FamilyActivity.class));
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    public void setToolbar(){
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
+
+        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(VideoFamilyActivity.this, FamilyActivity.class));
+                finish();
             }
         });
     }
 }
-

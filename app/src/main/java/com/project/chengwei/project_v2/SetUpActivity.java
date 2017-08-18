@@ -52,7 +52,7 @@ public class SetUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
+        //currentUser = mAuth.getCurrentUser();
         //uId = currentUser.getUid();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
@@ -170,7 +170,7 @@ public class SetUpActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("hi", "signInAnonymously:failure", task.getException());
-                            Toast.makeText(SetUpActivity.this, "Authentication failed.",
+                            Toast.makeText(SetUpActivity.this, "請檢查網路連線",
                                     Toast.LENGTH_SHORT).show();
                         }
 
@@ -205,7 +205,8 @@ public class SetUpActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------------- show UI ----------------------------------------//
@@ -254,6 +255,7 @@ public class SetUpActivity extends AppCompatActivity {
     }
     //Database : save the change to database
     public void saveSQLite() {
+        String hadsetup = "1";
         String strPhone = "0123456789";
         String strAddr = "高雄市蓮海路70號";
         String birthday = "2000-01-01";
@@ -261,7 +263,7 @@ public class SetUpActivity extends AppCompatActivity {
         initDB();
         Cursor cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
-        dbHelper.editProfileData(strName, strPhone ,strAddr, birthday, strRoom);
+        dbHelper.editProfileData(hadsetup, strName, strPhone ,strAddr, birthday, strRoom);
         closeDB();
         alertSuccess();
     }
@@ -270,7 +272,7 @@ public class SetUpActivity extends AppCompatActivity {
         dbHelper.close();
     }
     //--------------------------------------------------------------------------------------------//
-    //--------------------------------------- has or exist ---------------------------------------//
+    //--------------------------------------- check valid ----------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private boolean hasName(){
         if(editTextName==null){

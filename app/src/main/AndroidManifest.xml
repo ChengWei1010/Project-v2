@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -33,34 +34,51 @@
         </activity>
         <activity
             android:name=".SetUpActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".HomeActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".AndroidDatabaseManager"
             android:label="@string/app_name" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".ProfileAddActivity"/>
-        <activity android:name=".MapsFragSos" android:label="@string/title_activity_sos_gps" />
+        <activity android:name=".ProfileAddActivity" />
+        <activity
+            android:name=".MapsFragSos"
+            android:label="@string/title_activity_sos_gps" />
         <activity
             android:name=".ContactPopUpActivity"
             android:label=".ContactModifyActivity"
-            android:theme="@style/AppTheme.PopUpTheme"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopUpTheme" />
         <activity
             android:name=".ContactModifyActivity"
             android:label=".ContactModifyActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SosActivity" android:screenOrientation="portrait" />
-        <activity android:name=".ContactAddActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ContactListActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".MapsFragNav" android:screenOrientation="portrait"/>
-        <activity android:name=".NavigationActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".VideoActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".WatchVideoActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".FamilyActivity" android:screenOrientation="portrait" ></activity>
+        <activity
+            android:name=".SosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ContactAddActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ContactListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MapsFragNav"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".NavigationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".VideoElderActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FamilyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".VideoFamilyActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -216,6 +216,7 @@ public class ProfileAddActivity extends AppCompatActivity {
     }
     //Database : save the change to database
     public void save(View v) {
+        String hadSetUp = "1";
         String strPhone = editTextPhone.getText().toString();
         String strName = editTextName.getText().toString();
         String strAddr = editTextAddress.getText().toString();
@@ -231,7 +232,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         birthday =  year + "-" + month + "-" + date;
 
         if(isValidPhoneNum(strPhone)==true){
-            dbHelper.editProfileData(strName, strPhone ,strAddr, birthday,strRoom);
+            dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday,strRoom);
             closeDB();
             alertSuccess();
         }

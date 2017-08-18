@@ -21,11 +21,12 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     private final static String DATABASE_NAME = "profile_database";
     private final static int DATABASE_VERSION = 1;
     private final static String TABLE_NAME = "profile_tbl";
-    private final static String FEILD_ID = "_id";
-    private final static String FEILD_NAME = "name";
-    private final static String FEILD_PHONE = "phone";
-    private final static String FEILD_ADDRESS = "address";
-    private final static String FEILD_BIRTHDAY = "birthday";
+    private final static String FIELD_ID = "_id";
+    private final static String FIELD_HADSETUP = "hadSetUp";
+    private final static String FIELD_NAME = "name";
+    private final static String FIELD_PHONE = "phone";
+    private final static String FIELD_ADDRESS = "address";
+    private final static String FIELD_BIRTHDAY = "birthday";
     private final static String FIELD_ROOM = "room";
     private static final String IMAGE = "image";
 
@@ -53,28 +54,30 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     //SQL : create a table
     private String sql_createTbl;{
         sql_createTbl = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
-                "(" + FEILD_ID + " INTEGER PRIMARY KEY autoincrement, " +
-                FEILD_NAME + " TEXT, " +
+                "(" + FIELD_ID + " INTEGER PRIMARY KEY autoincrement, " +
+                FIELD_HADSETUP + " INTEGER, " +
+                FIELD_NAME + " TEXT, " +
                 FIELD_ROOM + " TEXT, " +
-                FEILD_PHONE + " TEXT, " +
-                FEILD_ADDRESS + " TEXT, " +
-                FEILD_BIRTHDAY + " TEXT, " +
+                FIELD_PHONE + " TEXT, " +
+                FIELD_ADDRESS + " TEXT, " +
+                FIELD_BIRTHDAY + " TEXT, " +
                 IMAGE + " BLOB )";
     }
     //SQL : create first row
     byte[] ByteExample = "abc".getBytes();
+
     private String sql_firstRow;{
-        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (name, phone, address, birthday, room, image) VALUES ('姓名', '電話', '高雄市蓮海路70號', '2000-01-01', '0000','"+ByteExample+"')");
-    }
+        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (hadSetUp, name, phone, address, birthday, room, image) VALUES (0, '姓名', '電話', '高雄市蓮海路70號', '2000-01-01', '0000','"+ByteExample+"')");}
 
     //Database : updateProfileData to the table
-    public long editProfileData(String name, String phone, String address, String birthday, String room){
+    public long editProfileData(String hadsetup, String name, String phone, String address, String birthday, String room){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(FEILD_NAME, name);
-        cv.put(FEILD_PHONE, phone);
-        cv.put(FEILD_ADDRESS, address);
-        cv.put(FEILD_BIRTHDAY, birthday);
+        cv.put(FIELD_HADSETUP, hadsetup);
+        cv.put(FIELD_NAME, name);
+        cv.put(FIELD_PHONE, phone);
+        cv.put(FIELD_ADDRESS, address);
+        cv.put(FIELD_BIRTHDAY, birthday);
         cv.put(FIELD_ROOM, room);
 
         return db.update(TABLE_NAME, cv, "_id=1", null);
@@ -84,7 +87,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public Cursor getProfileData()
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] cols = new String[] {FEILD_NAME, FEILD_PHONE, FEILD_ADDRESS, FEILD_BIRTHDAY,FIELD_ROOM};
+        String[] cols = new String[] {FIELD_HADSETUP,FIELD_NAME, FIELD_PHONE, FIELD_ADDRESS, FIELD_BIRTHDAY,FIELD_ROOM};
         Cursor mCursor = db.query(true,TABLE_NAME,cols, null, null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
