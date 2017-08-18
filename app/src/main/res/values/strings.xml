@@ -11,7 +11,7 @@
     <string name="instruction_phone">enter phone</string>
     <string name="instruction_addr">enter address</string>
     <string name="title_activity_sos_gps">Map</string>
-    <string name="SetUpInstruction">您好！歡迎使用</string>
+    <string name="instruction_setup1">您好！歡迎加入</string>
     <string name="dialog_title" />
     <string name="dialog_message" />
 </resources>

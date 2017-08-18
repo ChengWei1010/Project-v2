@@ -138,15 +138,5 @@
             android:layout_marginEnd="0dp"
             android:layout_marginStart="100dp"
             android:background="@drawable/ic_check_24dp"/>
-
-        <ImageView
-            android:id="@+id/guide1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:adjustViewBounds="true"
-            android:alpha="1"
-            android:scaleType="fitXY"
-            android:src="@drawable/guide_home_1"></ImageView>
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>

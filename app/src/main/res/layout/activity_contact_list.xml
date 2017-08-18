@@ -14,7 +14,18 @@
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/include"
         app:layout_constraintHorizontal_bias="0.0" />
-
+    <ImageView
+        android:id="@+id/bg_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/bg_phone"
+        android:layout_marginRight="0dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginBottom="0dp" />
     <GridView
         android:id="@+id/gridView"
         android:layout_width="0dp"
@@ -26,6 +37,7 @@
         android:numColumns="2"
         android:horizontalSpacing="6dp"
         android:verticalSpacing="6dp"
+        android:background="@color/guideBG"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

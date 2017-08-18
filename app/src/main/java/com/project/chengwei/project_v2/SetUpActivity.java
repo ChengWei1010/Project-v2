@@ -22,6 +22,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class SetUpActivity extends AppCompatActivity {
     static final String KEY =  "com.<your_app_name>";
@@ -30,26 +35,27 @@ public class SetUpActivity extends AppCompatActivity {
     private SQLiteDBHelper dbHelper;
 
     private ImageButton btn_elder, btn_family;
-    private Button btn_start,btn_create;
+    private Button btn_start,btn_create,btn_back;
     private FrameLayout guide_room;
     private EditText editTextName;
-    private EditText edit_group_num1,edit_group_num2,edit_group_num3,edit_group_num4;
+    private EditText edit_group_num;
+    //private EditText edit_group_num1,edit_group_num2,edit_group_num3,edit_group_num4;
     private TextView instruction1,instruction2,instruction3;
-
+    private String strName,strRoom;
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
-    private DatabaseReference root;
-
-    private String strName,strRoom;
+    private FirebaseUser currentUser;
+    private DatabaseReference mDB1,mDB2;
+    private String uId = UUID.randomUUID().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
-
+        currentUser = mAuth.getCurrentUser();
+        //uId = currentUser.getUid();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
-
         findViews();
         setUpListeners();
     }
@@ -63,18 +69,18 @@ public class SetUpActivity extends AppCompatActivity {
         instruction3 = (TextView) findViewById(R.id.instruction3);
         //editTextRoom = (EditText) findViewById(R.id.edit_group_num);
         editTextName =  (EditText) findViewById(R.id.edit_name);
+        edit_group_num  = (EditText) findViewById(R.id.edit_group_num);
+        editTextName.setSelectAllOnFocus(true);
+        edit_group_num.setSelectAllOnFocus(true);
         btn_elder = (ImageButton)findViewById(R.id.btn_elder);
         btn_family = (ImageButton)findViewById(R.id.btn_family);
         btn_start = (Button)findViewById(R.id.btn_start);
         btn_create = (Button)findViewById(R.id.btn_create);
-        edit_group_num1  = (EditText) findViewById(R.id.edit_group_num1);
-        edit_group_num2  = (EditText) findViewById(R.id.edit_group_num2);
-        edit_group_num3  = (EditText) findViewById(R.id.edit_group_num3);
-        edit_group_num4  = (EditText) findViewById(R.id.edit_group_num4);
-        edit_group_num1.setSelection(0);
-        edit_group_num2.setSelection(0);
-        edit_group_num3.setSelection(0);
-        edit_group_num4.setSelection(0);
+        btn_back = (Button)findViewById(R.id.btn_back);
+//        edit_group_num1  = (EditText) findViewById(R.id.edit_group_num1);
+//        edit_group_num2  = (EditText) findViewById(R.id.edit_group_num2);
+//        edit_group_num3  = (EditText) findViewById(R.id.edit_group_num3);
+//        edit_group_num4  = (EditText) findViewById(R.id.edit_group_num4);
     }
     //--------------------------------------------------------------------------------------------//
     //----------------------------------- Onclick Listeners --------------------------------------//
@@ -84,49 +90,71 @@ public class SetUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, true).commit();
-                showSelectRoom();
+                if(hasName()==true) {
+                    signIn();
+                    showSelectRoom();
+                }
             }
         });
         btn_family.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, false).commit();
-                //signIn();
-                showSelectRoom();
-                showCreateRoom();
+                if(hasName()==true) {
+                    signIn();
+                    showSelectRoom();
+                    showCreateRoom();
+                }
             }
         });
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 strName = editTextName.getText().toString();
-                String num1 = edit_group_num1.getText().toString();
-                String num2 = edit_group_num2.getText().toString();
-                String num3 = edit_group_num3.getText().toString();
-                String num4 = edit_group_num4.getText().toString();
-                strRoom = num1 + num2 + num3 +num4;
+                strRoom = edit_group_num.getText().toString();
+//                String num1 = edit_group_num1.getText().toString();
+//                String num2 = edit_group_num2.getText().toString();
+//                String num3 = edit_group_num3.getText().toString();
+//                String num4 = edit_group_num4.getText().toString();
+//                strRoom = num1 + num2 + num3 +num4;
 
                 if(hasName()==true && isValidRoomNum(strRoom)==true) {
-                save();
-                if (isElder()) {
-                    ElderEnter();
-                } else {
-                    FamilyEnter();
+                    saveSQLite();
+                    FireBasePutData(uId, strName, strRoom);
+                    if (isElder()) {
+                        ElderEnter();
+                    } else {
+                        FamilyEnter();
+                    }
                 }
             }
+        });
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideSelectRoom();
             }
         });
-
+        btn_create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                strName = editTextName.getText().toString();
+                strRoom = edit_group_num.getText().toString();
+                FireBaseCreateGroup(uId, strName);
+                saveSQLite();
+                FamilyEnter();
+            }
+        });
     }
     //--------------------------------------------------------------------------------------------//
-    //------------------------------------ CheckPreferences ----------------------------------------//
+    //------------------------------------ CheckPreferences --------------------------------------//
     //--------------------------------------------------------------------------------------------//
     public boolean isElder() {
         return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
     }
 
     //--------------------------------------------------------------------------------------------//
-    //------------------------------------ FireBase sign In --------------------------------------//
+    //------------------------------------------- FireBase  --------------------------------------//
     //--------------------------------------------------------------------------------------------//
     public void signIn(){
         mAuth.signInAnonymously()
@@ -139,19 +167,51 @@ public class SetUpActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(SetUpActivity.this, "login success. "+user.getUid(),
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("hi", "signInAnonymously:failure", task.getException());
                             Toast.makeText(SetUpActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
                         }
 
                     }
                 });
     }
+    public void FireBasePutData(String uId, String strName, String strRoom) {
+        mDB1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
+        mDB2 = FirebaseDatabase.getInstance().getReference("members");
+        Map<String, String> userData = new HashMap<>();
+        userData.put("mId", uId);
+        userData.put("mName", strName);
+        userData.put("mGroup", strRoom);
+        mDB1.push().setValue(userData);
+        mDB2.push().setValue(userData);
+    }
+    public void FireBaseCreateGroup(String uId, String strName) {
+        int randomGroupNum = (int)(Math.random()*9000)+1000;
+        String createRoom = Integer.toString(randomGroupNum);
+        strRoom = createRoom;
+        mDB1 = FirebaseDatabase.getInstance().getReference("groups").child(createRoom).child("members");
+        mDB2 = FirebaseDatabase.getInstance().getReference("members");
+        Map<String, String> userData = new HashMap<>();
+        userData.put("mId", uId);
+        userData.put("mName", strName);
+        userData.put("mGroup", strRoom);
+        mDB1.push().setValue(userData);
+        mDB2.push().setValue(userData);
+        Toast.makeText(SetUpActivity.this, "create room: " + createRoom, Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //------------------------------------------- show UI ----------------------------------------//
+    //--------------------------------------------------------------------------------------------//
     public void showSelectRoom(){
+        btn_back.setVisibility(FrameLayout.VISIBLE);
         instruction1.setVisibility(FrameLayout.INVISIBLE);
         editTextName.setVisibility(FrameLayout.INVISIBLE);
         guide_room.setVisibility(FrameLayout.VISIBLE);
@@ -164,40 +224,36 @@ public class SetUpActivity extends AppCompatActivity {
         btn_create.setVisibility(FrameLayout.VISIBLE);
         guideAnimation();
     }
+    public void hideSelectRoom(){
+        btn_back.setVisibility(FrameLayout.INVISIBLE);
+        instruction1.setVisibility(FrameLayout.VISIBLE);
+        editTextName.setVisibility(FrameLayout.VISIBLE);
+        guide_room.setVisibility(FrameLayout.INVISIBLE);
+        instruction3.setVisibility(FrameLayout.INVISIBLE);
+        btn_create.setVisibility(FrameLayout.INVISIBLE);
+        btn_elder.setClickable(true);
+        btn_family.setClickable(true);
+    }
     public void ElderEnter(){
         Intent intent = new Intent();
         intent.setClass(SetUpActivity.this , HomeActivity.class);
         startActivity(intent);
         finish();
-        //get into firebase
-        //root = FirebaseDatabase.getInstance().getReference().child(group).child(groupNum);
-        //Toast.makeText(SetUpActivity.this, "enter" + groupNum, Toast.LENGTH_SHORT).show();
     }
     public void FamilyEnter(){
         startActivity(new Intent(SetUpActivity.this, FamilyActivity.class));
         finish();
-        //root = FirebaseDatabase.getInstance().getReference().child(group).child(groupNum);
-        //Toast.makeText(SetUpActivity.this, "enter" + groupNum, Toast.LENGTH_SHORT).show();
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-    }
-    private void updateUI(FirebaseUser user) {}
 
     //--------------------------------------------------------------------------------------------//
-    //--------------------------------------- Database -------------------------------------------//
+    //--------------------------------------- SQLiteDB -------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     //Database : initial database
     private void initDB(){
         dbHelper = new SQLiteDBHelper(getApplicationContext());
     }
     //Database : save the change to database
-    public void save() {
+    public void saveSQLite() {
         String strPhone = "0123456789";
         String strAddr = "高雄市蓮海路70號";
         String birthday = "2000-01-01";
@@ -209,6 +265,13 @@ public class SetUpActivity extends AppCompatActivity {
         closeDB();
         alertSuccess();
     }
+    //Database : close database
+    private void closeDB(){
+        dbHelper.close();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- has or exist ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
     private boolean hasName(){
         if(editTextName==null){
             showMessage("請輸入姓名！");
@@ -224,13 +287,9 @@ public class SetUpActivity extends AppCompatActivity {
         return true;
     }
     // Show simple message using SnackBar
-    void showMessage(String message) {
+    private void showMessage(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
-    }
-    //Database : close database
-    private void closeDB(){
-        dbHelper.close();
     }
     public void alertSuccess() {
 //        Toast toast = Toast.makeText(this, "saved!", Toast.LENGTH_SHORT);
@@ -243,7 +302,6 @@ public class SetUpActivity extends AppCompatActivity {
 //            }
 //        }, 2 * 1000);
     }
-
     //--------------------------------------------------------------------------------------------//
     //------------------------------ setAnimationListener ----------------------------------------//
     //--------------------------------------------------------------------------------------------//

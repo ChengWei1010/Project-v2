@@ -27,6 +27,16 @@ import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     static final String KEY =  "com.<your_app_name>";
@@ -50,6 +60,7 @@ public class HomeActivity extends AppCompatActivity {
     private TextClock textClock;
     private TextView text_group_name;
     private String groupNum, myName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,7 +170,6 @@ public class HomeActivity extends AppCompatActivity {
             RequestRuntimePermission();
         }
     }
-
     private void RequestRuntimePermission() {
         //拒絕相機
         if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this, Manifest.permission.CAMERA)) {
@@ -251,7 +261,6 @@ public class HomeActivity extends AppCompatActivity {
                     RequestPermissionCode);
         }
     }
-
     //跳出權限要求時，按允許或拒絕
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -337,7 +346,6 @@ public class HomeActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -348,7 +356,6 @@ public class HomeActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
     private void openGuide(){
         help_guide.setVisibility(View.VISIBLE);
         btn_sos.setClickable(false);
@@ -358,7 +365,6 @@ public class HomeActivity extends AppCompatActivity {
         btn_magnifier.setClickable(false);
         textClock.setVisibility(View.INVISIBLE);
     }
-
     private void closeGuide(){
         help_guide.setVisibility(View.GONE);
         textClock.setVisibility(View.VISIBLE);
@@ -368,5 +374,4 @@ public class HomeActivity extends AppCompatActivity {
         btn_map.setClickable(true);
         btn_magnifier.setClickable(true);
     }
-
 }

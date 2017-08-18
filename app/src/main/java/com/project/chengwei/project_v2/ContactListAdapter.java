@@ -56,11 +56,9 @@ public class ContactListAdapter extends BaseAdapter {
         if(row == null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(layout, null);
-
             holder.txtName = (TextView) row.findViewById(R.id.txtName);
             //holder.txtPhone = (TextView) row.findViewById(R.id.txtPhone);
             holder.imgPerson = (ImageView) row.findViewById(R.id.imgPerson);
-
             row.setTag(holder);
         }
         else {
@@ -68,7 +66,6 @@ public class ContactListAdapter extends BaseAdapter {
         }
 
         Contact person = personsList.get(position);
-
         holder.txtName.setText(person.getName());
         //holder.txtPhone.setText(person.getPhone());
         holder.imgPerson.setImageURI(Uri.parse(person.getImage()));
