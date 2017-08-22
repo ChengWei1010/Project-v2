@@ -653,8 +653,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private void uploadVideo(String mergePath){
         // Storage Upload
         progressDialog = new ProgressDialog(this);
-        //String mergePath //就放明倫傳過來的檔案路徑
-        //String file = "/storage/emulated/0/Movies/Instagram/VID_176010131_012946_851.mp4";
         File tmpFile = new File(mergePath);
 
         Uri filePath = Uri.fromFile(tmpFile);
@@ -673,7 +671,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
                             //if the upload is successfull, hide the progress dialog
                             progressDialog.dismiss();
                             //and displaying a success toast
-                            Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Storage Uploaded ", Toast.LENGTH_LONG).show();
                             Uri downloadUri = taskSnapshot.getDownloadUrl();
                             uploadVideoDB(downloadUri.toString());
                         }
@@ -711,7 +709,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         videoData.put("date", date);
         videoData.put("storagePath", downloadUri);
         mDatabaseRef.push().setValue(videoData);
-        Toast.makeText(this, "database Success", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "database StoragePath Uploaded", Toast.LENGTH_SHORT).show();
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
