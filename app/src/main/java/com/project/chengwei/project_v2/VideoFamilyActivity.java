@@ -75,18 +75,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class VideoFamilyActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
-    private String groupNum;
-    private String mName;
+    private String groupNum,mName,mId="1234";
     private ProgressDialog progressDialog ;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private FirebaseDatabase mDatabase;
+    private DatabaseReference mDatabaseRef;
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
 
@@ -248,6 +250,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private void findViews(){
         groupNum = getIntent().getExtras().get("groupNum").toString();
         mName = getIntent().getExtras().get("mName").toString();
+        //mId = getIntent().getExtras().get("mId").toString();
         //Toast.makeText(VideoFamilyActivity.this,groupNum+mName,Toast.LENGTH_SHORT).show();
         myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
     }
@@ -648,10 +651,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
     }
 
     private void uploadVideo(String mergePath){
-        // Database upload
-
-
-
         // Storage Upload
         progressDialog = new ProgressDialog(this);
         //String mergePath //就放明倫傳過來的檔案路徑
@@ -666,21 +665,17 @@ public class VideoFamilyActivity extends AppCompatActivity {
             progressDialog.show();
             mStorage = FirebaseStorage.getInstance();
             mStorageRef = mStorage.getReference();
-            StorageReference ref = mStorageRef.child("videos").child(filePath.getLastPathSegment());
+            StorageReference ref = mStorageRef.child("videos").child(groupNum).child(filePath.getLastPathSegment());
             ref.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             //if the upload is successfull, hide the progress dialog
                             progressDialog.dismiss();
-
                             //and displaying a success toast
                             Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
-
-                            //sendMsg你就寫一個function把firebase的downloadUri存到聊天室的msg裡，之後要用來下載用的Uri
                             Uri downloadUri = taskSnapshot.getDownloadUrl();
-                            //sendMsg(downloadUri.toString());
-
+                            uploadVideoDB(downloadUri.toString());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -688,7 +683,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception exception) {
                             //if the upload is not successfull, hide the progress dialog
                             progressDialog.dismiss();
-
                             //and displaying error message
                             Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
                         }
@@ -698,12 +692,26 @@ public class VideoFamilyActivity extends AppCompatActivity {
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             //calculating progress percentage
                             double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-
                             //displaying percentage in progress dialog
                             progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
                         }
                     });
         }
+    }
+    private void uploadVideoDB(String downloadUri) {
+        // Database upload
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum).child("mVideo");
+        //取得時間
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
+        Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
+        String date = formatter.format(curDate);
+        Map<String, Object> videoData = new HashMap<>();
+        videoData.put("mId", mId);
+        videoData.put("member", mName);
+        videoData.put("date", date);
+        videoData.put("storagePath", downloadUri);
+        mDatabaseRef.push().setValue(videoData);
+        Toast.makeText(this, "database Success", Toast.LENGTH_SHORT).show();
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//

@@ -12,31 +12,41 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class FamilyActivity extends AppCompatActivity {
     private Toolbar myToolbar;
     private ImageButton btn_video;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
-    private String groupNum,mName;
+    private String groupNum,mName,mId;
     final int RequestCameraCode = 1;
     final int RequestCallCode = 2;
     final int RequestExternalStorageCode = 3;
     final int RequestLocationCode = 4;
     final int RequestPermissionCode = 999;
     private final int REQUEST_PERMISSION = 10;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_family);
         if (Build.VERSION.SDK_INT >= 23) {
             checkPermission();
+            signIn();
         }
         findViews();
         setToolbar();
@@ -77,6 +87,7 @@ public class FamilyActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(),VideoFamilyActivity.class);
                     intent.putExtra("mName",mName);
                     intent.putExtra("groupNum",groupNum);
+                    //intent.putExtra("mId",mId);
                     startActivity(intent);
                     finish();
                     break;
@@ -238,7 +249,30 @@ public class FamilyActivity extends AppCompatActivity {
             }
         }
     }
+    //--------------------------------------------------------------------------------------------//
+    //------------------------------------------- FireBase  --------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public void signIn(){
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("hi", "signInAnonymously:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(FamilyActivity.this, "login success. "+user.getUid(),
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("hi", "signInAnonymously:failure", task.getException());
+                            Toast.makeText(FamilyActivity.this, "請檢查網路連線",
+                                    Toast.LENGTH_SHORT).show();
+                        }
 
+                    }
+                });
+    }
     //--------------------------------------------------------------------------------------------//
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//

@@ -41,19 +41,20 @@ public class SetUpActivity extends AppCompatActivity {
     private EditText edit_group_num;
     //private EditText edit_group_num1,edit_group_num2,edit_group_num3,edit_group_num4;
     private TextView instruction1,instruction2,instruction3;
-    private String strName,strRoom;
+    private String strName,strRoom,strStatus;
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference mDB1,mDB2;
     private String uId = UUID.randomUUID().toString();
+            //= UUID.randomUUID().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
-        //currentUser = mAuth.getCurrentUser();
-        //uId = currentUser.getUid();
+//        currentUser = mAuth.getCurrentUser();
+//        uId = currentUser.getUid();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
         findViews();
@@ -120,10 +121,13 @@ public class SetUpActivity extends AppCompatActivity {
 
                 if(hasName()==true && isValidRoomNum(strRoom)==true) {
                     saveSQLite();
-                    FireBasePutData(uId, strName, strRoom);
                     if (isElder()) {
+                        strStatus = "e";
+                        FireBasePutData(uId, strName, strRoom,strStatus);
                         ElderEnter();
                     } else {
+                        strStatus = "f";
+                        FireBasePutData(uId, strName, strRoom,strStatus);
                         FamilyEnter();
                     }
                 }
@@ -177,13 +181,14 @@ public class SetUpActivity extends AppCompatActivity {
                     }
                 });
     }
-    public void FireBasePutData(String uId, String strName, String strRoom) {
+    public void FireBasePutData(String uId, String strName, String strRoom, String strStatus) {
         mDB1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
         mDB2 = FirebaseDatabase.getInstance().getReference("members");
         Map<String, String> userData = new HashMap<>();
-        userData.put("mId", uId);
+        //userData.put("mId", uId);
         userData.put("mName", strName);
         userData.put("mGroup", strRoom);
+        userData.put("mStatus",strStatus);
         mDB1.push().setValue(userData);
         mDB2.push().setValue(userData);
     }
