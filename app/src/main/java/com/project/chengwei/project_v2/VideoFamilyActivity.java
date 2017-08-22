@@ -703,6 +703,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
         Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
         String date = formatter.format(curDate);
+
         Map<String, Object> videoData = new HashMap<>();
         videoData.put("mId", mId);
         videoData.put("member", mName);
@@ -715,8 +716,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             startActivity(new Intent(VideoFamilyActivity.this, FamilyActivity.class));
             finish();

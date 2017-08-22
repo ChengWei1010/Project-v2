@@ -3,6 +3,7 @@ package com.project.chengwei.project_v2;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -45,10 +46,8 @@ public class SetUpActivity extends AppCompatActivity {
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-    private DatabaseReference mDB1,mDB2;
-    private String uId = UUID.randomUUID().toString();
-            //= UUID.randomUUID().toString();
+    private DatabaseReference mDBref1,mDBref2;
+    private String uuId = UUID.randomUUID().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +122,11 @@ public class SetUpActivity extends AppCompatActivity {
                     saveSQLite();
                     if (isElder()) {
                         strStatus = "e";
-                        FireBasePutData(uId, strName, strRoom,strStatus);
+                        FireBasePutData(uuId, strName, strRoom,strStatus);
                         ElderEnter();
                     } else {
                         strStatus = "f";
-                        FireBasePutData(uId, strName, strRoom,strStatus);
+                        FireBasePutData(uuId, strName, strRoom,strStatus);
                         FamilyEnter();
                     }
                 }
@@ -144,7 +143,8 @@ public class SetUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 strName = editTextName.getText().toString();
                 strRoom = edit_group_num.getText().toString();
-                FireBaseCreateGroup(uId, strName);
+                strStatus = "f";
+                FireBaseCreateGroup(uuId, strName,strStatus);
                 saveSQLite();
                 FamilyEnter();
             }
@@ -181,29 +181,23 @@ public class SetUpActivity extends AppCompatActivity {
                     }
                 });
     }
-    public void FireBasePutData(String uId, String strName, String strRoom, String strStatus) {
-        mDB1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
-        mDB2 = FirebaseDatabase.getInstance().getReference("members");
+    public void FireBasePutData(String uuId, String strName, String strRoom, String strStatus) {
+        mDBref1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
+        mDBref2 = FirebaseDatabase.getInstance().getReference("members");
+
         Map<String, String> userData = new HashMap<>();
-        //userData.put("mId", uId);
+        userData.put("mId", uuId);
         userData.put("mName", strName);
         userData.put("mGroup", strRoom);
         userData.put("mStatus",strStatus);
-        mDB1.push().setValue(userData);
-        mDB2.push().setValue(userData);
+        mDBref1.child(uuId).setValue(userData);
+        mDBref2.child(uuId).setValue(userData);
     }
-    public void FireBaseCreateGroup(String uId, String strName) {
+    public void FireBaseCreateGroup(String uId, String strName, String strStatus) {
         int randomGroupNum = (int)(Math.random()*9000)+1000;
         String createRoom = Integer.toString(randomGroupNum);
         strRoom = createRoom;
-        mDB1 = FirebaseDatabase.getInstance().getReference("groups").child(createRoom).child("members");
-        mDB2 = FirebaseDatabase.getInstance().getReference("members");
-        Map<String, String> userData = new HashMap<>();
-        userData.put("mId", uId);
-        userData.put("mName", strName);
-        userData.put("mGroup", strRoom);
-        mDB1.push().setValue(userData);
-        mDB2.push().setValue(userData);
+        FireBasePutData(uId, strName, strRoom,strStatus);
         Toast.makeText(SetUpActivity.this, "create room: " + createRoom, Toast.LENGTH_SHORT).show();
     }
     @Override
@@ -211,7 +205,7 @@ public class SetUpActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
+        //currentUser = mAuth.getCurrentUser();
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------------- show UI ----------------------------------------//
@@ -261,14 +255,11 @@ public class SetUpActivity extends AppCompatActivity {
     //Database : save the change to database
     public void saveSQLite() {
         String hadsetup = "1";
-        String strPhone = "0123456789";
-        String strAddr = "高雄市蓮海路70號";
-        String birthday = "2000-01-01";
 
         initDB();
         Cursor cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
-        dbHelper.editProfileData(hadsetup, strName, strPhone ,strAddr, birthday, strRoom);
+        dbHelper.setProfileData(uuId ,hadsetup, strName, strRoom);
         closeDB();
         alertSuccess();
     }

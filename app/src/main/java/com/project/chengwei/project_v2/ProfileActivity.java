@@ -98,8 +98,13 @@ public class ProfileActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
-            finish();
+            if(isElder()) {
+                startActivity(new Intent(ProfileActivity.this, FamilyActivity.class));
+                finish();
+            }else{
+                startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
+                finish();
+            }
         }
         return super.onKeyDown(keyCode, event);
     }

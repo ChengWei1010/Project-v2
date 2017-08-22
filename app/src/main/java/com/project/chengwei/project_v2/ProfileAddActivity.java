@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +20,20 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 public class ProfileAddActivity extends AppCompatActivity {
     private static final int SELECT_PICTURE = 100;
@@ -33,6 +45,8 @@ public class ProfileAddActivity extends AppCompatActivity {
     private ImageButton btn_manageDB;
     private ImageButton btn_editPhoto;
     private ImageView ImgView_photo;
+    private DatabaseReference dbRef1,dbRef2;
+    private String uuId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +71,7 @@ public class ProfileAddActivity extends AppCompatActivity {
 
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
+        uuId = cursor.getString(cursor.getColumnIndex("uuid"));
         editTextName.setText( cursor.getString(cursor.getColumnIndex("name")) );
         editTextName.setSelectAllOnFocus(true);
         editTextPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
@@ -234,6 +249,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         if(isValidPhoneNum(strPhone)==true){
             dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday,strRoom);
             closeDB();
+            FireBaseUpdateData(uuId, strName, strRoom);
             alertSuccess();
         }
     }
@@ -242,6 +258,20 @@ public class ProfileAddActivity extends AppCompatActivity {
         finish();
 //        Intent ProfileIntent = new Intent(AddProfileActivity.this, ProfileActivity.class);
 //        startActivity(ProfileIntent);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Firebase -------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public void FireBaseUpdateData(String uuId, String strName, String strRoom) {
+        //dbRef1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
+        dbRef2 = FirebaseDatabase.getInstance().getReference("members");
+
+        try {
+            dbRef2.child(uuId).child("mName").setValue(strName);
+            dbRef2.child(uuId).child("mGroup").setValue(strRoom);
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Database -------------------------------------------//
@@ -262,10 +292,9 @@ public class ProfileAddActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                startActivity(new Intent(ProfileAddActivity.this, ProfileActivity.class));
                 finish();
-//                Intent ProfileIntent = new Intent(ProfileAddActivity.this, ProfileActivity.class);
-//                startActivity(ProfileIntent);
             }
-        }, 2 * 1000);
+        }, 1000);
     }
 }
