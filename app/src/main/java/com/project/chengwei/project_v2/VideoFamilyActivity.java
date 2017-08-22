@@ -81,6 +81,7 @@ import java.util.List;
 import java.util.Map;
 
 public class VideoFamilyActivity extends AppCompatActivity {
+    //new angela branch
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
     private String groupNum,mName,mId="1234";
