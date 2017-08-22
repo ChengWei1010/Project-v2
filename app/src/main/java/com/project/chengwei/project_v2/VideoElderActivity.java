@@ -24,6 +24,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.StorageReference;
@@ -36,6 +37,7 @@ public class VideoElderActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
+    private DatabaseReference mDatabaseRef;
     private String groupNum;
     private Button downloadBtn;
     private Toolbar myToolbar;
@@ -55,10 +57,15 @@ public class VideoElderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video_elder);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+        //取得房號
+        groupNum = getIntent().getExtras().get("groupNum").toString();
+
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum);
+
 //        mStorage = FirebaseStorage.getInstance();
 //        mStorageRef = mStorage.getReference();
 //        mUri = mStorageRef.child("videos/test.mp4").getDownloadUrl().getResult();
-        //setDownloadBtn();
+//        setDownloadBtn();
         findViews();
         setToolbar();
 //        String id = UUID.randomUUID().toString();
@@ -108,6 +115,7 @@ public class VideoElderActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Download --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
+
 //    private void setDownloadBtn() {
 //        downloadBtn.setOnClickListener(new View.OnClickListener() {
 //            public void onClick(View v) {
