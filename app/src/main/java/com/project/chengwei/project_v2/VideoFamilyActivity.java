@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -49,6 +50,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -79,8 +81,12 @@ import java.util.List;
 public class VideoFamilyActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
+    private String groupNum;
+    private String mName;
     private ProgressDialog progressDialog ;
     private FirebaseAnalytics mFirebaseAnalytics;
+
+    private FirebaseDatabase mDatabase;
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
 
@@ -240,6 +246,9 @@ public class VideoFamilyActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
+        groupNum = getIntent().getExtras().get("groupNum").toString();
+        mName = getIntent().getExtras().get("mName").toString();
+        //Toast.makeText(VideoFamilyActivity.this,groupNum+mName,Toast.LENGTH_SHORT).show();
         myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
     }
 
@@ -639,8 +648,12 @@ public class VideoFamilyActivity extends AppCompatActivity {
     }
 
     private void uploadVideo(String mergePath){
+        // Database upload
+
+
+
+        // Storage Upload
         progressDialog = new ProgressDialog(this);
-        //這裡就是Upload的code
         //String mergePath //就放明倫傳過來的檔案路徑
         //String file = "/storage/emulated/0/Movies/Instagram/VID_176010131_012946_851.mp4";
         File tmpFile = new File(mergePath);

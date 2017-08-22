@@ -23,7 +23,7 @@ public class FamilyActivity extends AppCompatActivity {
     private ImageButton btn_video;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
-    private String groupNum;
+    private String groupNum,mName;
     final int RequestCameraCode = 1;
     final int RequestCallCode = 2;
     final int RequestExternalStorageCode = 3;
@@ -52,6 +52,7 @@ public class FamilyActivity extends AppCompatActivity {
         dbHelper = new SQLiteDBHelper(getApplicationContext());
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
+        mName = cursor.getString(cursor.getColumnIndex("name"));
         groupNum = cursor.getString(cursor.getColumnIndex("room"));
     }
     //Database : close database
@@ -74,7 +75,8 @@ public class FamilyActivity extends AppCompatActivity {
                 case R.id.btn_video:
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
                     Intent intent = new Intent(getApplicationContext(),VideoFamilyActivity.class);
-                    intent.putExtra("room_name",groupNum);
+                    intent.putExtra("mName",mName);
+                    intent.putExtra("groupNum",groupNum);
                     startActivity(intent);
                     finish();
                     break;
