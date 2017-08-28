@@ -14,4 +14,7 @@
     <string name="instruction_setup1">您好！歡迎加入</string>
     <string name="dialog_title" />
     <string name="dialog_message" />
+    <string name="drawer_open">1</string>
+    <string name="drawer_close">0</string>
+
 </resources>

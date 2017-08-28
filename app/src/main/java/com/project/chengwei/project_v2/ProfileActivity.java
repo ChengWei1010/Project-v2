@@ -99,10 +99,10 @@ public class ProfileActivity extends AppCompatActivity {
     {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             if(isElder()) {
-                startActivity(new Intent(ProfileActivity.this, FamilyActivity.class));
+                startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
                 finish();
             }else{
-                startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
+                startActivity(new Intent(ProfileActivity.this, FamilyActivity.class));
                 finish();
             }
         }

@@ -114,7 +114,6 @@ public class VideoElderActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-//        downloadBtn = findViewById(R.id.downloadBtn);
         myToolbar = findViewById(R.id.toolbar_home);
     }
     //--------------------------------------------------------------------------------------------//

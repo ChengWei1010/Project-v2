@@ -1,42 +1,25 @@
 package com.project.chengwei.project_v2;
 
-import android.*;
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     static final String KEY =  "com.<your_app_name>";
@@ -50,17 +33,11 @@ public class HomeActivity extends AppCompatActivity {
     final int RequestLocationCode = 4;
     final int RequestPermissionCode = 999;
     private final int REQUEST_PERMISSION = 10;
-    private ImageButton btn_phone;
-    private ImageButton btn_video;
-    private ImageButton btn_map;
-    private ImageButton btn_magnifier;
-    private ImageButton btn_sos;
-    private ImageButton btn_guide_ok;
+    private ImageButton btn_phone, btn_video, btn_map, btn_magnifier, btn_sos, btn_guide_ok,toolbar_guide;
     private FrameLayout help_guide;
     private TextClock textClock;
     private TextView text_group_name;
     private String groupNum, myName;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +47,6 @@ public class HomeActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 23) {
             checkPermission();
         }
-
         findViews();
         setToolbar();
         setListeners();
@@ -82,7 +58,8 @@ public class HomeActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_with_guide);
+        toolbar_guide = (ImageButton)findViewById(R.id.toolbar_btn_guide);
         btn_phone = (ImageButton)findViewById(R.id.btn_phone);
         btn_video = (ImageButton)findViewById(R.id.btn_video);
         btn_map = (ImageButton)findViewById(R.id.btn_map);
@@ -93,7 +70,6 @@ public class HomeActivity extends AppCompatActivity {
         textClock = (TextClock)findViewById(R.id.textClock);
         text_group_name = (TextView)findViewById(R.id.text_group_name);
     }
-
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -312,6 +288,13 @@ public class HomeActivity extends AppCompatActivity {
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void setToolbar(){
+        toolbar_guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGuide();
+            }
+        });
+
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_person_white);
@@ -319,6 +302,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+                overridePendingTransition(R.anim.leftcomein, R.anim.stable);
                 finish();
             }
         });
@@ -341,21 +325,21 @@ public class HomeActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //----------------------------------- Options Item -------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.help:
-                openGuide();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu_home, menu);
+//        return true;
+//    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.help:
+//                openGuide();
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
     private void openGuide(){
         help_guide.setVisibility(View.VISIBLE);
         btn_sos.setClickable(false);

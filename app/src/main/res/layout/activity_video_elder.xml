@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.project.chengwei.project_v2.VideoElderActivity">
     <include
-        layout="@layout/toolbar_main"
+        layout="@layout/toolbar_home"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"

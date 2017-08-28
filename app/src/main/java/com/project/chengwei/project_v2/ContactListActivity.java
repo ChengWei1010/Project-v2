@@ -13,12 +13,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class ContactListActivity extends AppCompatActivity {
     private Toolbar myToolbar;
+    private ImageButton toolbar_add_contact, toolbar_fav;
     GridView gridView;
     ArrayList<Contact> list;
     ContactListAdapter adapter = null;
@@ -87,7 +89,9 @@ public class ContactListActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_contact);
+        toolbar_add_contact = (ImageButton)findViewById(R.id.toolbar_add_contact);
+        toolbar_fav = (ImageButton)findViewById(R.id.toolbar_fav);
         gridView = (GridView) findViewById(R.id.gridView);
     }
     //--------------------------------------------------------------------------------------------//
@@ -107,6 +111,20 @@ public class ContactListActivity extends AppCompatActivity {
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void setToolbar(){
+        toolbar_add_contact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ContactListActivity.this, ContactAddActivity.class));
+                finish();
+            }
+        });
+        toolbar_fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ContactListActivity.this,"fav",Toast.LENGTH_SHORT).show();
+            }
+        });
+
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
@@ -127,26 +145,4 @@ public class ContactListActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-    //--------------------------------------------------------------------------------------------//
-    //----------------------------------- Options Item -------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_contact, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.addContact:
-                Toast.makeText(ContactListActivity.this,"add",Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ContactListActivity.this, ContactAddActivity.class));
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 }
