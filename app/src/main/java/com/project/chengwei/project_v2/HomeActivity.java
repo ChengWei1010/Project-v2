@@ -128,7 +128,7 @@ public class HomeActivity extends AppCompatActivity {
                 case R.id.btn_video:
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
                     Intent intent = new Intent(getApplicationContext(),VideoElderActivity.class);
-                    intent.putExtra("room_name",groupNum);
+                    intent.putExtra("groupNum",groupNum);
                     startActivity(intent);
                     finish();
                     break;

@@ -53,6 +53,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -81,6 +82,7 @@ import java.util.List;
 import java.util.Map;
 
 public class VideoFamilyActivity extends AppCompatActivity {
+    //new angela branch
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
     private String groupNum,mName,mId="1234";
@@ -656,6 +658,11 @@ public class VideoFamilyActivity extends AppCompatActivity {
         File tmpFile = new File(mergePath);
 
         Uri filePath = Uri.fromFile(tmpFile);
+        //Create file metadata including the content type
+        //If you do not provide a contentType and Cloud Storage cannot infer a default from the file extension, Cloud Storage uses application/octet-stream.
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setContentType("video/mp4")
+                .build();
 
         if (filePath != null) {
             //displaying a progress dialog while upload is going on
@@ -664,7 +671,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
             mStorage = FirebaseStorage.getInstance();
             mStorageRef = mStorage.getReference();
             StorageReference ref = mStorageRef.child("videos").child(groupNum).child(filePath.getLastPathSegment());
-            ref.putFile(filePath)
+            ref.putFile(filePath, metadata)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
