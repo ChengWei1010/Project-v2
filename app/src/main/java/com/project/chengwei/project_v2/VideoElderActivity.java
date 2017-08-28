@@ -3,6 +3,7 @@ package com.project.chengwei.project_v2;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.session.MediaController;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -12,7 +13,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.GridView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -24,10 +28,22 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class VideoElderActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
@@ -39,7 +55,7 @@ public class VideoElderActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
     private String groupNum;
-    private Button downloadBtn;
+    private Button showBtn;
     private Toolbar myToolbar;
 
     //這裡是宣告變數
@@ -48,6 +64,12 @@ public class VideoElderActivity extends AppCompatActivity {
     private DownloadManager downloadManager;
     private Uri mUri;
 //            "https://firebasestorage.googleapis.com/v0/b/elderlyproject-46505.appspot.com/o/videos%2Ftest.mp4?alt=media&token=973d7ee7-513a-49d4-9f64-c62233228c77";
+    //新加的東西
+    private FirebaseData firebaseData;
+//    private List<Map<String, String>> items = new ArrayList<>();
+    private GridView gridView;
+    private VideoListAdapter adapter = null;
+    private ArrayList<FirebaseData> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,17 +81,31 @@ public class VideoElderActivity extends AppCompatActivity {
 
         //取得房號
         groupNum = getIntent().getExtras().get("groupNum").toString();
-
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum);
 
 //        mStorage = FirebaseStorage.getInstance();
 //        mStorageRef = mStorage.getReference();
 //        mUri = mStorageRef.child("videos/test.mp4").getDownloadUrl().getResult();
-//        setDownloadBtn();
+        showBtn = findViewById(R.id.showBtn);
+        gridView = findViewById(R.id.gridView);
+        setShowBtn();
         findViews();
         setToolbar();
 //        String id = UUID.randomUUID().toString();
 //        Toast.makeText(WatchVideoActivity.this, id, Toast.LENGTH_SHORT).show();
+
+
+//        SimpleAdapter adapter = new SimpleAdapter(VideoElderActivity.this, items, R.layout.grid_item,
+//                new String[]{"date", "mId", "member", "storagePath"},
+//                new int[]{R.id.textView_date, R.id.textView_mId, R.id.textView_member, R.id.textView_storagePath});
+//        gridView.setNumColumns(3);
+//        gridView.setAdapter(adapter);
+//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(VideoElderActivity.this, "你選擇了" + items.get(position).get("date") + items.get(position).get("storagePath"), Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
 
 
@@ -78,7 +114,7 @@ public class VideoElderActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        downloadBtn = findViewById(R.id.downloadBtn);
+//        downloadBtn = findViewById(R.id.downloadBtn);
         myToolbar = findViewById(R.id.toolbar_home);
     }
     //--------------------------------------------------------------------------------------------//
@@ -115,6 +151,64 @@ public class VideoElderActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Download --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
+    
+    private void setShowBtn() {
+        showBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                list = new ArrayList<>();
+                adapter = new VideoListAdapter(VideoElderActivity.this, R.layout.grid_item,list);
+                gridView.setNumColumns(3);
+                gridView.setAdapter(adapter);
+
+//                //取得房間最後一筆資訊
+//                mDatabaseRef.child("mVideo").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+//                            firebaseData = child.getValue(FirebaseData.class);
+//                            String date = firebaseData.getDate();
+//                            String mId = firebaseData.getmId();
+//                            String member = firebaseData.getMember();
+//                            String storagePath = firebaseData.getStoragePath();
+//                            list.add(new FirebaseData(date, mId, member, storagePath));
+//                        }
+//                        adapter.notifyDataSetChanged();
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+                //取得房間裡所有資訊
+                mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // get all of the children at this level.
+                        Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                        // shake hands with each of them.'
+                        for (DataSnapshot child : children) {
+                            firebaseData = child.getValue(FirebaseData.class);
+                            String date = firebaseData.getDate();
+                            String mId = firebaseData.getmId();
+                            String member = firebaseData.getMember();
+                            String storagePath = firebaseData.getStoragePath();
+                            list.add(new FirebaseData(date, mId, member, storagePath));
+//                    Map<String, String> item = new HashMap<>();
+//                    item.put("date", firebaseData.getDate());
+//                    item.put("mId", firebaseData.getmId());
+//                    item.put("member", firebaseData.getMember());
+//                    item.put("storagePath", firebaseData.getStoragePath());
+//                    items.add(item);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+            }
+        });
+    }
 
 //    private void setDownloadBtn() {
 //        downloadBtn.setOnClickListener(new View.OnClickListener() {
