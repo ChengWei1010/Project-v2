@@ -292,8 +292,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                startActivity(new Intent(ProfileAddActivity.this, ProfileActivity.class));
-                finish();
+                startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
             }
         }, 1000);
     }

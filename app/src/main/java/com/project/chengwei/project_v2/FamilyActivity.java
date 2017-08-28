@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -27,6 +30,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class FamilyActivity extends AppCompatActivity {
     private Toolbar myToolbar;
+    private FrameLayout left_drawer;
+    private DrawerLayout drawer;
     private ImageButton btn_video;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
@@ -277,21 +282,29 @@ public class FamilyActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews() {
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
         btn_video = (ImageButton) findViewById(R.id.btn_video);
+        left_drawer =(FrameLayout)findViewById(R.id.left_drawer);
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void setToolbar(){
         setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_person_white);
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(FamilyActivity.this, ProfileActivity.class));
-                finish();
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                } else {
+                    drawer.openDrawer(GravityCompat.START);
+                }
+//                startActivity(new Intent(FamilyActivity.this, ProfileActivity.class));
+//                finish();
             }
         });
     }
@@ -300,18 +313,18 @@ public class FamilyActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        //getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.help:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.help:
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
 }

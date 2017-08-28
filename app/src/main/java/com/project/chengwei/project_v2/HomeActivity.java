@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +42,11 @@ public class HomeActivity extends AppCompatActivity {
     private TextView text_group_name;
     private String groupNum, myName;
 
+    private DrawerLayout drawer;
+    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom;
+    private ImageView profileImg;
+    private ImageButton btn_editProfile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         myToolbar = (Toolbar) findViewById(R.id.toolbar_with_guide);
         toolbar_guide = (ImageButton)findViewById(R.id.toolbar_btn_guide);
         btn_phone = (ImageButton)findViewById(R.id.btn_phone);
@@ -69,6 +78,15 @@ public class HomeActivity extends AppCompatActivity {
         help_guide = (FrameLayout)findViewById(R.id.help_guide);
         textClock = (TextClock)findViewById(R.id.textClock);
         text_group_name = (TextView)findViewById(R.id.text_group_name);
+
+    //profile drawer
+        textViewName = (TextView) findViewById(R.id.textViewName);
+        textViewPhone = (TextView) findViewById(R.id.textViewPhone);
+        textViewAddress = (TextView) findViewById(R.id.textViewAddress);
+        textViewBirthday = (TextView) findViewById(R.id.textViewBirthday);
+        textViewRoom = (TextView) findViewById(R.id.textViewRoom);
+        profileImg = (ImageView) findViewById(R.id.profileImg);
+        btn_editProfile = (ImageButton) findViewById(R.id.btn_editProfile);
     }
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//
@@ -79,6 +97,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_map.setOnClickListener(ImageBtnListener);
         btn_magnifier.setOnClickListener(ImageBtnListener);
         btn_guide_ok.setOnClickListener(ImageBtnListener);
+        btn_editProfile.setOnClickListener(ImageBtnListener);
         // SOS Button
         btn_sos.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -119,6 +138,11 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case R.id.btn_guide_ok:
                     closeGuide();
+                    break;
+                case R.id.btn_editProfile:
+                    Toast.makeText(HomeActivity.this, "edit !", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(HomeActivity.this, ProfileAddActivity.class));
+                    finish();
                     break;
             }
         }
@@ -296,14 +320,17 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_person_white);
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
-                overridePendingTransition(R.anim.leftcomein, R.anim.stable);
-                finish();
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                } else {
+                    drawer.openDrawer(GravityCompat.START);
+                }
             }
         });
     }
@@ -317,7 +344,26 @@ public class HomeActivity extends AppCompatActivity {
         cursor.moveToPosition(0);
         groupNum = cursor.getString(cursor.getColumnIndex("room"));
         text_group_name.setText(groupNum);
+
+        textViewName.setText( cursor.getString(cursor.getColumnIndex("name")) );
+        textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
+        textViewAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
+        textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
+        textViewRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
+        // Load image from Database
+//        try {
+//            initDB();
+//            byte[] bytes = dbHelper.retrieveImageFromDB();
+//            Log.d("byte load from DB",bytes.toString());
+//            dbHelper.close();
+//            // Show Image from DB in ImageView
+//            profileImg.setImageBitmap(Utils.getImage(bytes));
+//        } catch (Exception e) {
+//            //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
+//            dbHelper.close();
+//        }
     }
+
     //Database : close database
     private void closeDB(){
         dbHelper.close();
