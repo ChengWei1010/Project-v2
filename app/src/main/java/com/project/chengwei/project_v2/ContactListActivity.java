@@ -1,7 +1,9 @@
 package com.project.chengwei.project_v2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +21,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class ContactListActivity extends AppCompatActivity {
+    static final String KEY =  "com.<your_app_name>";
+    static final String ELDERLY_MODE = "ELDERLY_MODE";
     private Toolbar myToolbar;
     private ImageButton toolbar_add_contact, toolbar_fav;
     GridView gridView;
@@ -55,10 +59,10 @@ public class ContactListActivity extends AppCompatActivity {
                 String image = cursor.getString(3);
 
                 list.add(new Contact(name, phone, image, id));
+                if(!list.isEmpty()){notNullContacts();}
             }
             adapter.notifyDataSetChanged();
         }
-
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -68,7 +72,6 @@ public class ContactListActivity extends AppCompatActivity {
             Intent call = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
             startActivity(call);
 */
-                //
                 int pass_id = list.get(position).getId();
                 String pass_name = list.get(position).getName();
                 String pass_phone = list.get(position).getPhone();
@@ -131,8 +134,13 @@ public class ContactListActivity extends AppCompatActivity {
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            startActivity(new Intent(ContactListActivity.this, HomeActivity.class));
-            finish();
+                if(isElder()) {
+                    startActivity(new Intent(ContactListActivity.this, HomeActivity.class));
+                    finish();
+                }else{
+                    startActivity(new Intent(ContactListActivity.this, FamilyActivity.class));
+                    finish();
+                }
             }
         });
     }
@@ -140,9 +148,24 @@ public class ContactListActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            startActivity(new Intent(ContactListActivity.this, HomeActivity.class));
-            finish();
+            if(isElder()) {
+                startActivity(new Intent(ContactListActivity.this, HomeActivity.class));
+                finish();
+            }else{
+                startActivity(new Intent(ContactListActivity.this, FamilyActivity.class));
+                finish();
+            }
         }
         return super.onKeyDown(keyCode, event);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //----------------------------------------- Check --------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public boolean isElder() {
+        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
+    }
+    public void notNullContacts() {
+        gridView.setBackgroundColor(Color.WHITE);
+        //Toast.makeText(ContactListActivity.this,"notNullContacts",Toast.LENGTH_SHORT).show();
     }
 }

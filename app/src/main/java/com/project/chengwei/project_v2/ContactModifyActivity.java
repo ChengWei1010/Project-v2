@@ -1,6 +1,7 @@
 package com.project.chengwei.project_v2;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -25,7 +27,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 public class ContactModifyActivity extends AppCompatActivity {
-
+    static final String KEY =  "com.<your_app_name>";
+    static final String ELDERLY_MODE = "ELDERLY_MODE";
     Toolbar myToolbar;
     EditText modify_name, modify_phone;
     ImageView modify_imageView;
@@ -286,10 +289,30 @@ public class ContactModifyActivity extends AppCompatActivity {
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            startActivity(new Intent(ContactModifyActivity.this, HomeActivity.class));
-            finish();
+                if(isElder()) {
+                    startActivity(new Intent(ContactModifyActivity.this, HomeActivity.class));
+                    finish();
+                }else{
+                    startActivity(new Intent(ContactModifyActivity.this, FamilyActivity.class));
+                    finish();
+                }
             }
         });
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+                startActivity(new Intent(ContactModifyActivity.this, ContactListActivity.class));
+                finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //------------------------------------ CheckPreferences ----------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+
+    public boolean isElder() {
+        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
     }
 }
 

@@ -39,11 +39,10 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton btn_phone, btn_video, btn_map, btn_magnifier, btn_sos, btn_guide_ok,toolbar_guide;
     private FrameLayout help_guide;
     private TextClock textClock;
-    private TextView text_group_name;
     private String groupNum, myName;
 
     private DrawerLayout drawer;
-    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom;
+    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name;
     private ImageView profileImg;
     private ImageButton btn_editProfile;
 
@@ -77,9 +76,9 @@ public class HomeActivity extends AppCompatActivity {
         btn_guide_ok = (ImageButton)findViewById(R.id.btn_guide_ok);
         help_guide = (FrameLayout)findViewById(R.id.help_guide);
         textClock = (TextClock)findViewById(R.id.textClock);
-        text_group_name = (TextView)findViewById(R.id.text_group_name);
 
     //profile drawer
+        text_group_name = (TextView)findViewById(R.id.text_group_name);
         textViewName = (TextView) findViewById(R.id.textViewName);
         textViewPhone = (TextView) findViewById(R.id.textViewPhone);
         textViewAddress = (TextView) findViewById(R.id.textViewAddress);

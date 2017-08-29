@@ -91,9 +91,6 @@ public class VideoElderActivity extends AppCompatActivity {
         setShowBtn();
         findViews();
         setToolbar();
-//        String id = UUID.randomUUID().toString();
-//        Toast.makeText(WatchVideoActivity.this, id, Toast.LENGTH_SHORT).show();
-
 
 //        SimpleAdapter adapter = new SimpleAdapter(VideoElderActivity.this, items, R.layout.grid_item,
 //                new String[]{"date", "mId", "member", "storagePath"},
@@ -159,52 +156,52 @@ public class VideoElderActivity extends AppCompatActivity {
                 gridView.setNumColumns(3);
                 gridView.setAdapter(adapter);
 
-//                //取得房間最後一筆資訊
-//                mDatabaseRef.child("mVideo").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-//                            firebaseData = child.getValue(FirebaseData.class);
-//                            String date = firebaseData.getDate();
-//                            String mId = firebaseData.getmId();
-//                            String member = firebaseData.getMember();
-//                            String storagePath = firebaseData.getStoragePath();
-//                            list.add(new FirebaseData(date, mId, member, storagePath));
-//                        }
-//                        adapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
-                //取得房間裡所有資訊
-                mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
+                //取得房間最後一筆資訊
+                mDatabaseRef.child("mVideo").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        // get all of the children at this level.
-                        Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                        // shake hands with each of them.'
-                        for (DataSnapshot child : children) {
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
                             firebaseData = child.getValue(FirebaseData.class);
                             String date = firebaseData.getDate();
                             String mId = firebaseData.getmId();
                             String member = firebaseData.getMember();
                             String storagePath = firebaseData.getStoragePath();
                             list.add(new FirebaseData(date, mId, member, storagePath));
-//                    Map<String, String> item = new HashMap<>();
-//                    item.put("date", firebaseData.getDate());
-//                    item.put("mId", firebaseData.getmId());
-//                    item.put("member", firebaseData.getMember());
-//                    item.put("storagePath", firebaseData.getStoragePath());
-//                    items.add(item);
                         }
                         adapter.notifyDataSetChanged();
                     }
+
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {}
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
                 });
+                //取得房間裡所有資訊
+//                mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        // get all of the children at this level.
+//                        Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+//                        // shake hands with each of them.'
+//                        for (DataSnapshot child : children) {
+//                            firebaseData = child.getValue(FirebaseData.class);
+//                            String date = firebaseData.getDate();
+//                            String mId = firebaseData.getmId();
+//                            String member = firebaseData.getMember();
+//                            String storagePath = firebaseData.getStoragePath();
+//                            list.add(new FirebaseData(date, mId, member, storagePath));
+////                    Map<String, String> item = new HashMap<>();
+////                    item.put("date", firebaseData.getDate());
+////                    item.put("mId", firebaseData.getmId());
+////                    item.put("member", firebaseData.getMember());
+////                    item.put("storagePath", firebaseData.getStoragePath());
+////                    items.add(item);
+//                        }
+//                        adapter.notifyDataSetChanged();
+//                    }
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {}
+//                });
             }
         });
     }

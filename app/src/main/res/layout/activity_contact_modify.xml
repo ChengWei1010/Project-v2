@@ -77,8 +77,8 @@
 
     <Button
         android:id="@+id/editBtn"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginBottom="15dp"
         android:layout_marginStart="80dp"
         android:background="@drawable/ic_check_24dp"
@@ -92,8 +92,8 @@
     <!--cancel change-->
     <Button
         android:id="@+id/deleteBtn"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginBottom="15dp"
         android:layout_marginEnd="80dp"
         android:background="@drawable/ic_cancel_24dp"

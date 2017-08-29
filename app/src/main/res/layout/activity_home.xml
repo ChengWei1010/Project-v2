@@ -19,15 +19,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context="com.project.chengwei.project_v2.HomeActivity">
-            <include
-            layout="@layout/toolbar_with_guide"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/include"
-            app:layout_constraintHorizontal_bias="0.0" />
+        <include
+        layout="@layout/toolbar_with_guide"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/include"
+        app:layout_constraintHorizontal_bias="0.0" />
 
         <TextView
         android:id="@+id/text_group_name"

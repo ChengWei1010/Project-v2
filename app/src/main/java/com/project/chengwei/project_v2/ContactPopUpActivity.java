@@ -88,6 +88,7 @@ public class ContactPopUpActivity extends Activity {
                     intent.putExtra("PHONE", getPhone);
                     intent.putExtra("IMAGE", getImage);
                     startActivity(intent);
+                    finish();
                 }
             });
         }

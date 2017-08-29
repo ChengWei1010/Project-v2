@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,7 +23,7 @@ import java.io.FileOutputStream;
 public class ContactAddActivity extends AppCompatActivity {
 
     EditText edtName, edtPhone;
-    Button btnCamera, btnChoose, btn_cancel, btn_add;
+    Button btnCamera, btnChoose, btn_add;
     ImageView imageView;
     String uriString;
     Intent cropIntent;
@@ -31,24 +33,21 @@ public class ContactAddActivity extends AppCompatActivity {
     File file;
     Bitmap bitmap;
     String addName, addPhone;
-
+    private Toolbar myToolbar;
 
     final int REQUEST_EXTERNAL_STORAGE = 999;
     final int REQUEST_IMAGE_CAPTURE = 99;
     final int REQUEST_CROP_IMAGE = 9;
-
-    //try
-    //public static SQLiteDBHelper sqLiteDBHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_add);
 
-        init();
+        findViews();
+        setToolbar();
 
         //sqLiteDBHelper = new SQLiteDBHelper(this, "PersonDB.sqlite", null, 1);
-
         //sqLiteDBHelper.queryData("CREATE TABLE IF NOT EXISTS PERSON(Id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, image TEXT)");
 
         btnCamera.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +109,6 @@ public class ContactAddActivity extends AppCompatActivity {
                                 addPhone,
                                 uriString
                         );
-
                         Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent();
                         intent.setClass(ContactAddActivity.this , ContactListActivity.class);
@@ -127,13 +125,13 @@ public class ContactAddActivity extends AppCompatActivity {
         });
     }
 
-    private void init(){
+    private void findViews(){
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
         edtName = (EditText) findViewById(R.id.name);
         edtPhone = (EditText) findViewById(R.id.phone);
         btnCamera = (Button) findViewById(R.id.cameraBtn);
         btnChoose = (Button) findViewById(R.id.chooseBtn);
         btn_add = (Button) findViewById(R.id.btn_add);
-        btn_cancel = (Button) findViewById(R.id.btn_cancel);
         imageView = (ImageView) findViewById(R.id.imageView);
     }
 
@@ -181,10 +179,33 @@ public class ContactAddActivity extends AppCompatActivity {
         }
     }
     //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Toolbar --------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void setToolbar(){
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        myToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_50dp);
+        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ContactAddActivity.this, ContactListActivity.class));
+                finish();
+            }
+        });
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            startActivity(new Intent(ContactAddActivity.this, ContactListActivity.class));
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    //--------------------------------------------------------------------------------------------//
     //----------------------------------- bottom button ------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     public void cancel(View v){
-        startActivity(new Intent(ContactAddActivity.this, ContactListActivity.class));
         finish();
     }
 }

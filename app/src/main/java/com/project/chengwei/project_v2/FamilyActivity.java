@@ -20,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,11 +33,10 @@ import com.google.firebase.auth.FirebaseUser;
 public class FamilyActivity extends AppCompatActivity {
     private Toolbar myToolbar;
     private FrameLayout left_drawer;
-    private DrawerLayout drawer;
     private ImageButton btn_video;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
-    private String groupNum,mName,mId;
+    private String groupNum, mName, mId;
     final int RequestCameraCode = 1;
     final int RequestCallCode = 2;
     final int RequestExternalStorageCode = 3;
@@ -43,6 +44,11 @@ public class FamilyActivity extends AppCompatActivity {
     final int RequestPermissionCode = 999;
     private final int REQUEST_PERMISSION = 10;
     private FirebaseAuth mAuth;
+
+    private DrawerLayout drawer;
+    private TextView textViewName, textViewPhone, textViewAddress, textViewBirthday, textViewRoom;
+    private ImageView profileImg;
+    private ImageButton btn_editProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,26 +66,55 @@ public class FamilyActivity extends AppCompatActivity {
         closeDB();
     }
     //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- initial Views ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void findViews() {
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        btn_video = (ImageButton) findViewById(R.id.btn_video);
+        left_drawer = (FrameLayout) findViewById(R.id.left_drawer);
+
+        //profile drawer
+        textViewName = (TextView) findViewById(R.id.textViewName);
+        textViewPhone = (TextView) findViewById(R.id.textViewPhone);
+        textViewAddress = (TextView) findViewById(R.id.textViewAddress);
+        textViewBirthday = (TextView) findViewById(R.id.textViewBirthday);
+        textViewRoom = (TextView) findViewById(R.id.textViewRoom);
+        profileImg = (ImageView) findViewById(R.id.profileImg);
+        btn_editProfile = (ImageButton) findViewById(R.id.btn_editProfile);
+    }
+    //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Database -------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     //Database : initial database
-    private void initDB(){
+    private void initDB() {
         dbHelper = new SQLiteDBHelper(getApplicationContext());
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
         mName = cursor.getString(cursor.getColumnIndex("name"));
         groupNum = cursor.getString(cursor.getColumnIndex("room"));
+
+        textViewName.setText( cursor.getString(cursor.getColumnIndex("name")) );
+        textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
+        textViewAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
+        textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
+        textViewRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
+
     }
+
     //Database : close database
-    private void closeDB(){
+    private void closeDB() {
         dbHelper.close();
     }
+
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void setListeners() {
         btn_video.setOnClickListener(ImageBtnListener);
+        btn_editProfile.setOnClickListener(ImageBtnListener);
     }
+
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ ImageBtnListener --------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -89,16 +124,22 @@ public class FamilyActivity extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.btn_video:
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
-                    Intent intent = new Intent(getApplicationContext(),VideoFamilyActivity.class);
-                    intent.putExtra("mName",mName);
-                    intent.putExtra("groupNum",groupNum);
+                    Intent intent = new Intent(getApplicationContext(), VideoFamilyActivity.class);
+                    intent.putExtra("mName", mName);
+                    intent.putExtra("groupNum", groupNum);
                     //intent.putExtra("mId",mId);
                     startActivity(intent);
+                    finish();
+                    break;
+                case R.id.btn_editProfile:
+                    Toast.makeText(FamilyActivity.this, "edit !", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(FamilyActivity.this, ProfileAddActivity.class));
                     finish();
                     break;
             }
         }
     };
+
     //--------------------------------------------------------------------------------------------//
     //-------------------------- Version and Permission ------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -116,6 +157,7 @@ public class FamilyActivity extends AppCompatActivity {
             RequestRuntimePermission();
         }
     }
+
     private void RequestRuntimePermission() {
         //拒絕相機
         if (ActivityCompat.shouldShowRequestPermissionRationale(FamilyActivity.this, android.Manifest.permission.CAMERA)) {
@@ -132,7 +174,7 @@ public class FamilyActivity extends AppCompatActivity {
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(FamilyActivity.this,"Camera Permission Canceled",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FamilyActivity.this, "Camera Permission Canceled", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .show();
@@ -153,7 +195,7 @@ public class FamilyActivity extends AppCompatActivity {
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(FamilyActivity.this,"Call Permission Canceled",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FamilyActivity.this, "Call Permission Canceled", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .show();
@@ -174,7 +216,7 @@ public class FamilyActivity extends AppCompatActivity {
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(FamilyActivity.this,"External Storage Permission Canceled",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FamilyActivity.this, "External Storage Permission Canceled", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .show();
@@ -195,69 +237,71 @@ public class FamilyActivity extends AppCompatActivity {
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(FamilyActivity.this,"Location Permission Canceled",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FamilyActivity.this, "Location Permission Canceled", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .show();
         }
         //接受
-        else{
-            ActivityCompat.requestPermissions(FamilyActivity.this,new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.CALL_PHONE,
+        else {
+            ActivityCompat.requestPermissions(FamilyActivity.this, new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.CALL_PHONE,
                             android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.ACCESS_FINE_LOCATION},
                     RequestPermissionCode);
         }
     }
+
     //跳出權限要求時，按允許或拒絕
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case RequestPermissionCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[2] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(FamilyActivity.this,"Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(FamilyActivity.this,"Permission Canceled",Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(FamilyActivity.this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FamilyActivity.this, "Permission Canceled", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
             case RequestCameraCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(FamilyActivity.this,"Camera Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(FamilyActivity.this,"Camera Permission Canceled",Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(FamilyActivity.this, "Camera Permission Granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FamilyActivity.this, "Camera Permission Canceled", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
             case RequestCallCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(FamilyActivity.this,"Call Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(FamilyActivity.this,"Call Permission Canceled",Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(FamilyActivity.this, "Call Permission Granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FamilyActivity.this, "Call Permission Canceled", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
             case RequestExternalStorageCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(FamilyActivity.this,"External Storage Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(FamilyActivity.this,"External Storage Permission Canceled",Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(FamilyActivity.this, "External Storage Permission Granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FamilyActivity.this, "External Storage Permission Canceled", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
             case RequestLocationCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(FamilyActivity.this,"Location Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(FamilyActivity.this,"Location Permission Canceled",Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(FamilyActivity.this, "Location Permission Granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FamilyActivity.this, "Location Permission Canceled", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
         }
     }
+
     //--------------------------------------------------------------------------------------------//
     //------------------------------------------- FireBase  --------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    public void signIn(){
+    public void signIn() {
         mAuth.signInAnonymously()
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -266,7 +310,7 @@ public class FamilyActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("hi", "signInAnonymously:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(FamilyActivity.this, "login success. "+user.getUid(),
+                            Toast.makeText(FamilyActivity.this, "login success. " + user.getUid(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -278,19 +322,11 @@ public class FamilyActivity extends AppCompatActivity {
                     }
                 });
     }
-    //--------------------------------------------------------------------------------------------//
-    //-------------------------------------- initial Views ---------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    private void findViews() {
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
-        btn_video = (ImageButton) findViewById(R.id.btn_video);
-        left_drawer =(FrameLayout)findViewById(R.id.left_drawer);
-    }
+
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    private void setToolbar(){
+    private void setToolbar() {
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -308,23 +344,4 @@ public class FamilyActivity extends AppCompatActivity {
             }
         });
     }
-    //--------------------------------------------------------------------------------------------//
-    //----------------------------------- Options Item -------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.help:
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
-
 }

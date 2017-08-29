@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ProfileActivity extends AppCompatActivity {
-    static final String KEY_IS_FIRST_TIME =  "com.<your_app_name>.first_time";
     static final String KEY =  "com.<your_app_name>";
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     private SQLiteDBHelper dbHelper;

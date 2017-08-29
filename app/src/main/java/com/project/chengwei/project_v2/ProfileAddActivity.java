@@ -1,6 +1,7 @@
 package com.project.chengwei.project_v2;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,9 +11,11 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -36,6 +39,9 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 public class ProfileAddActivity extends AppCompatActivity {
+    static final String KEY_IS_FIRST_TIME =  "com.<your_app_name>.first_time";
+    static final String KEY =  "com.<your_app_name>";
+    static final String ELDERLY_MODE = "ELDERLY_MODE";
     private static final int SELECT_PICTURE = 100;
     private static final String TAG = "HomeActivity";
     private SQLiteDBHelper dbHelper;
@@ -56,7 +62,6 @@ public class ProfileAddActivity extends AppCompatActivity {
         findViews();
         setListeners();
 
-
         //Manage the Database by clicking a button
         btn_manageDB.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -64,26 +69,8 @@ public class ProfileAddActivity extends AppCompatActivity {
                 startActivity(dbManager);
             }
         });
-        //----------------------------------------------------------------------------------------//
-        //--------------------------------------- Database ---------------------------------------//
-        //----------------------------------------------------------------------------------------//
-        initDB();        //Database : initial and insert profile data
 
-        cursor = dbHelper.getProfileData();
-        cursor.moveToPosition(0);
-        uuId = cursor.getString(cursor.getColumnIndex("uuid"));
-        editTextName.setText( cursor.getString(cursor.getColumnIndex("name")) );
-        editTextName.setSelectAllOnFocus(true);
-        editTextPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
-        editTextAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
-        editTextRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
-
-        String birthday = cursor.getString(cursor.getColumnIndex("birthday"));
-        String[] parts = birthday.split("-");
-        int mYear = Integer.parseInt(parts[0]); //yyyy
-        int mMonth = Integer.parseInt(parts[1])-1; // mm
-        int mDate = Integer.parseInt(parts[2]); // dd
-        pickBirthday.init(mYear, mMonth, mDate, null);
+        initDB();
 
         // Enable if permission granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
@@ -222,13 +209,6 @@ public class ProfileAddActivity extends AppCompatActivity {
             return false;
         }
     }
-    private boolean isValidPhoneNum(String editTextPhone){
-        if(editTextPhone.length()!=10 && editTextPhone.matches("\\d+")){
-            showMessage("InValid Phone Number");
-            return false;
-        }
-        return true;
-    }
     //Database : save the change to database
     public void save(View v) {
         String hadSetUp = "1";
@@ -246,18 +226,48 @@ public class ProfileAddActivity extends AppCompatActivity {
         int date = pickBirthday.getDayOfMonth();
         birthday =  year + "-" + month + "-" + date;
 
-        if(isValidPhoneNum(strPhone)==true){
+        if(isValidPhoneNum(strPhone)==true && isValidRoomNum(strRoom)){
             dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday,strRoom);
             closeDB();
             FireBaseUpdateData(uuId, strName, strRoom);
             alertSuccess();
         }
     }
+    private boolean isValidPhoneNum(String editTextPhone){
+        if(editTextPhone.length()!=10 && editTextPhone.matches("\\d+")){
+            showMessage("請輸入有效的電話號碼！");
+            return false;
+        }
+        return true;
+    }
+    private boolean isValidRoomNum(String editTextRoom){
+        if(editTextRoom.length()!=4){
+            showMessage("請輸入有效的群組號碼！");
+            return false;
+        }
+        return true;
+    }
     //cancel edit and go back to profile page
     public void cancel(View v){
+        startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
         finish();
-//        Intent ProfileIntent = new Intent(AddProfileActivity.this, ProfileActivity.class);
-//        startActivity(ProfileIntent);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Toolbar --------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            if(isElder()) {
+                startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
+                finish();
+            }else{
+                startActivity(new Intent(ProfileAddActivity.this, FamilyActivity.class));
+                finish();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Firebase -------------------------------------------//
@@ -279,6 +289,21 @@ public class ProfileAddActivity extends AppCompatActivity {
     //Database : initial database
     private void initDB(){
         dbHelper = new SQLiteDBHelper(getApplicationContext());
+        cursor = dbHelper.getProfileData();
+        cursor.moveToPosition(0);
+        uuId = cursor.getString(cursor.getColumnIndex("uuid"));
+        editTextName.setText( cursor.getString(cursor.getColumnIndex("name")) );
+        editTextName.setSelectAllOnFocus(true);
+        editTextPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
+        editTextAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
+        editTextRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
+
+        String birthday = cursor.getString(cursor.getColumnIndex("birthday"));
+        String[] parts = birthday.split("-");
+        int mYear = Integer.parseInt(parts[0]); //yyyy
+        int mMonth = Integer.parseInt(parts[1])-1; // mm
+        int mDate = Integer.parseInt(parts[2]); // dd
+        pickBirthday.init(mYear, mMonth, mDate, null);
     }
 
     //Database : close database
@@ -292,8 +317,23 @@ public class ProfileAddActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
+                if(isElder()) {
+                    startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
+                    finish();
+                }else{
+                    startActivity(new Intent(ProfileAddActivity.this, FamilyActivity.class));
+                    finish();
+                }
             }
-        }, 1000);
+        }, 500);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //------------------------------------ CheckPreferences ----------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+
+    public boolean isElder() {
+        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
+        //settings = getSharedPreferences(data,0);
+        //return settings.getBoolean(elderlyMode,false);
     }
 }
