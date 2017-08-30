@@ -48,7 +48,7 @@ public class FamilyActivity extends AppCompatActivity {
     private DrawerLayout drawer;
     private TextView textViewName, textViewPhone, textViewAddress, textViewBirthday, textViewRoom;
     private ImageView profileImg;
-    private ImageButton btn_editProfile;
+    private ImageButton btn_editProfile,toolbar_guide;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,8 @@ public class FamilyActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     private void findViews() {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        myToolbar = (Toolbar) findViewById(R.id.toolbar_with_guide);
+        toolbar_guide = (ImageButton)findViewById(R.id.toolbar_btn_guide);
         btn_video = (ImageButton) findViewById(R.id.btn_video);
         left_drawer = (FrameLayout) findViewById(R.id.left_drawer);
 
@@ -132,7 +133,7 @@ public class FamilyActivity extends AppCompatActivity {
                     finish();
                     break;
                 case R.id.btn_editProfile:
-                    Toast.makeText(FamilyActivity.this, "edit !", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(FamilyActivity.this, "edit !", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(FamilyActivity.this, ProfileAddActivity.class));
                     finish();
                     break;
@@ -310,8 +311,7 @@ public class FamilyActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("hi", "signInAnonymously:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(FamilyActivity.this, "login success. " + user.getUid(),
-                                    Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(FamilyActivity.this, "login success. " + user.getUid(), Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("hi", "signInAnonymously:failure", task.getException());
@@ -327,6 +327,12 @@ public class FamilyActivity extends AppCompatActivity {
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void setToolbar() {
+        toolbar_guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(FamilyActivity.this, "guide !", Toast.LENGTH_SHORT).show();
+            }
+        });
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

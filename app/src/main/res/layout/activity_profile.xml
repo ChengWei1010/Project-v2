@@ -17,11 +17,11 @@
 
     <ImageView
         android:id="@+id/profileImg"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include"
@@ -36,7 +36,7 @@
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:text="@string/name"
-        android:textSize="28sp"
+        android:textSize="30sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileImg" />
@@ -50,7 +50,7 @@
         android:layout_marginTop="32dp"
         android:gravity="center"
         android:text="@string/phone"
-        android:textSize="28sp"
+        android:textSize="30sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewName" />
@@ -63,7 +63,7 @@
         android:layout_marginTop="32dp"
         android:gravity="center"
         android:text="@string/birthday"
-        android:textSize="28sp"
+        android:textSize="30sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewPhone" />
@@ -76,7 +76,7 @@
         android:layout_marginTop="32dp"
         android:gravity="center"
         android:text="room"
-        android:textSize="28sp"
+        android:textSize="30sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewBirthday" />
@@ -89,7 +89,7 @@
         android:layout_marginTop="32dp"
         android:gravity="center|top"
         android:text="@string/address"
-        android:textSize="28sp"
+        android:textSize="30sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewRoom" />
@@ -144,12 +144,12 @@
     <!--editProfileBtn-->
     <ImageButton
         android:id="@+id/btn_editProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_edit_white"
-        android:layout_marginRight="8dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/ic_edit_white"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="4dp" />
 
 </android.support.constraint.ConstraintLayout>

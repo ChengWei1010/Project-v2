@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -55,7 +56,7 @@ public class VideoElderActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
     private String groupNum;
-    private Button showBtn;
+    private ImageButton showBtn;
     private Toolbar myToolbar;
 
     //這裡是宣告變數
@@ -86,10 +87,8 @@ public class VideoElderActivity extends AppCompatActivity {
 //        mStorage = FirebaseStorage.getInstance();
 //        mStorageRef = mStorage.getReference();
 //        mUri = mStorageRef.child("videos/test.mp4").getDownloadUrl().getResult();
-        showBtn = findViewById(R.id.showBtn);
-        gridView = findViewById(R.id.gridView);
-        setShowBtn();
         findViews();
+        setShowBtn();
         setToolbar();
 
 //        SimpleAdapter adapter = new SimpleAdapter(VideoElderActivity.this, items, R.layout.grid_item,
@@ -103,14 +102,13 @@ public class VideoElderActivity extends AppCompatActivity {
 //                Toast.makeText(VideoElderActivity.this, "你選擇了" + items.get(position).get("date") + items.get(position).get("storagePath"), Toast.LENGTH_SHORT).show();
 //            }
 //        });
-
-
-
     }
     //--------------------------------------------------------------------------------------------//
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
+        showBtn = findViewById(R.id.showBtn);
+        gridView = findViewById(R.id.gridView);
         myToolbar = findViewById(R.id.toolbar_home);
     }
     //--------------------------------------------------------------------------------------------//

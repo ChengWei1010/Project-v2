@@ -14,9 +14,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -65,27 +67,27 @@ public class HomeActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_with_guide);
-        toolbar_guide = (ImageButton)findViewById(R.id.toolbar_btn_guide);
-        btn_phone = (ImageButton)findViewById(R.id.btn_phone);
-        btn_video = (ImageButton)findViewById(R.id.btn_video);
-        btn_map = (ImageButton)findViewById(R.id.btn_map);
-        btn_magnifier = (ImageButton)findViewById(R.id.btn_magnifier);
-        btn_sos = (ImageButton)findViewById(R.id.btn_sos);
-        btn_guide_ok = (ImageButton)findViewById(R.id.btn_guide_ok);
-        help_guide = (FrameLayout)findViewById(R.id.help_guide);
-        textClock = (TextClock)findViewById(R.id.textClock);
+        drawer = findViewById(R.id.drawer_layout);
+        myToolbar = findViewById(R.id.toolbar_with_guide);
+        toolbar_guide = findViewById(R.id.toolbar_btn_guide);
+        btn_phone = findViewById(R.id.btn_phone);
+        btn_video = findViewById(R.id.btn_video);
+        btn_map = findViewById(R.id.btn_map);
+        btn_magnifier = findViewById(R.id.btn_magnifier);
+        btn_sos = findViewById(R.id.btn_sos);
+        btn_guide_ok = findViewById(R.id.btn_guide_ok);
+        help_guide = findViewById(R.id.help_guide);
+        textClock = findViewById(R.id.textClock);
 
     //profile drawer
-        text_group_name = (TextView)findViewById(R.id.text_group_name);
-        textViewName = (TextView) findViewById(R.id.textViewName);
-        textViewPhone = (TextView) findViewById(R.id.textViewPhone);
-        textViewAddress = (TextView) findViewById(R.id.textViewAddress);
-        textViewBirthday = (TextView) findViewById(R.id.textViewBirthday);
-        textViewRoom = (TextView) findViewById(R.id.textViewRoom);
-        profileImg = (ImageView) findViewById(R.id.profileImg);
-        btn_editProfile = (ImageButton) findViewById(R.id.btn_editProfile);
+        text_group_name = findViewById(R.id.text_group_name);
+        textViewName = findViewById(R.id.textViewName);
+        textViewPhone = findViewById(R.id.textViewPhone);
+        textViewAddress = findViewById(R.id.textViewAddress);
+        textViewBirthday = findViewById(R.id.textViewBirthday);
+        textViewRoom = findViewById(R.id.textViewRoom);
+        profileImg = findViewById(R.id.profileImg);
+        btn_editProfile = findViewById(R.id.btn_editProfile);
     }
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//
@@ -139,7 +141,7 @@ public class HomeActivity extends AppCompatActivity {
                     closeGuide();
                     break;
                 case R.id.btn_editProfile:
-                    Toast.makeText(HomeActivity.this, "edit !", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(HomeActivity.this, "edit !", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(HomeActivity.this, ProfileAddActivity.class));
                     finish();
                     break;
@@ -350,17 +352,17 @@ public class HomeActivity extends AppCompatActivity {
         textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
         textViewRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
         // Load image from Database
-//        try {
-//            initDB();
-//            byte[] bytes = dbHelper.retrieveImageFromDB();
-//            Log.d("byte load from DB",bytes.toString());
-//            dbHelper.close();
-//            // Show Image from DB in ImageView
-//            profileImg.setImageBitmap(Utils.getImage(bytes));
-//        } catch (Exception e) {
-//            //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
-//            dbHelper.close();
-//        }
+        try {
+            //initDB();
+            byte[] bytes = dbHelper.retrieveImageFromDB();
+            Log.d("byte load from DB",bytes.toString());
+            dbHelper.close();
+            // Show Image from DB in ImageView
+            profileImg.setImageBitmap(Utils.getImage(bytes));
+        } catch (Exception e) {
+            //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
+            dbHelper.close();
+        }
     }
 
     //Database : close database

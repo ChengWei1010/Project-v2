@@ -69,7 +69,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     byte[] ByteExample = "abc".getBytes();
 
     private String sql_firstRow;{
-        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uuid, hadSetUp, name, phone, address, birthday, room, image) VALUES (0, 0, '姓名', '電話', '高雄市蓮海路70號', '2000-01-01', '0000','"+ByteExample+"')");}
+        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uuid, hadSetUp, name, phone, address, birthday, room, image) VALUES (0, 0, '姓名', '未設置', '未設置', '2000-01-01', '0000','"+ByteExample+"')");}
 
     //Database : setProfileData to the table
     public long setProfileData(String uuid, String hadsetup, String name, String room){
@@ -83,7 +83,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         return db.update(TABLE_NAME, cv, "_id=1", null);
     }
     //Database : updateProfileData to the table
-    public long editProfileData(String hadsetup, String name, String phone, String address, String birthday, String room){
+    public long editProfileData(String hadsetup, String name, String phone, String address, String birthday){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(FIELD_HADSETUP, hadsetup);
@@ -91,7 +91,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         cv.put(FIELD_PHONE, phone);
         cv.put(FIELD_ADDRESS, address);
         cv.put(FIELD_BIRTHDAY, birthday);
-        cv.put(FIELD_ROOM, room);
+        //cv.put(FIELD_ROOM, room);
 
         return db.update(TABLE_NAME, cv, "_id=1", null);
     }

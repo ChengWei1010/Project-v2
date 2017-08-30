@@ -106,12 +106,13 @@ public class ProfileAddActivity extends AppCompatActivity {
         editTextName = (EditText) findViewById(R.id.editTextName);
         editTextPhone = (EditText) findViewById(R.id.editTextPhone);
         editTextAddress = (EditText) findViewById(R.id.editTextAddress);
-        editTextRoom = (EditText) findViewById(R.id.editTextRoom);
+        //editTextRoom = (EditText) findViewById(R.id.editTextRoom);
         pickBirthday = (DatePicker) findViewById(R.id.pickBirthday);
 
         btn_manageDB = (ImageButton) findViewById(R.id.btn_manageDB);
         btn_editPhoto = (ImageButton) findViewById(R.id.btn_editPhoto);
         ImgView_photo = (ImageView) findViewById(R.id.ImgView_photo);
+
     }
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//
@@ -148,7 +149,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
     }
 
-    // Show simple message using SnackBar
+    // Show simple message using Toast
     void showMessage(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
@@ -160,7 +161,7 @@ public class ProfileAddActivity extends AppCompatActivity {
                 if (null != selectedImageUri) {
                     // Saving to Database...
                     if (saveImageInDB(selectedImageUri)) {
-                        showMessage("Image Saved in Database...");
+                        //showMessage("Image Saved in Database...");
                         ImgView_photo.setImageURI(selectedImageUri);
                     }
 
@@ -169,7 +170,7 @@ public class ProfileAddActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (loadImageFromDB()) {
-                                showMessage("Image Loaded from Database...");
+                                //showMessage("Image Loaded from Database...");
                             }
                         }
                     }, 3000);
@@ -180,7 +181,7 @@ public class ProfileAddActivity extends AppCompatActivity {
     // Save image in Database
     Boolean saveImageInDB(Uri selectedImageUri) {
         try {
-            initDB();
+            //initDB();
             InputStream iStream = getContentResolver().openInputStream(selectedImageUri);
             byte[] inputData = Utils.getBytes(iStream);
             Log.d("byte save to DB",inputData.toString());
@@ -196,7 +197,7 @@ public class ProfileAddActivity extends AppCompatActivity {
     // Load image from Database
     Boolean loadImageFromDB() {
         try {
-            initDB();
+            //initDB();
             byte[] bytes = dbHelper.retrieveImageFromDB();
             Log.d("byte load from DB",bytes.toString());
             dbHelper.close();
@@ -215,7 +216,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         String strPhone = editTextPhone.getText().toString();
         String strName = editTextName.getText().toString();
         String strAddr = editTextAddress.getText().toString();
-        String strRoom = editTextRoom.getText().toString();
+        //String strRoom = editTextRoom.getText().toString();
         String birthday;
         initDB();
         Cursor cursor = dbHelper.getProfileData();
@@ -225,13 +226,20 @@ public class ProfileAddActivity extends AppCompatActivity {
         int month = pickBirthday.getMonth()+1;
         int date = pickBirthday.getDayOfMonth();
         birthday =  year + "-" + month + "-" + date;
-
-        if(isValidPhoneNum(strPhone)==true && isValidRoomNum(strRoom)){
-            dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday,strRoom);
+        if(isValidPhoneNum(strPhone)==true){
+            dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday);
+            initDB();
             closeDB();
-            FireBaseUpdateData(uuId, strName, strRoom);
+            FireBaseUpdateData(uuId, strName);
             alertSuccess();
         }
+        //可以改 room 時
+//        if(isValidPhoneNum(strPhone)==true && isValidRoomNum(strRoom)){
+//            dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday,strRoom);
+//            closeDB();
+//            FireBaseUpdateData(uuId, strName, strRoom);
+//            alertSuccess();
+//        }
     }
     private boolean isValidPhoneNum(String editTextPhone){
         if(editTextPhone.length()!=10 && editTextPhone.matches("\\d+")){
@@ -240,17 +248,22 @@ public class ProfileAddActivity extends AppCompatActivity {
         }
         return true;
     }
-    private boolean isValidRoomNum(String editTextRoom){
-        if(editTextRoom.length()!=4){
-            showMessage("請輸入有效的群組號碼！");
-            return false;
-        }
-        return true;
-    }
+//    private boolean isValidRoomNum(String editTextRoom){
+//        if(editTextRoom.length()!=4){
+//            showMessage("請輸入有效的群組號碼！");
+//            return false;
+//        }
+//        return true;
+//    }
     //cancel edit and go back to profile page
     public void cancel(View v){
-        startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
-        finish();
+        if(isElder()) {
+            startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
+            finish();
+        }else{
+            startActivity(new Intent(ProfileAddActivity.this, FamilyActivity.class));
+            finish();
+        }
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
@@ -272,13 +285,13 @@ public class ProfileAddActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Firebase -------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    public void FireBaseUpdateData(String uuId, String strName, String strRoom) {
+    public void FireBaseUpdateData(String uuId, String strName) {
         //dbRef1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
         dbRef2 = FirebaseDatabase.getInstance().getReference("members");
 
         try {
             dbRef2.child(uuId).child("mName").setValue(strName);
-            dbRef2.child(uuId).child("mGroup").setValue(strRoom);
+            //dbRef2.child(uuId).child("mGroup").setValue(strRoom);
          } catch (Exception e) {
              e.printStackTrace();
          }
@@ -296,7 +309,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         editTextName.setSelectAllOnFocus(true);
         editTextPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
         editTextAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
-        editTextRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
+        //editTextRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
 
         String birthday = cursor.getString(cursor.getColumnIndex("birthday"));
         String[] parts = birthday.split("-");
@@ -325,7 +338,7 @@ public class ProfileAddActivity extends AppCompatActivity {
                     finish();
                 }
             }
-        }, 500);
+        }, 1000);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences ----------------------------------------//
