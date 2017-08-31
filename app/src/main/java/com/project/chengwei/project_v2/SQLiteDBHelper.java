@@ -72,13 +72,14 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uuid, hadSetUp, name, phone, address, birthday, room, image) VALUES (0, 0, '姓名', '未設置手機', '未設置地址', '2000-01-01', '0000','"+ByteExample+"')");}
 
     //Database : setProfileData to the table
-    public long setProfileData(String uuid, String hadsetup, String name, String room){
+    public long setProfileData(String uuid, String hadsetup, String name, String room, String phone){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(FIELD_UUID,uuid);
         cv.put(FIELD_HADSETUP, hadsetup);
         cv.put(FIELD_NAME, name);
         cv.put(FIELD_ROOM, room);
+        cv.put(FIELD_PHONE, phone);
 
         return db.update(TABLE_NAME, cv, "_id=1", null);
     }

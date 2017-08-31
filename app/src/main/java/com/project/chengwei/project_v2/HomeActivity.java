@@ -36,12 +36,6 @@ public class HomeActivity extends AppCompatActivity {
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
     private Toolbar myToolbar;
-    final int RequestCameraCode = 1;
-    final int RequestCallCode = 2;
-    final int RequestExternalStorageCode = 3;
-    final int RequestLocationCode = 4;
-    final int RequestPermissionCode = 999;
-    private final int REQUEST_PERMISSION = 10;
     private ImageButton btn_phone, btn_video, btn_map, btn_magnifier, btn_sos, btn_guide_ok,toolbar_guide;
     private FrameLayout help_guide;
     private TextClock textClock;
@@ -57,7 +51,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         //if (Build.VERSION.SDK_INT >= 23) {
-        checkPermission();
         //}
         findViews();
         setToolbar();
@@ -164,162 +157,6 @@ public class HomeActivity extends AppCompatActivity {
     private void SosActivity(){
         Intent homeIntent = new Intent(HomeActivity.this, SosActivity.class);
         startActivity(homeIntent);
-    }
-
-    //--------------------------------------------------------------------------------------------//
-    //-------------------------- Version and Permission ------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    public void checkPermission() {
-        int cameraPermission = ActivityCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.CAMERA);
-        int readPermission = ActivityCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
-        int writePermission = ActivityCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int callPermission = ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.CALL_PHONE);
-        int locationPermission = ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
-
-        if (readPermission != PackageManager.PERMISSION_GRANTED || writePermission != PackageManager.PERMISSION_GRANTED ||
-        callPermission != PackageManager.PERMISSION_GRANTED || cameraPermission != PackageManager.PERMISSION_GRANTED ||
-        locationPermission != PackageManager.PERMISSION_GRANTED) {
-            //未取得權限，向使用者要求允許權限
-            RequestRuntimePermission();
-        }
-    }
-    private void RequestRuntimePermission() {
-        //拒絕相機
-        if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this, Manifest.permission.CAMERA)) {
-            new AlertDialog.Builder(HomeActivity.this)
-                    .setMessage("此應用程式需要CAMERA功能，請接受權限要求!")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(HomeActivity.this,
-                                    new String[]{Manifest.permission.CAMERA},
-                                    RequestCameraCode);
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(HomeActivity.this,"Camera Permission Canceled",Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .show();
-        }
-        //拒絕電話
-        else if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this,
-                Manifest.permission.CALL_PHONE)) {
-            new AlertDialog.Builder(HomeActivity.this)
-                    .setMessage("此應用程式需要CALL_PHONE功能，請接受權限要求!")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(HomeActivity.this,
-                                    new String[]{Manifest.permission.CALL_PHONE},
-                                    RequestCallCode);
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(HomeActivity.this,"Call Permission Canceled",Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .show();
-        }
-        //拒絕讀取及寫入
-        else if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            new AlertDialog.Builder(HomeActivity.this)
-                    .setMessage("此應用程式需要READ及WRITE_EXTERNAL_STORAGE功能，請接受權限要求!")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(HomeActivity.this,
-                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    RequestExternalStorageCode);
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(HomeActivity.this,"External Storage Permission Canceled",Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .show();
-        }
-        //拒絕位置
-        else if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            new AlertDialog.Builder(HomeActivity.this)
-                    .setMessage("此應用程式需要ACCESS_FINE_LOCATION功能，請接受權限要求!")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(HomeActivity.this,
-                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    RequestCallCode);
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(HomeActivity.this,"Location Permission Canceled",Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .show();
-        }
-        //接受
-        else{
-            ActivityCompat.requestPermissions(HomeActivity.this,new String[]{Manifest.permission.CAMERA,Manifest.permission.CALL_PHONE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION},
-                    RequestPermissionCode);
-        }
-    }
-    //跳出權限要求時，按允許或拒絕
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case RequestPermissionCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[2] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(HomeActivity.this,"Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(HomeActivity.this,"Permission Canceled",Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-            case RequestCameraCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(HomeActivity.this,"Camera Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(HomeActivity.this,"Camera Permission Canceled",Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-            case RequestCallCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(HomeActivity.this,"Call Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(HomeActivity.this,"Call Permission Canceled",Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-            case RequestExternalStorageCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(HomeActivity.this,"External Storage Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(HomeActivity.this,"External Storage Permission Canceled",Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-            case RequestLocationCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(HomeActivity.this,"Location Permission Granted",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(HomeActivity.this,"Location Permission Canceled",Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-        }
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//

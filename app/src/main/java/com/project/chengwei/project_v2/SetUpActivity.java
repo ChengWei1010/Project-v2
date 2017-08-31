@@ -1,12 +1,19 @@
 package com.project.chengwei.project_v2;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +34,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class SetUpActivity extends AppCompatActivity {
@@ -35,11 +44,18 @@ public class SetUpActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     private SQLiteDBHelper dbHelper;
 
+    final int RequestCameraCode = 1;
+    final int RequestCallCode = 2;
+    final int RequestExternalStorageCode = 3;
+    final int RequestLocationCode = 4;
+    final int RequestSmsCode = 5;
+    final int RequestPermissionCode = 999;
+    private final int REQUEST_PERMISSION = 10;
+
     private ImageButton btn_elder, btn_family;
     private Button btn_start,btn_create,btn_back;
     private FrameLayout guide_room,guide_create_room;
-    private EditText editTextName;
-    private EditText edit_group_num;
+    private EditText editTextName,editTextGroupNum,editTextPhone;
     //private EditText edit_group_num1,edit_group_num2,edit_group_num3,edit_group_num4;
     private TextView instruction1,instruction2,instruction3;
     private String strName,strRoom,strStatus;
@@ -56,28 +72,217 @@ public class SetUpActivity extends AppCompatActivity {
 //        uId = currentUser.getUid();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
+        checkPermission();
         findViews();
         setUpListeners();
     }
     //--------------------------------------------------------------------------------------------//
+    //-------------------------- Version and Permission ------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public void checkPermission() {
+        int cameraPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.CAMERA);
+        int readPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        int writePermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int callPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.CALL_PHONE);
+        int smsPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.SEND_SMS);
+        int locationPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (readPermission != PackageManager.PERMISSION_GRANTED || writePermission != PackageManager.PERMISSION_GRANTED ||
+                callPermission != PackageManager.PERMISSION_GRANTED || cameraPermission != PackageManager.PERMISSION_GRANTED ||
+                locationPermission != PackageManager.PERMISSION_GRANTED || smsPermission != PackageManager.PERMISSION_GRANTED) {
+            //未取得權限，向使用者要求允許權限
+            RequestRuntimePermission();
+        }
+    }
+    private void RequestRuntimePermission() {
+        //拒絕相機
+        if (ActivityCompat.shouldShowRequestPermissionRationale(SetUpActivity.this, android.Manifest.permission.CAMERA)) {
+            new AlertDialog.Builder(SetUpActivity.this)
+                    .setMessage("此應用程式需要CAMERA功能，請接受權限要求!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(SetUpActivity.this,
+                                    new String[]{android.Manifest.permission.CAMERA},
+                                    RequestCameraCode);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(SetUpActivity.this,"Camera Permission Canceled",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
+        }
+        //拒絕電話
+        else if (ActivityCompat.shouldShowRequestPermissionRationale(SetUpActivity.this,
+                android.Manifest.permission.CALL_PHONE)) {
+            new AlertDialog.Builder(SetUpActivity.this)
+                    .setMessage("此應用程式需要CALL_PHONE功能，請接受權限要求!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(SetUpActivity.this,
+                                    new String[]{android.Manifest.permission.CALL_PHONE},
+                                    RequestCallCode);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(SetUpActivity.this,"Call Permission Canceled",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
+        }
+        //拒絕讀取及寫入
+        else if (ActivityCompat.shouldShowRequestPermissionRationale(SetUpActivity.this,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            new AlertDialog.Builder(SetUpActivity.this)
+                    .setMessage("此應用程式需要READ及WRITE_EXTERNAL_STORAGE功能，請接受權限要求!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(SetUpActivity.this,
+                                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    RequestExternalStorageCode);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(SetUpActivity.this,"External Storage Permission Canceled",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
+        }
+        //拒絕SMS
+        else if (ActivityCompat.shouldShowRequestPermissionRationale(SetUpActivity.this,
+                Manifest.permission.SEND_SMS)) {
+            new AlertDialog.Builder(SetUpActivity.this)
+                    .setMessage("此應用程式需要SEND_SMS功能，請接受權限要求!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(SetUpActivity.this,
+                                    new String[]{android.Manifest.permission.SEND_SMS},
+                                    RequestSmsCode);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(SetUpActivity.this,"SMS Permission Canceled",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
+        }
+        //拒絕位置
+        else if (ActivityCompat.shouldShowRequestPermissionRationale(SetUpActivity.this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            new AlertDialog.Builder(SetUpActivity.this)
+                    .setMessage("此應用程式需要ACCESS_FINE_LOCATION功能，請接受權限要求!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(SetUpActivity.this,
+                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                    RequestCallCode);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(SetUpActivity.this,"Location Permission Canceled",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
+        }
+        //接受
+        else{
+            ActivityCompat.requestPermissions(SetUpActivity.this,new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.CALL_PHONE,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    RequestPermissionCode);
+        }
+    }
+    //跳出權限要求時，按允許或拒絕
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case RequestPermissionCode: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[2] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(SetUpActivity.this,"Permission Granted",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(SetUpActivity.this,"Permission Canceled",Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            case RequestCameraCode: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(SetUpActivity.this,"Camera Permission Granted",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(SetUpActivity.this,"Camera Permission Canceled",Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            case RequestCallCode: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(SetUpActivity.this,"Call Permission Granted",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(SetUpActivity.this,"Call Permission Canceled",Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            case RequestExternalStorageCode: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(SetUpActivity.this,"External Storage Permission Granted",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(SetUpActivity.this,"External Storage Permission Canceled",Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            case RequestLocationCode: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(SetUpActivity.this,"Location Permission Granted",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(SetUpActivity.this,"Location Permission Canceled",Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            case RequestSmsCode: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[2] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(SetUpActivity.this,"SMS Permission Granted",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(SetUpActivity.this,"SMS Permission Canceled",Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------------------------//
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        guide_room = (FrameLayout) findViewById(R.id.guide_room);
-        guide_create_room = (FrameLayout) findViewById(R.id.guide_create_room);
-        instruction1 = (TextView) findViewById(R.id.instruction1);
-        instruction2 = (TextView) findViewById(R.id.instruction2);
-        instruction3 = (TextView) findViewById(R.id.instruction3);
+        guide_room = findViewById(R.id.guide_room);
+        guide_create_room = findViewById(R.id.guide_create_room);
+        instruction1 = findViewById(R.id.instruction1);
+        instruction2 = findViewById(R.id.instruction2);
+        instruction3 = findViewById(R.id.instruction3);
         //editTextRoom = (EditText) findViewById(R.id.edit_group_num);
-        editTextName =  (EditText) findViewById(R.id.edit_name);
-        edit_group_num  = (EditText) findViewById(R.id.edit_group_num);
+        editTextName = findViewById(R.id.edit_name);
+        editTextGroupNum  = findViewById(R.id.editTextGroupNum);
+
         editTextName.setSelectAllOnFocus(true);
-        edit_group_num.setSelectAllOnFocus(true);
-        btn_elder = (ImageButton)findViewById(R.id.btn_elder);
-        btn_family = (ImageButton)findViewById(R.id.btn_family);
-        btn_start = (Button)findViewById(R.id.btn_start);
-        btn_create = (Button)findViewById(R.id.btn_create);
-        btn_back = (Button)findViewById(R.id.btn_back);
+        editTextGroupNum.setSelectAllOnFocus(true);
+        btn_elder = findViewById(R.id.btn_elder);
+        btn_family = findViewById(R.id.btn_family);
+        btn_start = findViewById(R.id.btn_start);
+        btn_create = findViewById(R.id.btn_create);
+        btn_back = findViewById(R.id.btn_back);
 //        edit_group_num1  = (EditText) findViewById(R.id.edit_group_num1);
 //        edit_group_num2  = (EditText) findViewById(R.id.edit_group_num2);
 //        edit_group_num3  = (EditText) findViewById(R.id.edit_group_num3);
@@ -112,7 +317,7 @@ public class SetUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 strName = editTextName.getText().toString();
-                strRoom = edit_group_num.getText().toString();
+                strRoom = editTextGroupNum.getText().toString();
 //                String num1 = edit_group_num1.getText().toString();
 //                String num2 = edit_group_num2.getText().toString();
 //                String num3 = edit_group_num3.getText().toString();
@@ -123,11 +328,11 @@ public class SetUpActivity extends AppCompatActivity {
                     saveSQLite();
                     if (isElder()) {
                         strStatus = "e";
-                        FireBasePutData(uuId, strName, strRoom,strStatus);
+                        FireBasePutData(uuId, strName, strRoom, strStatus, getMyPhoneNumber());
                         ElderEnter();
                     } else {
                         strStatus = "f";
-                        FireBasePutData(uuId, strName, strRoom,strStatus);
+                        FireBasePutData(uuId, strName, strRoom, strStatus, getMyPhoneNumber());
                         FamilyEnter();
                     }
                 }
@@ -143,7 +348,7 @@ public class SetUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 strName = editTextName.getText().toString();
-                strRoom = edit_group_num.getText().toString();
+                strRoom = editTextGroupNum.getText().toString();
                 strStatus = "f";
                 FireBaseCreateGroup(uuId, strName,strStatus);
                 saveSQLite();
@@ -157,10 +362,19 @@ public class SetUpActivity extends AppCompatActivity {
     public boolean isElder() {
         return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
     }
+    //--------------------------------------------------------------------------------------------//
+    //---------------------------------------- FireBase ------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private String getMyPhoneNumber(){
+        TelephonyManager mTelephonyMgr;
+        mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
-    //--------------------------------------------------------------------------------------------//
-    //------------------------------------------- FireBase  --------------------------------------//
-    //--------------------------------------------------------------------------------------------//
+        if(mTelephonyMgr.getLine1Number()==null){
+            alertSetPhone();
+            return "未設置手機號碼";
+        }else
+        return mTelephonyMgr.getLine1Number();
+    }
     public void signIn(){
         mAuth.signInAnonymously()
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -182,7 +396,7 @@ public class SetUpActivity extends AppCompatActivity {
                     }
                 });
     }
-    public void FireBasePutData(String uuId, String strName, String strRoom, String strStatus) {
+    public void FireBasePutData(String uuId, String strName, String strRoom, String strStatus, String strPhone) {
         mDBref1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
         mDBref2 = FirebaseDatabase.getInstance().getReference("members");
 
@@ -191,6 +405,7 @@ public class SetUpActivity extends AppCompatActivity {
         userData.put("mName", strName);
         userData.put("mGroup", strRoom);
         userData.put("mStatus",strStatus);
+        userData.put("strPhone",strPhone);
         mDBref1.child(uuId).setValue(userData);
         mDBref2.child(uuId).setValue(userData);
     }
@@ -198,7 +413,7 @@ public class SetUpActivity extends AppCompatActivity {
         int randomGroupNum = (int)(Math.random()*9000)+1000;
         String createRoom = Integer.toString(randomGroupNum);
         strRoom = createRoom;
-        FireBasePutData(uId, strName, strRoom,strStatus);
+        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
         Toast.makeText(SetUpActivity.this, "create room: " + createRoom, Toast.LENGTH_SHORT).show();
     }
     @Override
@@ -244,7 +459,6 @@ public class SetUpActivity extends AppCompatActivity {
         startActivity(new Intent(SetUpActivity.this, FamilyActivity.class));
         finish();
     }
-
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- SQLiteDB -------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -259,9 +473,8 @@ public class SetUpActivity extends AppCompatActivity {
         initDB();
         Cursor cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
-        dbHelper.setProfileData(uuId ,hadsetup, strName, strRoom);
+        dbHelper.setProfileData(uuId ,hadsetup, strName, strRoom, getMyPhoneNumber());
         closeDB();
-        alertSuccess();
     }
     //Database : close database
     private void closeDB(){
@@ -289,16 +502,15 @@ public class SetUpActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
     }
-    public void alertSuccess() {
-//        Toast toast = Toast.makeText(this, "saved!", Toast.LENGTH_SHORT);
-//        toast.show();
-//        Timer timer = new Timer();
-//        timer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                finish();
-//            }
-//        }, 2 * 1000);
+    public void alertSetPhone() {
+        Toast.makeText(SetUpActivity.this, "請插入SIM卡，並稍後設定手機號碼", Toast.LENGTH_SHORT).show();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 2 * 1000);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------ setAnimationListener ----------------------------------------//

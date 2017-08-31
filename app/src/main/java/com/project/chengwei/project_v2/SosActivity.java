@@ -51,7 +51,7 @@ public class SosActivity extends AppCompatActivity
 
         //TextView lat = (TextView)findViewById(R.id.lat);
         //TextView lng = (TextView)findViewById(R.id.lng);
-        locationText = (TextView)findViewById(R.id.locationText);
+        locationText = findViewById(R.id.locationText);
 
         //sendSMS();
         //callPhone();

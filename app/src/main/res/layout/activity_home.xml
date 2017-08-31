@@ -156,7 +156,7 @@
 
     <!-- The navigation drawer -->
     <FrameLayout android:id="@+id/left_drawer"
-        android:layout_width="300dp"
+        android:layout_width="310dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:divider="@android:color/transparent"
