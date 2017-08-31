@@ -69,7 +69,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     byte[] ByteExample = "abc".getBytes();
 
     private String sql_firstRow;{
-        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uuid, hadSetUp, name, phone, address, birthday, room, image) VALUES (0, 0, '姓名', '未設置', '未設置', '2000-01-01', '0000','"+ByteExample+"')");}
+        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uuid, hadSetUp, name, phone, address, birthday, room, image) VALUES (0, 0, '姓名', '未設置手機', '未設置地址', '2000-01-01', '0000','"+ByteExample+"')");}
 
     //Database : setProfileData to the table
     public long setProfileData(String uuid, String hadsetup, String name, String room){

@@ -24,7 +24,7 @@ public class ContactListActivity extends AppCompatActivity {
     static final String KEY =  "com.<your_app_name>";
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     private Toolbar myToolbar;
-    private ImageButton toolbar_add_contact, toolbar_fav;
+    private ImageButton toolbar_add_contact, toolbar_btn_guide;
     GridView gridView;
     ArrayList<Contact> list;
     ContactListAdapter adapter = null;
@@ -94,7 +94,7 @@ public class ContactListActivity extends AppCompatActivity {
     private void findViews(){
         myToolbar = (Toolbar) findViewById(R.id.toolbar_contact);
         toolbar_add_contact = (ImageButton)findViewById(R.id.toolbar_add_contact);
-        toolbar_fav = (ImageButton)findViewById(R.id.toolbar_fav);
+        toolbar_btn_guide = (ImageButton)findViewById(R.id.toolbar_btn_guide);
         gridView = (GridView) findViewById(R.id.gridView);
     }
     //--------------------------------------------------------------------------------------------//
@@ -121,10 +121,10 @@ public class ContactListActivity extends AppCompatActivity {
                 finish();
             }
         });
-        toolbar_fav.setOnClickListener(new View.OnClickListener() {
+        toolbar_btn_guide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ContactListActivity.this,"fav",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ContactListActivity.this,"guide",Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -1,10 +1,13 @@
 package com.project.chengwei.project_v2;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -27,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class HomeActivity extends AppCompatActivity {
+    static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
     static final String GROUP_NUM =  "0000";
     private SQLiteDBHelper dbHelper;
@@ -52,10 +56,9 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            checkPermission();
-        }
+        //if (Build.VERSION.SDK_INT >= 23) {
+        checkPermission();
+        //}
         findViews();
         setToolbar();
         setListeners();
@@ -88,6 +91,16 @@ public class HomeActivity extends AppCompatActivity {
         textViewRoom = findViewById(R.id.textViewRoom);
         profileImg = findViewById(R.id.profileImg);
         btn_editProfile = findViewById(R.id.btn_editProfile);
+        Drawable drawable;
+        Resources res = this.getResources();
+        if(isElder()){
+            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
+            profileImg.setBackground(drawable);
+        }
+        else{
+            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
+            profileImg.setBackground(drawable);
+        }
     }
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//
@@ -108,7 +121,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ ImageBtnListener --------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -370,23 +382,8 @@ public class HomeActivity extends AppCompatActivity {
         dbHelper.close();
     }
     //--------------------------------------------------------------------------------------------//
-    //----------------------------------- Options Item -------------------------------------------//
+    //-------------------------------------- help and Guide --------------------------------------//
     //--------------------------------------------------------------------------------------------//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_home, menu);
-//        return true;
-//    }
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.help:
-//                openGuide();
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
     private void openGuide(){
         help_guide.setVisibility(View.VISIBLE);
         btn_sos.setClickable(false);
@@ -404,5 +401,11 @@ public class HomeActivity extends AppCompatActivity {
         btn_video.setClickable(true);
         btn_map.setClickable(true);
         btn_magnifier.setClickable(true);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //------------------------------------ CheckPreferences --------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public boolean isElder() {
+        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
     }
 }

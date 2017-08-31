@@ -37,7 +37,7 @@ public class SetUpActivity extends AppCompatActivity {
 
     private ImageButton btn_elder, btn_family;
     private Button btn_start,btn_create,btn_back;
-    private FrameLayout guide_room;
+    private FrameLayout guide_room,guide_create_room;
     private EditText editTextName;
     private EditText edit_group_num;
     //private EditText edit_group_num1,edit_group_num2,edit_group_num3,edit_group_num4;
@@ -64,6 +64,7 @@ public class SetUpActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
         guide_room = (FrameLayout) findViewById(R.id.guide_room);
+        guide_create_room = (FrameLayout) findViewById(R.id.guide_create_room);
         instruction1 = (TextView) findViewById(R.id.instruction1);
         instruction2 = (TextView) findViewById(R.id.instruction2);
         instruction3 = (TextView) findViewById(R.id.instruction3);
@@ -220,8 +221,8 @@ public class SetUpActivity extends AppCompatActivity {
         guideAnimation();
     }
     public void showCreateRoom(){
-        instruction3.setVisibility(FrameLayout.VISIBLE);
-        btn_create.setVisibility(FrameLayout.VISIBLE);
+        btn_back.setVisibility(FrameLayout.VISIBLE);
+        guide_create_room.setVisibility(FrameLayout.VISIBLE);
         guideAnimation();
     }
     public void hideSelectRoom(){
@@ -229,8 +230,7 @@ public class SetUpActivity extends AppCompatActivity {
         instruction1.setVisibility(FrameLayout.VISIBLE);
         editTextName.setVisibility(FrameLayout.VISIBLE);
         guide_room.setVisibility(FrameLayout.INVISIBLE);
-        instruction3.setVisibility(FrameLayout.INVISIBLE);
-        btn_create.setVisibility(FrameLayout.INVISIBLE);
+        guide_create_room.setVisibility(FrameLayout.INVISIBLE);
         btn_elder.setClickable(true);
         btn_family.setClickable(true);
     }

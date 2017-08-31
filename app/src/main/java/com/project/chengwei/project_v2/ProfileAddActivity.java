@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -61,15 +63,6 @@ public class ProfileAddActivity extends AppCompatActivity {
 
         findViews();
         setListeners();
-
-        //Manage the Database by clicking a button
-        btn_manageDB.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent dbManager = new Intent(ProfileAddActivity.this, AndroidDatabaseManager.class);
-                startActivity(dbManager);
-            }
-        });
-
         initDB();
 
         // Enable if permission granted
@@ -112,7 +105,16 @@ public class ProfileAddActivity extends AppCompatActivity {
         btn_manageDB = (ImageButton) findViewById(R.id.btn_manageDB);
         btn_editPhoto = (ImageButton) findViewById(R.id.btn_editPhoto);
         ImgView_photo = (ImageView) findViewById(R.id.ImgView_photo);
-
+        Drawable drawable;
+        Resources res = this.getResources();
+        if(isElder()){
+            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
+            ImgView_photo.setBackground(drawable);
+        }
+        else{
+            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
+            ImgView_photo.setBackground(drawable);
+        }
     }
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//
@@ -120,10 +122,15 @@ public class ProfileAddActivity extends AppCompatActivity {
     private void setListeners(){
         btn_manageDB.setOnClickListener(ImageBtnListener);
         btn_editPhoto.setOnClickListener(ImageBtnListener);
+        //Manage the Database by clicking a button
+        btn_manageDB.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent dbManager = new Intent(ProfileAddActivity.this, AndroidDatabaseManager.class);
+                startActivity(dbManager);
+            }
+        });
     }
-    //--------------------------------------------------------------------------------------------//
-    //------------------------------------ ImageBtnListener --------------------------------------//
-    //--------------------------------------------------------------------------------------------//
+
     private android.view.View.OnClickListener ImageBtnListener = new ImageButton.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -139,7 +146,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         }
     };
     //--------------------------------------------------------------------------------------------//
-    //----------------------------------------About Profile Photo---------------------------------//
+    //-------------------------------------- About Profile Photo ---------------------------------//
     //--------------------------------------------------------------------------------------------//
     // Choose an image from Gallery
     void openImageChooser() {
@@ -255,22 +262,11 @@ public class ProfileAddActivity extends AppCompatActivity {
 //        }
 //        return true;
 //    }
-    //cancel edit and go back to profile page
-    public void cancel(View v){
-        if(isElder()) {
-            startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
-            finish();
-        }else{
-            startActivity(new Intent(ProfileAddActivity.this, FamilyActivity.class));
-            finish();
-        }
-    }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             if(isElder()) {
                 startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
@@ -281,6 +277,16 @@ public class ProfileAddActivity extends AppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+    //cancel edit and go back to profile page
+    public void cancel(View v){
+        if(isElder()) {
+            startActivity(new Intent(ProfileAddActivity.this, HomeActivity.class));
+            finish();
+        }else{
+            startActivity(new Intent(ProfileAddActivity.this, FamilyActivity.class));
+            finish();
+        }
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Firebase -------------------------------------------//
@@ -318,7 +324,6 @@ public class ProfileAddActivity extends AppCompatActivity {
         int mDate = Integer.parseInt(parts[2]); // dd
         pickBirthday.init(mYear, mMonth, mDate, null);
     }
-
     //Database : close database
     private void closeDB(){
         dbHelper.close();
@@ -343,7 +348,6 @@ public class ProfileAddActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences ----------------------------------------//
     //--------------------------------------------------------------------------------------------//
-
     public boolean isElder() {
         return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
         //settings = getSharedPreferences(data,0);

@@ -1,10 +1,13 @@
 package com.project.chengwei.project_v2;
 
 import android.*;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -31,6 +34,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class FamilyActivity extends AppCompatActivity {
+    static final String ELDERLY_MODE = "ELDERLY_MODE";
+    static final String KEY =  "com.<your_app_name>";
     private Toolbar myToolbar;
     private FrameLayout left_drawer;
     private ImageButton btn_video;
@@ -69,20 +74,30 @@ public class FamilyActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews() {
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_with_guide);
-        toolbar_guide = (ImageButton)findViewById(R.id.toolbar_btn_guide);
-        btn_video = (ImageButton) findViewById(R.id.btn_video);
-        left_drawer = (FrameLayout) findViewById(R.id.left_drawer);
+        drawer = findViewById(R.id.drawer_layout);
+        myToolbar = findViewById(R.id.toolbar_with_guide);
+        toolbar_guide = findViewById(R.id.toolbar_btn_guide);
+        btn_video = findViewById(R.id.btn_video);
+        left_drawer = findViewById(R.id.left_drawer);
 
         //profile drawer
-        textViewName = (TextView) findViewById(R.id.textViewName);
-        textViewPhone = (TextView) findViewById(R.id.textViewPhone);
-        textViewAddress = (TextView) findViewById(R.id.textViewAddress);
-        textViewBirthday = (TextView) findViewById(R.id.textViewBirthday);
-        textViewRoom = (TextView) findViewById(R.id.textViewRoom);
-        profileImg = (ImageView) findViewById(R.id.profileImg);
-        btn_editProfile = (ImageButton) findViewById(R.id.btn_editProfile);
+        textViewName = findViewById(R.id.textViewName);
+        textViewPhone = findViewById(R.id.textViewPhone);
+        textViewAddress = findViewById(R.id.textViewAddress);
+        textViewBirthday = findViewById(R.id.textViewBirthday);
+        textViewRoom = findViewById(R.id.textViewRoom);
+        profileImg = findViewById(R.id.profileImg);
+        btn_editProfile = findViewById(R.id.btn_editProfile);
+        Drawable drawable;
+        Resources res = this.getResources();
+        if(isElder()){
+            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
+            profileImg.setBackground(drawable);
+        }
+        else{
+            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
+            profileImg.setBackground(drawable);
+        }
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Database -------------------------------------------//
@@ -349,5 +364,11 @@ public class FamilyActivity extends AppCompatActivity {
 //                finish();
             }
         });
+    }
+    //--------------------------------------------------------------------------------------------//
+    //------------------------------------ CheckPreferences --------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public boolean isElder() {
+        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
     }
 }

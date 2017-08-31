@@ -2,7 +2,9 @@ package com.project.chengwei.project_v2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -42,14 +44,14 @@ public class ProfileActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
-        textViewName = (TextView) findViewById(R.id.textViewName);
-        textViewPhone = (TextView) findViewById(R.id.textViewPhone);
-        textViewAddress = (TextView) findViewById(R.id.textViewAddress);
-        textViewBirthday = (TextView) findViewById(R.id.textViewBirthday);
-        textViewRoom = (TextView) findViewById(R.id.textViewRoom);
-        profileImg = (ImageView) findViewById(R.id.profileImg);
-        btn_editProfile = (ImageButton) findViewById(R.id.btn_editProfile);
+        myToolbar = findViewById(R.id.toolbar_home);
+        textViewName = findViewById(R.id.textViewName);
+        textViewPhone = findViewById(R.id.textViewPhone);
+        textViewAddress = findViewById(R.id.textViewAddress);
+        textViewBirthday = findViewById(R.id.textViewBirthday);
+        textViewRoom = findViewById(R.id.textViewRoom);
+        profileImg = findViewById(R.id.profileImg);
+        btn_editProfile = findViewById(R.id.btn_editProfile);
     }
     public void setListeners() {
         btn_editProfile.setOnClickListener(new View.OnClickListener() {

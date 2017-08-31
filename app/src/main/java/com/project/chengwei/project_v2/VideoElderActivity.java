@@ -39,12 +39,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class VideoElderActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
@@ -56,7 +50,7 @@ public class VideoElderActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
     private String groupNum;
-    private ImageButton showBtn;
+    private ImageButton showBtn,toolbar_guide;
     private Toolbar myToolbar;
 
     //這裡是宣告變數
@@ -109,7 +103,8 @@ public class VideoElderActivity extends AppCompatActivity {
     private void findViews(){
         showBtn = findViewById(R.id.showBtn);
         gridView = findViewById(R.id.gridView);
-        myToolbar = findViewById(R.id.toolbar_home);
+        myToolbar = findViewById(R.id.toolbar_with_guide);
+        toolbar_guide = findViewById(R.id.toolbar_btn_guide);
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
@@ -125,6 +120,13 @@ public class VideoElderActivity extends AppCompatActivity {
     }
 
     public void setToolbar(){
+        toolbar_guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGuide();
+            }
+        });
+
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
@@ -249,6 +251,15 @@ public class VideoElderActivity extends AppCompatActivity {
 //        updateUI(currentUser);
 //    }
     private void updateUI(FirebaseUser user) {}
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- help and Guide --------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void openGuide(){
+        Toast.makeText(VideoElderActivity.this, "guide !", Toast.LENGTH_SHORT).show();
+    }
+    private void closeGuide(){
+
+    }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences ----------------------------------------//
     //--------------------------------------------------------------------------------------------//

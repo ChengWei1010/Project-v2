@@ -226,7 +226,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     private void homeAddress() {
 
         String Address = HomeAddress;
-        //HomeAddress = " 高雄市鼓山區臨海二路50號";//住所入力　高雄市鹽埕區中正四路272號　高雄市鼓山區臨海二路50號
+        //Address = "高雄市鼓山區臨海二路50號";//住所入力　高雄市鹽埕區中正四路272號　高雄市鼓山區臨海二路50號
 
         try {
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());

@@ -96,7 +96,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
 
     private Toolbar myToolbar;
     private Button mSelectButton;
-    private ImageButton mRecordImageButton;
+    private ImageButton mRecordImageButton,toolbar_guide;
 
     VideoPicker GlobalPicker;
     private File mVideoFolder;
@@ -252,9 +252,8 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private void findViews(){
         groupNum = getIntent().getExtras().get("groupNum").toString();
         mName = getIntent().getExtras().get("mName").toString();
-        //mId = getIntent().getExtras().get("mId").toString();
-        //Toast.makeText(VideoFamilyActivity.this,groupNum+mName,Toast.LENGTH_SHORT).show();
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        myToolbar = findViewById(R.id.toolbar_with_guide);
+        toolbar_guide = findViewById(R.id.toolbar_btn_guide);
     }
 
     //當camera存在時關閉camera
@@ -732,6 +731,12 @@ public class VideoFamilyActivity extends AppCompatActivity {
     }
 
     public void setToolbar(){
+        toolbar_guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(VideoFamilyActivity.this, "guide !", Toast.LENGTH_SHORT).show();
+            }
+        });
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);

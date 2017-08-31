@@ -6,7 +6,7 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context="com.project.chengwei.project_v2.VideoFamilyActivity">
     <include
-        layout="@layout/toolbar_home"
+        layout="@layout/toolbar_with_guide"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"
