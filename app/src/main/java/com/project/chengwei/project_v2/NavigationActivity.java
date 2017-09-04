@@ -130,7 +130,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         getAddressFromDB();
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);//航空写真
@@ -415,7 +414,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
             }
             return routes;
         }
-
         // Executes in UI thread, after the parsing process//////////////////////////////////////////
         private List<List<HashMap<String, String>>> resultcopy;
 
@@ -477,7 +475,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
     @Override
     public void onConnectionSuspended(int i) {}
-
     private LocationSource.OnLocationChangedListener onLocationChangedListener = null;
     private boolean a = true;
 
@@ -516,7 +513,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         userLocaton = latLng;
     }
 
-
     //distance
     public void distance(LatLng location) {
         TextView distance = (TextView) findViewById(R.id.distance);
@@ -532,7 +528,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
-
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     //なんかバグる
@@ -555,7 +550,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
             return true;
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -606,8 +600,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         });
     }
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             startActivity(new Intent(NavigationActivity.this, HomeActivity.class));
             finish();

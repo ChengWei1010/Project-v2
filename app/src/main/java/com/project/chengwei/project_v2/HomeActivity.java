@@ -134,10 +134,14 @@ public class HomeActivity extends AppCompatActivity {
                     finish();
                     break;
                 case R.id.btn_map:
-                    //Toast.makeText(HomeActivity.this, "map !", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(HomeActivity.this, NavigationActivity.class));
-                    finish();
-                    break;
+                    if (hasValidAddress()){
+                        startActivity(new Intent(HomeActivity.this, NavigationActivity.class));
+                        finish();
+                        break;
+                    } else{
+                        Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
                 case R.id.btn_magnifier:
                     Toast.makeText(HomeActivity.this, "mag !", Toast.LENGTH_SHORT).show();
                     //startActivity(new Intent(HomeActivity.this, MagnifierActivity.class));
@@ -211,6 +215,17 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
             dbHelper.close();
+        }
+    }
+    private boolean hasValidAddress(){
+        dbHelper = new SQLiteDBHelper(getApplicationContext());
+        cursor = dbHelper.getProfileData();
+        cursor.moveToPosition(0);
+        String address = cursor.getString(cursor.getColumnIndex("address"));
+        if((address.contains("路")||address.contains("街")) && address.contains("號")){
+            return true;
+        }else {
+            return false;
         }
     }
 
