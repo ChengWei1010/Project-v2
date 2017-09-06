@@ -1,6 +1,8 @@
 package com.project.chengwei.project_v2;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -70,9 +72,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -85,7 +89,8 @@ public class VideoFamilyActivity extends AppCompatActivity {
     //new angela branch
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
-    private String groupNum,mName,mId="1234";
+    private String groupNum,mName,mId;
+    private int hour, minute;
     private ProgressDialog progressDialog ;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -252,7 +257,9 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private void findViews(){
         groupNum = getIntent().getExtras().get("groupNum").toString();
         mName = getIntent().getExtras().get("mName").toString();
-        //mId = getIntent().getExtras().get("mId").toString();
+        mId = getIntent().getExtras().get("mId").toString();
+        hour = getIntent().getIntExtra("hour",0);
+        minute = getIntent().getIntExtra("minute",0);
         //Toast.makeText(VideoFamilyActivity.this,groupNum+mName,Toast.LENGTH_SHORT).show();
         myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
     }
@@ -632,7 +639,8 @@ public class VideoFamilyActivity extends AppCompatActivity {
 
             appendMp4List(mp4PathList,outputPath);
             Toast.makeText(getApplicationContext(),"Merge Success!",Toast.LENGTH_LONG).show();
-            uploadVideo(outputPath);
+            sendVideo(outputPath);
+            //uploadVideo(outputPath);
             //Log.d("The Path","The Path is:"+outputPath);
 
         }catch(IOException e){
@@ -652,72 +660,88 @@ public class VideoFamilyActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadVideo(String mergePath){
-        // Storage Upload
-        progressDialog = new ProgressDialog(this);
-        File tmpFile = new File(mergePath);
+//    private void uploadVideo(String mergePath){
+//        // Storage Upload
+//        progressDialog = new ProgressDialog(this);
+//        File tmpFile = new File(mergePath);
+//
+//        Uri filePath = Uri.fromFile(tmpFile);
+//        //Create file metadata including the content type
+//        //If you do not provide a contentType and Cloud Storage cannot infer a default from the file extension, Cloud Storage uses application/octet-stream.
+//        StorageMetadata metadata = new StorageMetadata.Builder()
+//                .setContentType("video/mp4")
+//                .build();
+//
+//        if (filePath != null) {
+//            //displaying a progress dialog while upload is going on
+//            progressDialog.setTitle("Uploading");
+//            progressDialog.show();
+//            mStorage = FirebaseStorage.getInstance();
+//            mStorageRef = mStorage.getReference();
+//            StorageReference ref = mStorageRef.child("videos").child(groupNum).child(filePath.getLastPathSegment());
+//            ref.putFile(filePath, metadata)
+//                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                            //if the upload is successfull, hide the progress dialog
+//                            progressDialog.dismiss();
+//                            //and displaying a success toast
+//                            Toast.makeText(getApplicationContext(), "Storage Uploaded ", Toast.LENGTH_LONG).show();
+//                            Uri downloadUri = taskSnapshot.getDownloadUrl();
+//                            //uploadVideoDB(downloadUri.toString());
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception exception) {
+//                            //if the upload is not successfull, hide the progress dialog
+//                            progressDialog.dismiss();
+//                            //and displaying error message
+//                            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+//                        }
+//                    })
+//                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+//                            //calculating progress percentage
+//                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+//                            //displaying percentage in progress dialog
+//                            progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
+//                        }
+//                    });
+//        }
+//    }
+//    private void uploadVideoDB(String downloadUri) {
+//        // Database upload
+//        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum).child("mVideo");
+//        //取得時間
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
+//        Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
+//        String date = formatter.format(curDate);
+//
+//        Map<String, Object> videoData = new HashMap<>();
+//        videoData.put("mId", mId);
+//        videoData.put("member", mName);
+//        videoData.put("date", date);
+//        videoData.put("storagePath", "This is storagePath~~~");
+//        mDatabaseRef.push().setValue(videoData);
+//        Toast.makeText(this, "database StoragePath Uploaded", Toast.LENGTH_SHORT).show();
+//    }
+    private void sendVideo(String storagePath){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY,hour);
+        calendar.set(Calendar.MINUTE,minute);
+        calendar.set(Calendar.SECOND,00);
 
-        Uri filePath = Uri.fromFile(tmpFile);
-        //Create file metadata including the content type
-        //If you do not provide a contentType and Cloud Storage cannot infer a default from the file extension, Cloud Storage uses application/octet-stream.
-        StorageMetadata metadata = new StorageMetadata.Builder()
-                .setContentType("video/mp4")
-                .build();
+        Intent intent = new Intent(getApplicationContext(),PeriodiclyUpload.class);
+        intent.putExtra("groupNum", groupNum);
+        intent.putExtra("mId",mId);
+        intent.putExtra("member",mName);
+        intent.putExtra("storagePath", storagePath);
 
-        if (filePath != null) {
-            //displaying a progress dialog while upload is going on
-            progressDialog.setTitle("Uploading");
-            progressDialog.show();
-            mStorage = FirebaseStorage.getInstance();
-            mStorageRef = mStorage.getReference();
-            StorageReference ref = mStorageRef.child("videos").child(groupNum).child(filePath.getLastPathSegment());
-            ref.putFile(filePath, metadata)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            //if the upload is successfull, hide the progress dialog
-                            progressDialog.dismiss();
-                            //and displaying a success toast
-                            Toast.makeText(getApplicationContext(), "Storage Uploaded ", Toast.LENGTH_LONG).show();
-                            Uri downloadUri = taskSnapshot.getDownloadUrl();
-                            uploadVideoDB(downloadUri.toString());
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            //if the upload is not successfull, hide the progress dialog
-                            progressDialog.dismiss();
-                            //and displaying error message
-                            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            //calculating progress percentage
-                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                            //displaying percentage in progress dialog
-                            progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
-                        }
-                    });
-        }
-    }
-    private void uploadVideoDB(String downloadUri) {
-        // Database upload
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum).child("mVideo");
-        //取得時間
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
-        Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
-        String date = formatter.format(curDate);
-
-        Map<String, Object> videoData = new HashMap<>();
-        videoData.put("mId", mId);
-        videoData.put("member", mName);
-        videoData.put("date", date);
-        videoData.put("storagePath", downloadUri);
-        mDatabaseRef.push().setValue(videoData);
-        Toast.makeText(this, "database StoragePath Uploaded", Toast.LENGTH_SHORT).show();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
