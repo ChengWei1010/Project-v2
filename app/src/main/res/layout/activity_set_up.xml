@@ -151,7 +151,7 @@
 
     <!--join room + create room-->
     <FrameLayout
-        android:visibility="visible"
+        android:visibility="invisible"
         android:id="@+id/guide_create_room"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

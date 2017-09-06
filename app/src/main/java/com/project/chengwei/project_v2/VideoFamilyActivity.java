@@ -34,6 +34,8 @@ import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
@@ -47,8 +49,6 @@ import com.coremedia.iso.boxes.Container;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -80,6 +80,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import pl.droidsonroids.gif.GifTextView;
 
 public class VideoFamilyActivity extends AppCompatActivity {
     //new angela branch
@@ -97,6 +101,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private Toolbar myToolbar;
     private Button mSelectButton;
     private ImageButton mRecordImageButton,toolbar_guide;
+    private pl.droidsonroids.gif.GifTextView recordingGif;
 
     VideoPicker GlobalPicker;
     private File mVideoFolder;
@@ -186,24 +191,22 @@ public class VideoFamilyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_family);
         mTextureView = (TextureView)findViewById(R.id.textureView);
-
         findViews();
         setToolbar();
         createVideoFolder();
 
         mMediaRecorder = new MediaRecorder();
-        mChronometer = (Chronometer)findViewById(R.id.chronometer);
+        //mRecordImageButton.setImageResource(R.mipmap.video_off);
 
-        mRecordImageButton = (ImageButton) findViewById(R.id.recordButton);
-        mRecordImageButton.setImageResource(R.mipmap.video_off );
         mRecordImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mIsRecording){
                     mChronometer.stop();
                     mChronometer.setVisibility(View.INVISIBLE);
+                    recordingGif.setVisibility(View.VISIBLE);
                     mIsRecording = false;
-                    mRecordImageButton.setImageResource(R.mipmap.video_off );
+                    //mRecordImageButton.setImageResource(R.mipmap.video_off );
                     mMediaRecorder.stop();
                     mMediaRecorder.reset();
                     startPreview();
@@ -214,7 +217,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
             }
         });
 
-        mSelectButton = (Button) findViewById(R.id.btn_select);
         mSelectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -254,6 +256,11 @@ public class VideoFamilyActivity extends AppCompatActivity {
         mName = getIntent().getExtras().get("mName").toString();
         myToolbar = findViewById(R.id.toolbar_with_guide);
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
+        mChronometer = findViewById(R.id.chronometer);
+        mRecordImageButton = findViewById(R.id.recordButton);
+        mRecordImageButton.setImageResource(R.mipmap.video_off);
+        mSelectButton = findViewById(R.id.btn_select);
+        recordingGif = findViewById(R.id.recordingGif);
     }
 
     //當camera存在時關閉camera
@@ -431,7 +438,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         if(requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT){
             if(grantResult[0] == PackageManager.PERMISSION_GRANTED){
                 mIsRecording = true;
-                mRecordImageButton.setImageResource(R.mipmap.video_on);
+                setRecordingIcon();
                 try {
                     createVideoFileName();
                 } catch (IOException e) {
@@ -478,7 +485,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
                     == PackageManager.PERMISSION_GRANTED){
                 Log.d("Permission","Permission granted!");
                 mIsRecording = true;
-                mRecordImageButton.setImageResource(R.mipmap.video_on);
+                    setRecordingIcon();
                 try {
                     createVideoFileName();
                 } catch (IOException e) {
@@ -499,7 +506,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         }else{
             Log.d("Version","Below 6.0");
             mIsRecording = true;
-            mRecordImageButton.setImageResource(R.mipmap.video_on);
+            setRecordingIcon();
             try {
                 createVideoFileName();
             } catch (IOException e) {
@@ -528,7 +535,9 @@ public class VideoFamilyActivity extends AppCompatActivity {
                         mChronometer.stop();
                         mChronometer.setVisibility(View.INVISIBLE);
                         mIsRecording = false;
-                        mRecordImageButton.setImageResource(R.mipmap.video_off );
+
+                        stopRecordingIcon();
+
                         mMediaRecorder.stop();
                         mMediaRecorder.reset();
                         mMediaRecorder = new MediaRecorder();
@@ -547,6 +556,37 @@ public class VideoFamilyActivity extends AppCompatActivity {
         mMediaRecorder.prepare();
     }
 
+    private void setRecordingIcon(){
+        mRecordImageButton.setImageResource(R.mipmap.video_on);
+        mRecordImageButton.setBackground(null);
+        recordingGif.setVisibility(View.VISIBLE);
+        recordingGif.setBackgroundResource(R.drawable.gif_file);//your gif file
+
+//        Animation fadeout = new AlphaAnimation(1.f, 1.f);
+//        fadeout.setDuration(5000); // You can modify the duration here
+//        fadeout.setAnimationListener(new Animation.AnimationListener() {
+//
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//
+//            }
+//        });
+//        recordingGif.startAnimation(fadeout);
+    }
+    private void stopRecordingIcon(){
+        mRecordImageButton.setBackgroundResource(R.drawable.recordgif);
+        mRecordImageButton.setImageResource(R.mipmap.video_off);
+        recordingGif.setVisibility(View.GONE);
+    }
     private void startRecord(){
         try {
             setupMediaRecorder();
