@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -42,9 +44,12 @@ public class HomeActivity extends AppCompatActivity {
     private String groupNum, myName;
 
     private DrawerLayout drawer;
-    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name;
+    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
     private ImageView profileImg;
     private ImageButton btn_editProfile;
+
+    RoundImage roundedImage;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +79,8 @@ public class HomeActivity extends AppCompatActivity {
         btn_guide_ok = findViewById(R.id.btn_guide_ok);
         help_guide = findViewById(R.id.help_guide);
         textClock = findViewById(R.id.textClock);
+        notification_num = findViewById(R.id.notification_num);
+        notification_num.setText("1");
 
     //profile drawer
         text_group_name = findViewById(R.id.text_group_name);
@@ -84,6 +91,8 @@ public class HomeActivity extends AppCompatActivity {
         textViewRoom = findViewById(R.id.textViewRoom);
         profileImg = findViewById(R.id.profileImg);
         btn_editProfile = findViewById(R.id.btn_editProfile);
+
+
         Drawable drawable;
         Resources res = this.getResources();
         if(isElder()){
@@ -212,6 +221,12 @@ public class HomeActivity extends AppCompatActivity {
             dbHelper.close();
             // Show Image from DB in ImageView
             profileImg.setImageBitmap(Utils.getImage(bytes));
+
+//            BitmapDrawable drawable = (BitmapDrawable) profileImg.getDrawable();
+//            bitmap = drawable.getBitmap();
+//            roundedImage = new RoundImage(bitmap);
+//            profileImg.setImageDrawable(roundedImage);
+
         } catch (Exception e) {
             //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
             dbHelper.close();

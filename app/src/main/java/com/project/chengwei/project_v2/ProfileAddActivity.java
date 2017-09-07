@@ -1,6 +1,7 @@
 package com.project.chengwei.project_v2;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -55,6 +56,11 @@ public class ProfileAddActivity extends AppCompatActivity {
     private ImageView ImgView_photo;
     private DatabaseReference dbRef1,dbRef2;
     private String uuId;
+
+    final int REQUEST_EXTERNAL_STORAGE = 999;
+    final int REQUEST_IMAGE_CAPTURE = 99;
+    final int REQUEST_CROP_IMAGE = 9;
+    Intent cropIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,6 +267,25 @@ public class ProfileAddActivity extends AppCompatActivity {
 //            return false;
 //        }
 //        return true;
+//    }
+//    private void cropImage() {
+//        try{
+//            cropIntent = new Intent("com.android.camera.action.CROP");
+//            cropIntent.setDataAndType(uri,"image/*");
+//
+//            cropIntent.putExtra("crop","true");
+//            cropIntent.putExtra("outputX",1000);
+//            cropIntent.putExtra("outputY",1000);
+//            cropIntent.putExtra("aspectX",1);
+//            cropIntent.putExtra("aspectY",1);
+//            cropIntent.putExtra("noFaceDetection", true);
+//            cropIntent.putExtra("scaleUpIfNeeded",true);
+//            cropIntent.putExtra("return-data",true);
+//
+//            startActivityForResult(cropIntent,REQUEST_CROP_IMAGE);
+//        }
+//        catch (ActivityNotFoundException ex){
+//        }
 //    }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//

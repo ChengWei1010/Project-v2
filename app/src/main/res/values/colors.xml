@@ -2,13 +2,13 @@
 <resources>
     <color name="colorPrimary">#ef6262</color>
     <color name="colorPrimaryDark">#910534</color>
-    <color name="colorAccent">#f7e5eb</color>
+    <color name="colorAccent">#960334</color>
 
     <!--<color name="colorToolbar">#ed7b7b</color>-->
     <color name="colorIcon">#e18888</color>
     <color name="colorIcon2">#ffffff</color>
-    <color name="colorBG">#f1cccc</color>
-    <color name="colorToolbarText">#FFFFFF</color>
+    <color name="colorBG">#fdc7c7</color>
+    <color name="colorText">#FFFFFF</color>
     <color name="guideBG">#EAE8E8</color>
     <color name="colorPopUp">#f19d99</color>
     <color name="colorEdit">#df6e6e</color>

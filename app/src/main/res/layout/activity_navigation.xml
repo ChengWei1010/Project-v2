@@ -111,7 +111,7 @@
         android:layout_height="50dp"
         android:id="@+id/distance"
         android:textSize="30sp"
-        android:textColor="@color/colorToolbarText"
+        android:textColor="@color/colorText"
         android:layout_alignEnd="@+id/zoomout"
         android:layout_marginRight="0dp"
         app:layout_constraintRight_toRightOf="parent"
