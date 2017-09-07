@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 public class WelcomeActivity extends AppCompatActivity {
     static final String KEY_IS_FIRST_TIME =  "com.<your_app_name>.first_time";
     static final String KEY =  "com.<your_app_name>";
@@ -29,7 +31,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 try {
                     super.run();
                     mhadSetUp = hadSetUp();
-                    sleep(2000);  //Delay of 2 seconds
+                    sleep(3000);  //Delay of 2 seconds
                 } catch (Exception e) {
 
                 } finally {
@@ -68,6 +70,7 @@ public class WelcomeActivity extends AppCompatActivity {
         };
         welcomeThread.start();
     }
+
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences ----------------------------------------//
     //--------------------------------------------------------------------------------------------//
