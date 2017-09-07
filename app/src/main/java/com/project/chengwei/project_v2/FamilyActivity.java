@@ -1,7 +1,7 @@
 package com.project.chengwei.project_v2;
 
-import android.*;
 import android.content.Context;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,13 +18,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import android.widget.Button;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +33,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static android.R.id.list;
 
 public class FamilyActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
@@ -39,6 +54,7 @@ public class FamilyActivity extends AppCompatActivity {
     private Toolbar myToolbar;
     private FrameLayout left_drawer;
     private ImageButton btn_video;
+    private Button btn_time, btn_showMember;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
     private String groupNum, mName, mId;
@@ -49,6 +65,12 @@ public class FamilyActivity extends AppCompatActivity {
     final int RequestPermissionCode = 999;
     private final int REQUEST_PERMISSION = 10;
     private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDatabaseRef, sendTimeRef;
+    private int TimeDialogID = 0;
+    private int hour, minute;
+    private MemberData memberData;
+    private ArrayList<String> memberList;
 
     private DrawerLayout drawer;
     private TextView textViewName, textViewPhone, textViewAddress, textViewBirthday, textViewRoom;
@@ -79,6 +101,9 @@ public class FamilyActivity extends AppCompatActivity {
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
         btn_video = findViewById(R.id.btn_video);
         left_drawer = findViewById(R.id.left_drawer);
+
+        btn_time = (Button) findViewById(R.id.timeBtn);
+        btn_showMember = (Button) findViewById(R.id.showMemberBtn);
 
         //profile drawer
         textViewName = findViewById(R.id.textViewName);
@@ -116,6 +141,9 @@ public class FamilyActivity extends AppCompatActivity {
         textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
         textViewRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
 
+        mId = cursor.getString(cursor.getColumnIndex("uuid"));
+
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum);
     }
 
     //Database : close database
@@ -129,6 +157,8 @@ public class FamilyActivity extends AppCompatActivity {
     private void setListeners() {
         btn_video.setOnClickListener(ImageBtnListener);
         btn_editProfile.setOnClickListener(ImageBtnListener);
+        btn_time.setOnClickListener(BtnListener);
+        btn_showMember.setOnClickListener(BtnListener);
     }
 
     //--------------------------------------------------------------------------------------------//
@@ -141,9 +171,11 @@ public class FamilyActivity extends AppCompatActivity {
                 case R.id.btn_video:
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
                     Intent intent = new Intent(getApplicationContext(), VideoFamilyActivity.class);
-                    intent.putExtra("mName", mName);
-                    intent.putExtra("groupNum", groupNum);
-                    //intent.putExtra("mId",mId);
+                    intent.putExtra("mName",mName);
+                    intent.putExtra("groupNum",groupNum);
+                    intent.putExtra("mId",mId);
+                    intent.putExtra("hour", hour);
+                    intent.putExtra("minute", minute);
                     startActivity(intent);
                     finish();
                     break;
@@ -156,6 +188,70 @@ public class FamilyActivity extends AppCompatActivity {
         }
     };
 
+    //------------------------------------ BtnListener --------------------------------------//
+    private Button.OnClickListener BtnListener = new Button.OnClickListener(){
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.timeBtn:
+                    setSendTime();
+                    break;
+                case R.id.showMemberBtn:
+                    listMember();
+                    break;
+            }
+        }
+    };
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------- Set video send time-----------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void setSendTime(){
+        //抓現在的時間為預設時間
+        final Calendar c = Calendar.getInstance();
+        hour = c.get(Calendar.HOUR_OF_DAY);
+        minute = c.get(Calendar.MINUTE);
+        // Create a new instance of TimePickerDialog and return it
+        new TimePickerDialog(FamilyActivity.this, new TimePickerDialog.OnTimeSetListener(){
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minutes) {
+                hour = hourOfDay;
+                minute = minutes;
+                Toast.makeText(FamilyActivity.this, "Send Time is: "+ hour + ":" + minute, Toast.LENGTH_SHORT).show();
+            }
+        }, hour, minute, false).show();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------- List members in the same room-----------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public void listMember(){
+        memberList = new ArrayList<>();
+        mDatabaseRef.child("members").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // get all of the children at this level.
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                // shake hands with each of them.'
+                for (DataSnapshot child : children) {
+                    //抓出成員存到arrayList
+                    memberData = child.getValue(MemberData.class);
+                    memberList.add(memberData.getmName());
+                }
+                //顯示arrayList的所有成員
+                new AlertDialog.Builder(FamilyActivity.this)
+                        .setTitle(groupNum + "裡的成員")
+                        .setItems(memberList.toArray(new String[memberList.size()]), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String name = memberList.get(which);
+                                Toast.makeText(getApplicationContext(), name, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
     //--------------------------------------------------------------------------------------------//
     //-------------------------- Version and Permission ------------------------------------------//
     //--------------------------------------------------------------------------------------------//
