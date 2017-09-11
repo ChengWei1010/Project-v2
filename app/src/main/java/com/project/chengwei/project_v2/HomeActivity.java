@@ -143,8 +143,10 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     }
                 case R.id.btn_magnifier:
-                    Toast.makeText(HomeActivity.this, "mag !", Toast.LENGTH_SHORT).show();
-                    //startActivity(new Intent(HomeActivity.this, MagnifierActivity.class));
+                    Intent intent1 = new Intent(getApplicationContext(),GroupMemberActivity.class);
+                    intent1.putExtra("groupNum",groupNum);
+                    startActivity(intent1);
+                    finish();
                     break;
                 case R.id.btn_guide_ok:
                     closeGuide();
