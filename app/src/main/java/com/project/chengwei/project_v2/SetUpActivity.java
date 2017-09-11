@@ -202,7 +202,7 @@ public class SetUpActivity extends AppCompatActivity {
         //接受
         else{
             ActivityCompat.requestPermissions(SetUpActivity.this,new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.CALL_PHONE,
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.ACCESS_FINE_LOCATION},
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE ,android.Manifest.permission.SEND_SMS, android.Manifest.permission.ACCESS_FINE_LOCATION},
                     RequestPermissionCode);
         }
     }
@@ -252,8 +252,7 @@ public class SetUpActivity extends AppCompatActivity {
                 return;
             }
             case RequestSmsCode: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[2] == PackageManager.PERMISSION_GRANTED){
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     Toast.makeText(SetUpActivity.this,"SMS Permission Granted",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(SetUpActivity.this,"SMS Permission Canceled",Toast.LENGTH_SHORT).show();
@@ -505,7 +504,7 @@ public class SetUpActivity extends AppCompatActivity {
         toast.show();
     }
     public void alertSetPhone() {
-        Toast.makeText(SetUpActivity.this, "請插入SIM卡，並稍後設定手機號碼", Toast.LENGTH_SHORT).show();
+        Toast.makeText(SetUpActivity.this, "請檢查SIM卡，或設定手機號碼", Toast.LENGTH_SHORT).show();
 //        Timer timer = new Timer();
 //        timer.schedule(new TimerTask() {
 //            @Override

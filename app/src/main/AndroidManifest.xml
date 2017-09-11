@@ -11,9 +11,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="com.android.alarm.permission.Set_ALARM"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-
+    <uses-permission android:name="com.android.alarm.permission.Set_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -82,7 +81,13 @@
         <activity
             android:name=".VideoFamilyActivity"
             android:screenOrientation="portrait" />
+
         <receiver android:name=".PeriodiclyUpload"/>
+
+        <activity
+            android:name=".NavigationPopUpActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopUpTheme" />
     </application>
 
 </manifest>

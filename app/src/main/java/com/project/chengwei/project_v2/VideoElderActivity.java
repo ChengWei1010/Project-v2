@@ -103,8 +103,6 @@ public class VideoElderActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        showBtn = findViewById(R.id.showBtn);
-        gridView = findViewById(R.id.gridView);
         myToolbar = findViewById(R.id.toolbar_with_guide);
         toolbar_title = findViewById(R.id.toolbar_title);
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
@@ -151,63 +149,8 @@ public class VideoElderActivity extends AppCompatActivity {
     //--------------------------------------- Download --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     
-    private void setShowBtn() {
-        showBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                list = new ArrayList<>();
-                adapter = new VideoListAdapter(VideoElderActivity.this, R.layout.grid_item,list);
-                gridView.setNumColumns(3);
-                gridView.setAdapter(adapter);
+    private void setShowBtn() {}
 
-                //取得房間最後一筆資訊
-                mDatabaseRef.child("mVideo").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            firebaseData = child.getValue(FirebaseData.class);
-                            String date = firebaseData.getDate();
-                            String mId = firebaseData.getmId();
-                            String member = firebaseData.getMember();
-                            String storagePath = firebaseData.getStoragePath();
-                            list.add(new FirebaseData(date, mId, member, storagePath));
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-                //取得房間裡所有資訊
-//                mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        // get all of the children at this level.
-//                        Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-//                        // shake hands with each of them.'
-//                        for (DataSnapshot child : children) {
-//                            firebaseData = child.getValue(FirebaseData.class);
-//                            String date = firebaseData.getDate();
-//                            String mId = firebaseData.getmId();
-//                            String member = firebaseData.getMember();
-//                            String storagePath = firebaseData.getStoragePath();
-//                            list.add(new FirebaseData(date, mId, member, storagePath));
-////                    Map<String, String> item = new HashMap<>();
-////                    item.put("date", firebaseData.getDate());
-////                    item.put("mId", firebaseData.getmId());
-////                    item.put("member", firebaseData.getMember());
-////                    item.put("storagePath", firebaseData.getStoragePath());
-////                    items.add(item);
-//                        }
-//                        adapter.notifyDataSetChanged();
-//                    }
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {}
-//                });
-            }
-        });
-    }
 
 //    private void setDownloadBtn() {
 //        downloadBtn.setOnClickListener(new View.OnClickListener() {

@@ -102,15 +102,15 @@ public class ProfileAddActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        editTextName = (EditText) findViewById(R.id.editTextName);
-        editTextPhone = (EditText) findViewById(R.id.editTextPhone);
-        editTextAddress = (EditText) findViewById(R.id.editTextAddress);
-        //editTextRoom = (EditText) findViewById(R.id.editTextRoom);
-        pickBirthday = (DatePicker) findViewById(R.id.pickBirthday);
+        editTextName = findViewById(R.id.editTextName);
+        editTextPhone = findViewById(R.id.editTextPhone);
+        editTextAddress = findViewById(R.id.editTextAddress);
+        //editTextRoom = findViewById(R.id.editTextRoom);
+        pickBirthday = findViewById(R.id.pickBirthday);
 
-        btn_manageDB = (ImageButton) findViewById(R.id.btn_manageDB);
-        btn_editPhoto = (ImageButton) findViewById(R.id.btn_editPhoto);
-        ImgView_photo = (ImageView) findViewById(R.id.ImgView_photo);
+        btn_manageDB = findViewById(R.id.btn_manageDB);
+        btn_editPhoto = findViewById(R.id.btn_editPhoto);
+        ImgView_photo = findViewById(R.id.ImgView_photo);
         Drawable drawable;
         Resources res = this.getResources();
         if(isElder()){

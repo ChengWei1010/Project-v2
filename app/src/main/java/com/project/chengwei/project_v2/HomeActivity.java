@@ -45,8 +45,8 @@ public class HomeActivity extends AppCompatActivity {
     private TextView toolbar_title;
 
     private DrawerLayout drawer;
-    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
-    private ImageView profileImg;
+    private TextView textViewName,textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
+    private ImageView profileImg,ic_one;
     private ImageButton btn_editProfile;
 
     RoundImage roundedImage;
@@ -81,6 +81,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_guide_ok = findViewById(R.id.btn_guide_ok);
         help_guide = findViewById(R.id.help_guide);
         textClock = findViewById(R.id.textClock);
+        ic_one = findViewById(R.id.ic_one);
         notification_num = findViewById(R.id.notification_num);
         notification_num.setText("8");
 
@@ -150,7 +151,8 @@ public class HomeActivity extends AppCompatActivity {
                         finish();
                         break;
                     } else{
-                        Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(HomeActivity.this, NavigationPopUpActivity.class));
+                        //Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
                         break;
                     }
                 case R.id.btn_magnifier:
@@ -234,6 +236,9 @@ public class HomeActivity extends AppCompatActivity {
             dbHelper.close();
         }
     }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- Valid Address ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
     private boolean hasValidAddress(){
         dbHelper = new SQLiteDBHelper(getApplicationContext());
         cursor = dbHelper.getProfileData();
@@ -261,17 +266,21 @@ public class HomeActivity extends AppCompatActivity {
         btn_map.setClickable(false);
         btn_magnifier.setClickable(false);
         textClock.setVisibility(View.INVISIBLE);
+
         notification_num.setVisibility(View.INVISIBLE);
+        ic_one.setVisibility(View.INVISIBLE);
     }
     private void closeGuide(){
-        help_guide.setVisibility(View.GONE);
+        help_guide.setVisibility(View.INVISIBLE);
         textClock.setVisibility(View.VISIBLE);
         btn_sos.setClickable(true);
         btn_phone.setClickable(true);
         btn_video.setClickable(true);
         btn_map.setClickable(true);
         btn_magnifier.setClickable(true);
+
         notification_num.setVisibility(View.VISIBLE);
+        ic_one.setVisibility(View.VISIBLE);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//

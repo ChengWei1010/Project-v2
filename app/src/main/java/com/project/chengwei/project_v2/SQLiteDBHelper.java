@@ -96,6 +96,13 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
         return db.update(TABLE_NAME, cv, "_id=1", null);
     }
+    public long editAddrData(String address){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(FIELD_ADDRESS, address);
+
+        return db.update(TABLE_NAME, cv, "_id=1", null);
+    }
 
     //Database : cursor pointer to the table
     public Cursor getProfileData()
