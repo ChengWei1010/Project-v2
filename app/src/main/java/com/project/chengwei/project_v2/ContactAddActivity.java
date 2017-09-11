@@ -3,6 +3,7 @@ package com.project.chengwei.project_v2;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -34,6 +36,7 @@ public class ContactAddActivity extends AppCompatActivity {
     Bitmap bitmap;
     String addName, addPhone;
     private Toolbar myToolbar;
+    private TextView toolbar_title;
 
     final int REQUEST_EXTERNAL_STORAGE = 999;
     final int REQUEST_IMAGE_CAPTURE = 99;
@@ -126,13 +129,14 @@ public class ContactAddActivity extends AppCompatActivity {
     }
 
     private void findViews(){
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
-        edtName = (EditText) findViewById(R.id.name);
-        edtPhone = (EditText) findViewById(R.id.phone);
-        btnCamera = (Button) findViewById(R.id.cameraBtn);
-        btnChoose = (Button) findViewById(R.id.chooseBtn);
-        btn_add = (Button) findViewById(R.id.btn_add);
-        imageView = (ImageView) findViewById(R.id.imageView);
+        myToolbar = findViewById(R.id.toolbar_home);
+        toolbar_title = findViewById(R.id.toolbar_title);
+        edtName = findViewById(R.id.name);
+        edtPhone = findViewById(R.id.phone);
+        btnCamera = findViewById(R.id.cameraBtn);
+        btnChoose = findViewById(R.id.chooseBtn);
+        btn_add = findViewById(R.id.btn_add);
+        imageView = findViewById(R.id.imageView);
     }
 
     @Override
@@ -183,8 +187,10 @@ public class ContactAddActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     private void setToolbar(){
         setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        myToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_50dp);
+        toolbar_title.setText("新增聯絡人");
+        myToolbar.setNavigationIcon(R.drawable.ic_back_left_white_50dp);
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

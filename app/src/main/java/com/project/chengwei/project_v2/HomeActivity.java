@@ -42,6 +42,7 @@ public class HomeActivity extends AppCompatActivity {
     private FrameLayout help_guide;
     private TextClock textClock;
     private String groupNum, myName;
+    private TextView toolbar_title;
 
     private DrawerLayout drawer;
     private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
@@ -58,9 +59,9 @@ public class HomeActivity extends AppCompatActivity {
         //if (Build.VERSION.SDK_INT >= 23) {
         //}
         findViews();
+        initDB();
         setToolbar();
         setListeners();
-        initDB();
         closeDB();
     }
 
@@ -70,6 +71,7 @@ public class HomeActivity extends AppCompatActivity {
     private void findViews(){
         drawer = findViewById(R.id.drawer_layout);
         myToolbar = findViewById(R.id.toolbar_with_guide);
+        toolbar_title = findViewById(R.id.toolbar_title);
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
         btn_phone = findViewById(R.id.btn_phone);
         btn_video = findViewById(R.id.btn_video);
@@ -80,7 +82,7 @@ public class HomeActivity extends AppCompatActivity {
         help_guide = findViewById(R.id.help_guide);
         textClock = findViewById(R.id.textClock);
         notification_num = findViewById(R.id.notification_num);
-        notification_num.setText("1");
+        notification_num.setText("8");
 
     //profile drawer
         text_group_name = findViewById(R.id.text_group_name);
@@ -183,7 +185,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         setSupportActionBar(myToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar_title.setText("您好，" + myName);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_person_white);
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -207,8 +209,8 @@ public class HomeActivity extends AppCompatActivity {
         cursor.moveToPosition(0);
         groupNum = cursor.getString(cursor.getColumnIndex("room"));
         text_group_name.setText(groupNum);
-
-        textViewName.setText( cursor.getString(cursor.getColumnIndex("name")) );
+        myName = cursor.getString(cursor.getColumnIndex("name"));
+        textViewName.setText( myName );
         textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
         textViewAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
         textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
@@ -259,6 +261,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_map.setClickable(false);
         btn_magnifier.setClickable(false);
         textClock.setVisibility(View.INVISIBLE);
+        notification_num.setVisibility(View.INVISIBLE);
     }
     private void closeGuide(){
         help_guide.setVisibility(View.GONE);
@@ -268,6 +271,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_video.setClickable(true);
         btn_map.setClickable(true);
         btn_magnifier.setClickable(true);
+        notification_num.setVisibility(View.VISIBLE);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//

@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -52,6 +53,7 @@ public class VideoElderActivity extends AppCompatActivity {
     private String groupNum;
     private ImageButton showBtn,toolbar_guide;
     private Toolbar myToolbar;
+    private TextView toolbar_title;
 
     //這裡是宣告變數
     private VideoView vidView;
@@ -104,6 +106,7 @@ public class VideoElderActivity extends AppCompatActivity {
         showBtn = findViewById(R.id.showBtn);
         gridView = findViewById(R.id.gridView);
         myToolbar = findViewById(R.id.toolbar_with_guide);
+        toolbar_title = findViewById(R.id.toolbar_title);
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
     }
     //--------------------------------------------------------------------------------------------//
@@ -126,9 +129,9 @@ public class VideoElderActivity extends AppCompatActivity {
                 openGuide();
             }
         });
-
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar_title.setText("觀看今日影片");
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
 
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {

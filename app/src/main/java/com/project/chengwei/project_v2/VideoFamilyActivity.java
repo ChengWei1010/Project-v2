@@ -804,7 +804,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
             }
         });
         setSupportActionBar(myToolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        myToolbar.setTitle("觀看今日影片");
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
 
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
