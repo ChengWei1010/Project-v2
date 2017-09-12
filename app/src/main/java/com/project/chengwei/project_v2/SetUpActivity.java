@@ -58,26 +58,25 @@ public class SetUpActivity extends AppCompatActivity {
     private EditText editTextName,editTextGroupNum,editTextPhone;
     //private EditText edit_group_num1,edit_group_num2,edit_group_num3,edit_group_num4;
     private TextView instruction1,instruction2,instruction3;
-    private String strName,strRoom,strStatus;
+    private String uId,strName,strRoom,strStatus;
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
     private DatabaseReference mDBref1,mDBref2;
-    private String uuId = UUID.randomUUID().toString();
+    //private String uuId = UUID.randomUUID().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
-//        currentUser = mAuth.getCurrentUser();
-//        uId = currentUser.getUid();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
+        signIn();
         checkPermission();
         findViews();
         setUpListeners();
     }
     //--------------------------------------------------------------------------------------------//
-    //-------------------------- Version and Permission ------------------------------------------//
+    //----------------------------- Version and Permission ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     public void checkPermission() {
         int cameraPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.CAMERA);
@@ -327,11 +326,11 @@ public class SetUpActivity extends AppCompatActivity {
                     saveSQLite();
                     if (isElder()) {
                         strStatus = "e";
-                        FireBasePutData(uuId, strName, strRoom, strStatus, getMyPhoneNumber());
+                        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
                         ElderEnter();
                     } else {
                         strStatus = "f";
-                        FireBasePutData(uuId, strName, strRoom, strStatus, getMyPhoneNumber());
+                        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
                         FamilyEnter();
                     }
                 }
@@ -349,7 +348,7 @@ public class SetUpActivity extends AppCompatActivity {
                 strName = editTextName.getText().toString();
                 strRoom = editTextGroupNum.getText().toString();
                 strStatus = "f";
-                FireBaseCreateGroup(uuId, strName,strStatus);
+                FireBaseCreateGroup(uId, strName,strStatus);
                 saveSQLite();
                 //FamilyEnter();
             }
@@ -383,6 +382,7 @@ public class SetUpActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("hi", "signInAnonymously:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            uId = user.getUid();
                             //Toast.makeText(SetUpActivity.this, "login success. "+user.getUid(),Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -394,18 +394,18 @@ public class SetUpActivity extends AppCompatActivity {
                     }
                 });
     }
-    public void FireBasePutData(String uuId, String strName, String strRoom, String strStatus, String strPhone) {
+    public void FireBasePutData(String uId, String strName, String strRoom, String strStatus, String strPhone) {
         mDBref1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
         mDBref2 = FirebaseDatabase.getInstance().getReference("members");
 
         Map<String, String> userData = new HashMap<>();
-        userData.put("mId", uuId);
+        userData.put("mId", uId);
         userData.put("mName", strName);
         userData.put("mGroup", strRoom);
         userData.put("mStatus",strStatus);
-        userData.put("strPhone",strPhone);
-        mDBref1.child(uuId).setValue(userData);
-        mDBref2.child(uuId).setValue(userData);
+        userData.put("mPhone",strPhone);
+        mDBref1.child(uId).setValue(userData);
+        mDBref2.child(uId).setValue(userData);
     }
     public void FireBaseCreateGroup(String uId, String strName, String strStatus) {
         int randomGroupNum = (int)(Math.random()*9000)+1000;
@@ -472,7 +472,7 @@ public class SetUpActivity extends AppCompatActivity {
         initDB();
         Cursor cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
-        dbHelper.setProfileData(uuId ,hadsetup, strName, strRoom, getMyPhoneNumber());
+        dbHelper.setProfileData(uId ,hadsetup, strName, strRoom, getMyPhoneNumber());
         closeDB();
     }
     //Database : close database

@@ -26,6 +26,14 @@ import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
 import static java.lang.String.valueOf;
 
 public class SosActivity extends AppCompatActivity
@@ -33,8 +41,8 @@ public class SosActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-    private String phoneNo = "0929181248";
     private String sos_message = "緊急通知！";
+    private String myGroup, myPhone, phoneNo;
     private TextView locationText;
 
     private GoogleMap mMap;
@@ -43,6 +51,9 @@ public class SosActivity extends AppCompatActivity
     LocationRequest mLocationRequest;
     private double lat_gps = 0;
     private double lng_gps = 0;
+    private DatabaseReference mDatabaseRef,mDatabaseRef2;
+    private MemberData memberData;
+    private ArrayList<String> mPhoneList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +64,13 @@ public class SosActivity extends AppCompatActivity
         //TextView lng = (TextView)findViewById(R.id.lng);
         locationText = findViewById(R.id.locationText);
 
+        mPhoneList = new ArrayList<>();
+
+        getOtherFirebaseMembers();
         //sendSMS();
         //callPhone();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.sos_map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.sos_map);
         mapFragment.getMapAsync(this);
 
     }
@@ -90,7 +103,6 @@ public class SosActivity extends AppCompatActivity
     }
     @Override
     public void onConnected(Bundle bundle) {
-
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
@@ -135,45 +147,40 @@ public class SosActivity extends AppCompatActivity
     }
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
-    protected void sendSMS(){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.SEND_SMS)) {
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.SEND_SMS}, 0);
-            }
-        }
-
+    private void sendSMS(String phoneNumber, String message) {
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, null, null);
     }
-    protected void callPhone(){
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:0929181248"));
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},0);
-        }
-        else {
-            startActivity(callIntent);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 0: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage(phoneNo, null, sos_message, null, null);
-                    Toast.makeText(getApplicationContext(), "SMS sent.",
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "SMS failed, please try again.", Toast.LENGTH_LONG).show();
-                    return;
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Firebase -------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void getOtherFirebaseMembers() {
+        //取得房號
+        myGroup = getIntent().getExtras().get("myGroup").toString();
+        myPhone = getIntent().getExtras().get("myPhone").toString();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup);
+        mDatabaseRef2 = FirebaseDatabase.getInstance().getReference("groups").child(myPhone);
+        mDatabaseRef.child("members").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // get all of the children at this level.
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                // shake hands with each of them.'
+                for (DataSnapshot child : children) {
+                    memberData = child.getValue(MemberData.class);
+                    String phone = memberData.getmPhone();
+                    if(!phone.equals(myPhone) && !phone.equals("")){
+                        //Toast.makeText(getApplicationContext(), "i send to "+ memberData.getmPhone(), Toast.LENGTH_LONG).show();
+                        sendSMS(phone,sos_message);
+                    }else{
+                        //Toast.makeText(getApplicationContext(), "can not send "+ memberData.getmPhone(), Toast.LENGTH_LONG).show();
+                    }
                 }
             }
-        }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }

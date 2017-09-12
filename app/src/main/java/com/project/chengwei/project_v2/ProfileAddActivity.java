@@ -55,7 +55,7 @@ public class ProfileAddActivity extends AppCompatActivity {
     private ImageButton btn_editPhoto;
     private ImageView ImgView_photo;
     private DatabaseReference dbRef1,dbRef2;
-    private String uuId;
+    private String uuId,groupNum;
 
     final int REQUEST_EXTERNAL_STORAGE = 999;
     final int REQUEST_IMAGE_CAPTURE = 99;
@@ -243,7 +243,7 @@ public class ProfileAddActivity extends AppCompatActivity {
             dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday);
             initDB();
             closeDB();
-            FireBaseUpdateData(uuId, strName);
+            FireBaseUpdateData(uuId, strName, strPhone, groupNum);
             alertSuccess();
         }
         //可以改 room 時
@@ -316,13 +316,18 @@ public class ProfileAddActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Firebase -------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    public void FireBaseUpdateData(String uuId, String strName) {
-        //dbRef1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("members");
+    public void FireBaseUpdateData(String uId, String strName, String strPhone, String strGroup) {
+        dbRef1 = FirebaseDatabase.getInstance().getReference("groups").child(strGroup).child("members");
         dbRef2 = FirebaseDatabase.getInstance().getReference("members");
 
         try {
-            dbRef2.child(uuId).child("mName").setValue(strName);
-            //dbRef2.child(uuId).child("mGroup").setValue(strRoom);
+            dbRef1.child(uId).child("mName").setValue(strName);
+            dbRef1.child(uId).child("mGroup").setValue(strGroup);
+            dbRef1.child(uId).child("mPhone").setValue(strPhone);
+
+            dbRef2.child(uId).child("mName").setValue(strName);
+            dbRef2.child(uId).child("mGroup").setValue(strGroup);
+            dbRef2.child(uId).child("mPhone").setValue(strPhone);
          } catch (Exception e) {
              e.printStackTrace();
          }
@@ -335,12 +340,12 @@ public class ProfileAddActivity extends AppCompatActivity {
         dbHelper = new SQLiteDBHelper(getApplicationContext());
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
-        uuId = cursor.getString(cursor.getColumnIndex("uuid"));
+        uuId = cursor.getString(cursor.getColumnIndex("uid"));
         editTextName.setText( cursor.getString(cursor.getColumnIndex("name")) );
         editTextName.setSelectAllOnFocus(true);
         editTextPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
         editTextAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
-        //editTextRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
+        groupNum = cursor.getString(cursor.getColumnIndex("room"));
 
         String birthday = cursor.getString(cursor.getColumnIndex("birthday"));
         String[] parts = birthday.split("-");

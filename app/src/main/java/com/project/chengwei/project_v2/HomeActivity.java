@@ -41,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton btn_phone, btn_video, btn_map, btn_magnifier, btn_sos, btn_guide_ok,toolbar_guide;
     private FrameLayout help_guide;
     private TextClock textClock;
-    private String groupNum, myName;
+    private String myGroup, myName, myPhone;
     private TextView toolbar_title;
 
     private DrawerLayout drawer;
@@ -121,7 +121,10 @@ public class HomeActivity extends AppCompatActivity {
         btn_sos.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                SosActivity();
+                Intent intent = new Intent(getApplicationContext(),SosActivity.class);
+                intent.putExtra("myGroup",myGroup);
+                intent.putExtra("myPhone",myPhone);
+                startActivity(intent);
                 return true;
             }
         });
@@ -141,7 +144,7 @@ public class HomeActivity extends AppCompatActivity {
                 case R.id.btn_video:
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
                     Intent intent = new Intent(getApplicationContext(),VideoElderActivity.class);
-                    intent.putExtra("groupNum",groupNum);
+                    intent.putExtra("groupNum",myGroup);
                     startActivity(intent);
                     finish();
                     break;
@@ -209,11 +212,12 @@ public class HomeActivity extends AppCompatActivity {
         dbHelper = new SQLiteDBHelper(getApplicationContext());
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
-        groupNum = cursor.getString(cursor.getColumnIndex("room"));
-        text_group_name.setText(groupNum);
+        myGroup = cursor.getString(cursor.getColumnIndex("room"));
         myName = cursor.getString(cursor.getColumnIndex("name"));
+        myPhone = cursor.getString(cursor.getColumnIndex("phone"));
+        text_group_name.setText(myGroup);
         textViewName.setText( myName );
-        textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
+        textViewPhone.setText( myPhone );
         textViewAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
         textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
         textViewRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );

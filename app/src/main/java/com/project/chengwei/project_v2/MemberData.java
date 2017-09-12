@@ -9,14 +9,16 @@ public class MemberData {
     private String mId;
     private String mName;
     private String mStatus;
+    private String mPhone;
 
     private MemberData(){}
 
-    public MemberData(String mGroup, String mId, String mName, String mStatus){
+    public MemberData(String mGroup, String mId, String mName, String mStatus, String mPhone){
         this.mGroup = mGroup;
         this.mId = mId;
         this.mName = mName;
         this.mStatus = mStatus;
+        this.mPhone = mPhone;
     }
 
     public String getmGroup(){
@@ -31,5 +33,9 @@ public class MemberData {
 
     public String getmStatus(){
         return mStatus;
+    }
+
+    public String getmPhone(){
+        return mPhone;
     }
 }

@@ -22,7 +22,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     private final static int DATABASE_VERSION = 1;
     private final static String TABLE_NAME = "profile_tbl";
     private final static String FIELD_ID = "_id";
-    private final static String FIELD_UUID = "uuid";
+    private final static String FIELD_UID = "uid";
     private final static String FIELD_HADSETUP = "hadSetUp";
     private final static String FIELD_NAME = "name";
     private final static String FIELD_PHONE = "phone";
@@ -56,7 +56,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     private String sql_createTbl;{
         sql_createTbl = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 "(" + FIELD_ID + " INTEGER PRIMARY KEY autoincrement, " +
-                FIELD_UUID + " TEXT, " +
+                FIELD_UID + " TEXT, " +
                 FIELD_HADSETUP + " INTEGER, " +
                 FIELD_NAME + " TEXT, " +
                 FIELD_ROOM + " TEXT, " +
@@ -69,13 +69,13 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     byte[] ByteExample = "abc".getBytes();
 
     private String sql_firstRow;{
-        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uuid, hadSetUp, name, phone, address, birthday, room, image) VALUES (0, 0, '姓名', '未設置手機', '未設置地址', '2000-01-01', '0000','"+ByteExample+"')");}
+        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uid, hadSetUp, name, phone, address, birthday, room, image) VALUES (0, 0, '姓名', '未設置手機', '未設置地址', '2000-01-01', '0000','"+ByteExample+"')");}
 
     //Database : setProfileData to the table
     public long setProfileData(String uuid, String hadsetup, String name, String room, String phone){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(FIELD_UUID,uuid);
+        cv.put(FIELD_UID,uuid);
         cv.put(FIELD_HADSETUP, hadsetup);
         cv.put(FIELD_NAME, name);
         cv.put(FIELD_ROOM, room);
@@ -108,7 +108,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public Cursor getProfileData()
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] cols = new String[] {FIELD_UUID,FIELD_HADSETUP,FIELD_NAME, FIELD_PHONE, FIELD_ADDRESS, FIELD_BIRTHDAY,FIELD_ROOM};
+        String[] cols = new String[] {FIELD_UID,FIELD_HADSETUP,FIELD_NAME, FIELD_PHONE, FIELD_ADDRESS, FIELD_BIRTHDAY,FIELD_ROOM};
         Cursor mCursor = db.query(true,TABLE_NAME,cols, null, null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();

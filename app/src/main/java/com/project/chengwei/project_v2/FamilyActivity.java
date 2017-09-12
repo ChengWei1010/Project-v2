@@ -141,7 +141,7 @@ public class FamilyActivity extends AppCompatActivity {
         textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
         textViewRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
 
-        mId = cursor.getString(cursor.getColumnIndex("uuid"));
+        mId = cursor.getString(cursor.getColumnIndex("uid"));
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum);
     }
@@ -423,6 +423,7 @@ public class FamilyActivity extends AppCompatActivity {
                             Log.d("hi", "signInAnonymously:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             //Toast.makeText(FamilyActivity.this, "login success. " + user.getUid(), Toast.LENGTH_SHORT).show();
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("hi", "signInAnonymously:failure", task.getException());
@@ -432,6 +433,13 @@ public class FamilyActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        mAuth = FirebaseAuth.getInstance();
+        //currentUser = mAuth.getCurrentUser();
     }
 
     //--------------------------------------------------------------------------------------------//

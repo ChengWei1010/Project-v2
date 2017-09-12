@@ -50,7 +50,7 @@ public class VideoElderActivity extends AppCompatActivity {
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
-    private String groupNum;
+    private String myGroup;
     private ImageButton showBtn,toolbar_guide;
     private Toolbar myToolbar;
     private TextView toolbar_title;
@@ -77,8 +77,8 @@ public class VideoElderActivity extends AppCompatActivity {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         //取得房號
-        groupNum = getIntent().getExtras().get("groupNum").toString();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum);
+        myGroup = getIntent().getExtras().get("myGroup").toString();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup);
 
 //        mStorage = FirebaseStorage.getInstance();
 //        mStorageRef = mStorage.getReference();
