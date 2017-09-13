@@ -92,6 +92,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private File mVideoFolder;
     private String mVideoFileName;
     private boolean mIsRecording = false;
+    private String TAG ="C2VI";
     private static final int REQUEST_CAMERA_PERMISSION_RESULT = 0;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT = 1;
     private TextureView mTextureView;
@@ -191,7 +192,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(mIsRecording){
-                    mCameraCaptureSession.close();
+                    mRecordCaptureSession.close();
                     mChronometer.stop();
                     mChronometer.setVisibility(View.INVISIBLE);
                     mIsRecording = false;
@@ -337,7 +338,14 @@ public class VideoFamilyActivity extends AppCompatActivity {
 
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface), new CameraCaptureSession.StateCallback() {
                 @Override
+                public void onClosed(@NonNull CameraCaptureSession session) {
+                    super.onClosed(session);
+                    Log.d(TAG,"Stop Preview");
+                }
+
+                @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                    Log.d(TAG,"Start Preview!");
                     try {
                         cameraCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(),
                                 null,mBackgroundHandler);
@@ -515,14 +523,15 @@ public class VideoFamilyActivity extends AppCompatActivity {
                 if(i == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED){
                     Toast.makeText(getApplicationContext(),"已達到最長錄製時間",Toast.LENGTH_SHORT).show();
                     if(mMediaRecorder!=null){
+                        mRecordCaptureSession.close();
                         mChronometer.stop();
                         mChronometer.setVisibility(View.INVISIBLE);
                         mIsRecording = false;
                         mRecordImageButton.setImageResource(R.mipmap.video_off );
                         mMediaRecorder.stop();
                         mMediaRecorder.reset();
-                        mMediaRecorder = new MediaRecorder();
-                        startPreview();
+                        //mMediaRecorder = new MediaRecorder();
+                        //startPreview();
                     }
                 }
             }
@@ -554,6 +563,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                            Log.d(TAG,"Start Record!");
                             mRecordCaptureSession = cameraCaptureSession;
                             try {
                                 mRecordCaptureSession.setRepeatingRequest(
@@ -571,6 +581,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
                         @Override
                         public void onClosed(@NonNull CameraCaptureSession session) {
                             super.onClosed(session);
+                            Log.d(TAG,"Stop Record!");
                             startPreview();
                         }
                     },null);
