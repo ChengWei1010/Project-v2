@@ -163,6 +163,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private Chronometer mChronometer;
     private int mTotalRotation;
 
+    private CameraCaptureSession mRecordCaptureSession;
     private CaptureRequest.Builder mCaptureRequestBuilder;
     private static SparseIntArray ORIENTAIONS = new SparseIntArray();
     static{
@@ -190,13 +191,14 @@ public class VideoFamilyActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(mIsRecording){
+                    mCameraCaptureSession.close();
                     mChronometer.stop();
                     mChronometer.setVisibility(View.INVISIBLE);
                     mIsRecording = false;
                     mRecordImageButton.setImageResource(R.mipmap.video_off );
                     mMediaRecorder.stop();
                     mMediaRecorder.reset();
-                    startPreview();
+                    //startPreview();
                 }else{
                     Log.d("start_check_permission","Start check permission");
                     checkWriteStoragePermission();
@@ -504,6 +506,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private void setupMediaRecorder()throws IOException{
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+
         mMediaRecorder.setMaxDuration(5000); //500ms 先設定五秒
         //設定時間到要做什麼
         mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
@@ -551,8 +554,9 @@ public class VideoFamilyActivity extends AppCompatActivity {
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                            mRecordCaptureSession = cameraCaptureSession;
                             try {
-                                cameraCaptureSession.setRepeatingRequest(
+                                mRecordCaptureSession.setRepeatingRequest(
                                         mCaptureRequestBuilder.build(),null,null
                                 );
                             } catch (CameraAccessException e) {
@@ -562,6 +566,12 @@ public class VideoFamilyActivity extends AppCompatActivity {
 
                         @Override
                         public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+                        }
+
+                        @Override
+                        public void onClosed(@NonNull CameraCaptureSession session) {
+                            super.onClosed(session);
+                            startPreview();
                         }
                     },null);
         } catch (Exception e) {
