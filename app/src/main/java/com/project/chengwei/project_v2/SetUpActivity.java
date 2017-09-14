@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,23 +54,25 @@ public class SetUpActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSION = 10;
 
     private ImageButton btn_elder, btn_family;
-    private Button btn_start,btn_create,btn_back;
-    private FrameLayout guide_room,guide_create_room;
+
+    private Button btn_start,btn_create,btn_back,btn_next;
+    private ImageView r1, r2, r3;
+
+    private FrameLayout step1,step2,step3;
     private EditText editTextName,editTextGroupNum,editTextPhone;
     //private EditText edit_group_num1,edit_group_num2,edit_group_num3,edit_group_num4;
-    private TextView instruction1,instruction2,instruction3;
     private String uId,strName,strRoom,strStatus;
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
     private DatabaseReference mDBref1,mDBref2;
-    //private String uuId = UUID.randomUUID().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
+
         signIn();
         checkPermission();
         findViews();
@@ -265,26 +268,25 @@ public class SetUpActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        guide_room = findViewById(R.id.guide_room);
-        guide_create_room = findViewById(R.id.guide_create_room);
-        instruction1 = findViewById(R.id.instruction1);
-        instruction2 = findViewById(R.id.instruction2);
-        instruction3 = findViewById(R.id.instruction3);
+        btn_next = findViewById(R.id.btn_next);
+        r1 = findViewById(R.id.r1);
+        r2 = findViewById(R.id.r2);
+        r3 = findViewById(R.id.r3);
         //editTextRoom = (EditText) findViewById(R.id.edit_group_num);
         editTextName = findViewById(R.id.edit_name);
-        editTextGroupNum  = findViewById(R.id.editTextGroupNum);
+        step1 = findViewById(R.id.step1);
+        step2 = findViewById(R.id.step2);
+        //step3 = findViewById(R.id.step3);
 
-        editTextName.setSelectAllOnFocus(true);
-        editTextGroupNum.setSelectAllOnFocus(true);
+//        editTextGroupNum  = findViewById(R.id.editTextGroupNum);
+//
+//        editTextName.setSelectAllOnFocus(true);
+//        editTextGroupNum.setSelectAllOnFocus(true);
         btn_elder = findViewById(R.id.btn_elder);
         btn_family = findViewById(R.id.btn_family);
-        btn_start = findViewById(R.id.btn_start);
-        btn_create = findViewById(R.id.btn_create);
-        btn_back = findViewById(R.id.btn_back);
-//        edit_group_num1  = (EditText) findViewById(R.id.edit_group_num1);
-//        edit_group_num2  = (EditText) findViewById(R.id.edit_group_num2);
-//        edit_group_num3  = (EditText) findViewById(R.id.edit_group_num3);
-//        edit_group_num4  = (EditText) findViewById(R.id.edit_group_num4);
+//        btn_start = findViewById(R.id.btn_start);
+//        btn_create = findViewById(R.id.btn_create);
+//        btn_back = findViewById(R.id.btn_back);
     }
     //--------------------------------------------------------------------------------------------//
     //----------------------------------- Onclick Listeners --------------------------------------//
@@ -295,8 +297,7 @@ public class SetUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, true).commit();
                 if(hasName()) {
-                    signIn();
-                    showSelectRoom();
+                    btn_next.setBackgroundResource(R.drawable.next);
                 }
             }
         });
@@ -305,54 +306,49 @@ public class SetUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, false).commit();
                 if(hasName()) {
-                    signIn();
-                    showSelectRoom();
-                    showCreateRoom();
+                    btn_next.setBackgroundResource(R.drawable.next);
                 }
             }
         });
-        btn_start.setOnClickListener(new View.OnClickListener() {
+        btn_elder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                strName = editTextName.getText().toString();
-                strRoom = editTextGroupNum.getText().toString();
-//                String num1 = edit_group_num1.getText().toString();
-//                String num2 = edit_group_num2.getText().toString();
-//                String num3 = edit_group_num3.getText().toString();
-//                String num4 = edit_group_num4.getText().toString();
-//                strRoom = num1 + num2 + num3 +num4;
+                //if() {
+                    showStep2();
+                //}
+            }
+        });
+//        btn_start.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                strName = editTextName.getText().toString();
+//                strRoom = editTextGroupNum.getText().toString();
 
-                if(hasName()==true && isValidRoomNum(strRoom)==true) {
-                    saveSQLite();
-                    if (isElder()) {
-                        strStatus = "e";
-                        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
-                        ElderEnter();
-                    } else {
-                        strStatus = "f";
-                        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
-                        FamilyEnter();
-                    }
-                }
-            }
-        });
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideSelectRoom();
-            }
-        });
-        btn_create.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                strName = editTextName.getText().toString();
-                strRoom = editTextGroupNum.getText().toString();
-                strStatus = "f";
-                FireBaseCreateGroup(uId, strName,strStatus);
-                saveSQLite();
-                //FamilyEnter();
-            }
-        });
+//                if(hasName()==true && isValidRoomNum(strRoom)==true) {
+//                    saveSQLite();
+//                    if (isElder()) {
+//                        strStatus = "e";
+//                        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
+//                        ElderEnter();
+//                    } else {
+//                        strStatus = "f";
+//                        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
+//                        FamilyEnter();
+//                    }
+//                }
+//            }
+//        });
+//        btn_create.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                strName = editTextName.getText().toString();
+//                strRoom = editTextGroupNum.getText().toString();
+//                strStatus = "f";
+//                FireBaseCreateGroup(uId, strName,strStatus);
+//                saveSQLite();
+//                //FamilyEnter();
+//            }
+//        });
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//
@@ -425,39 +421,51 @@ public class SetUpActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- show UI --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    public void showSelectRoom(){
-        btn_back.setVisibility(FrameLayout.VISIBLE);
-        instruction1.setVisibility(FrameLayout.INVISIBLE);
-        editTextName.setVisibility(FrameLayout.INVISIBLE);
-        guide_room.setVisibility(FrameLayout.VISIBLE);
-        btn_elder.setClickable(false);
-        btn_family.setClickable(false);
-        guideAnimation();
+    private void showStep2(){
+        step1.setVisibility(FrameLayout.INVISIBLE);
+        step2.setVisibility(FrameLayout.INVISIBLE);
+        r1.setBackgroundResource(R.drawable.r01);
+        r2.setBackgroundResource(R.drawable.r2);
+        r3.setBackgroundResource(R.drawable.r03);
     }
-    public void showCreateRoom(){
-        btn_back.setVisibility(FrameLayout.VISIBLE);
-        guide_create_room.setVisibility(FrameLayout.VISIBLE);
-        guideAnimation();
+    private void showStep3(){
+        step2.setVisibility(FrameLayout.INVISIBLE);
+        step3.setVisibility(FrameLayout.INVISIBLE);
+        r1.setBackgroundResource(R.drawable.r01);
+        r2.setBackgroundResource(R.drawable.r02);
+        r3.setBackgroundResource(R.drawable.r3);
     }
-    public void hideSelectRoom(){
-        btn_back.setVisibility(FrameLayout.INVISIBLE);
-        instruction1.setVisibility(FrameLayout.VISIBLE);
-        editTextName.setVisibility(FrameLayout.VISIBLE);
-        guide_room.setVisibility(FrameLayout.INVISIBLE);
-        guide_create_room.setVisibility(FrameLayout.INVISIBLE);
-        btn_elder.setClickable(true);
-        btn_family.setClickable(true);
-    }
-    public void ElderEnter(){
-        Intent intent = new Intent();
-        intent.setClass(SetUpActivity.this , HomeActivity.class);
-        startActivity(intent);
-        finish();
-    }
-    public void FamilyEnter(){
-        startActivity(new Intent(SetUpActivity.this, FamilyActivity.class));
-        finish();
-    }
+//    public void showSelectRoom(){
+//        btn_back.setVisibility(FrameLayout.VISIBLE);
+//        //instruction1.setVisibility(FrameLayout.INVISIBLE);
+//        editTextName.setVisibility(FrameLayout.INVISIBLE);
+//        guide_room.setVisibility(FrameLayout.VISIBLE);
+//        btn_elder.setClickable(false);
+//        btn_family.setClickable(false);
+//    }
+//    public void showCreateRoom(){
+//        btn_back.setVisibility(FrameLayout.VISIBLE);
+//        guide_create_room.setVisibility(FrameLayout.VISIBLE);
+//    }
+//    public void hideSelectRoom(){
+//        btn_back.setVisibility(FrameLayout.INVISIBLE);
+//        //instruction1.setVisibility(FrameLayout.VISIBLE);
+//        editTextName.setVisibility(FrameLayout.VISIBLE);
+//        guide_room.setVisibility(FrameLayout.INVISIBLE);
+//        guide_create_room.setVisibility(FrameLayout.INVISIBLE);
+//        btn_elder.setClickable(true);
+//        btn_family.setClickable(true);
+//    }
+//    public void ElderEnter(){
+//        Intent intent = new Intent();
+//        intent.setClass(SetUpActivity.this , HomeActivity.class);
+//        startActivity(intent);
+//        finish();
+//    }
+//    public void FamilyEnter(){
+//        startActivity(new Intent(SetUpActivity.this, FamilyActivity.class));
+//        finish();
+//    }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- SQLiteDB -------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -513,47 +521,6 @@ public class SetUpActivity extends AppCompatActivity {
 //                finish();
 //            }
 //        }, 2 * 1000);
-    }
-    //--------------------------------------------------------------------------------------------//
-    //------------------------------ setAnimationListener ----------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    private void guideAnimation() {
-        //AlphaAnimation(float fromAlpha, float toAlpha)
-        //fromAlpha 起始透明度(Alpha)值
-        //toAlpha 最後透明度(Alpha)值
-        // 1.0f~0.0f
-        //Animation am = new AlphaAnimation(1.0f, 0.0f);
-        //setDuration (long durationMillis) 設定動畫開始到結束的執行時間
-        //am.setDuration(2000);
-        //setRepeatCount (int repeatCount) 設定重複次數 -1為無限次數 0
-        //am.setRepeatCount(-1);
-        //將動畫參數設定到圖片並開始執行動畫
-        //btn_start.startAnimation(am);
-
-//        final TranslateAnimation run = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0f,
-//                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0f);
-//        run.setDuration(2000);
-
-
-//        btn_start.startAnimation(run);
-//        run.setAnimationListener(new Animation.AnimationListener() {
-//            @Override
-//            public void onAnimationStart(Animation arg0) {
-//                // TODO Auto-generated method stub
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animation arg0) {
-//                // TODO Auto-generated method stub
-//
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animation arg0) {
-//                // TODO Auto-generated method stub
-//                run.setFillAfter(true);
-//            }
-//        });
     }
 }
 
