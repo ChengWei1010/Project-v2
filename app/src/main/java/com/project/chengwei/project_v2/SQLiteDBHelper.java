@@ -119,7 +119,13 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     //-------------------------------------------------------------------------------------//
     //---------------------------------About Profile Photo---------------------------------//
     //-------------------------------------------------------------------------------------//
-
+    public void setProfileImg(String name,String image){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new  ContentValues();
+        cv.put(IMAGE, image);
+        cv.put(FIELD_NAME, name);
+        db.update(TABLE_NAME, cv, "_id=1", null);
+    }
     // Database : insertImage
     public void addImageByte( byte[] imageBytes) throws SQLiteException {
         SQLiteDatabase db = this.getWritableDatabase();
