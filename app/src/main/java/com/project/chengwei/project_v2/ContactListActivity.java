@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class ContactListActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     private Toolbar myToolbar;
     private ImageButton toolbar_add_contact, toolbar_btn_guide;
+    private TextView toolbar_title;
     GridView gridView;
     ArrayList<Contact> list;
     ContactListAdapter adapter = null;
@@ -92,10 +94,11 @@ public class ContactListActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_contact);
-        toolbar_add_contact = (ImageButton)findViewById(R.id.toolbar_add_contact);
-        toolbar_btn_guide = (ImageButton)findViewById(R.id.toolbar_btn_guide);
-        gridView = (GridView) findViewById(R.id.gridView);
+        myToolbar = findViewById(R.id.toolbar_contact);
+        toolbar_title = findViewById(R.id.toolbar_title);
+        toolbar_add_contact = findViewById(R.id.toolbar_add_contact);
+        toolbar_btn_guide = findViewById(R.id.toolbar_btn_guide);
+        gridView = findViewById(R.id.gridView);
     }
     //--------------------------------------------------------------------------------------------//
     //-------------------------------------- setListeners ----------------------------------------//
@@ -130,6 +133,7 @@ public class ContactListActivity extends AppCompatActivity {
 
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar_title.setText("電話簿");
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

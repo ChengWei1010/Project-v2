@@ -62,7 +62,7 @@ public class MemberListAdapter extends BaseAdapter {
             holder = (ViewHolder) row.getTag();
         }
 
-        holder.txtMember.setText("成員: " + memberList.get(position));
+        holder.txtMember.setText(memberList.get(position));
         holder.imgMember.setImageResource(R.drawable.ic_elder);
 
         return row;

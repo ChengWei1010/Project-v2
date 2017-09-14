@@ -225,6 +225,7 @@ public class FamilyActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     public void listMember(){
         memberList = new ArrayList<>();
+        memberList.clear();
         mDatabaseRef.child("members").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -84,7 +84,10 @@
 
         <receiver android:name=".PeriodiclyUpload" />
 
-        <activity android:name=".GroupMemberActivity"></activity>
+        <activity
+            android:name=".VideoPopUpActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopUpTheme"></activity>
     </application>
 
 </manifest>

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -40,11 +42,15 @@ public class HomeActivity extends AppCompatActivity {
     private FrameLayout help_guide;
     private TextClock textClock;
     private String groupNum, myName;
+    private TextView toolbar_title;
 
     private DrawerLayout drawer;
-    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name;
+    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
     private ImageView profileImg;
     private ImageButton btn_editProfile;
+
+    RoundImage roundedImage;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +59,9 @@ public class HomeActivity extends AppCompatActivity {
         //if (Build.VERSION.SDK_INT >= 23) {
         //}
         findViews();
+        initDB();
         setToolbar();
         setListeners();
-        initDB();
         closeDB();
     }
 
@@ -65,6 +71,7 @@ public class HomeActivity extends AppCompatActivity {
     private void findViews(){
         drawer = findViewById(R.id.drawer_layout);
         myToolbar = findViewById(R.id.toolbar_with_guide);
+        toolbar_title = findViewById(R.id.toolbar_title);
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
         btn_phone = findViewById(R.id.btn_phone);
         btn_video = findViewById(R.id.btn_video);
@@ -74,6 +81,8 @@ public class HomeActivity extends AppCompatActivity {
         btn_guide_ok = findViewById(R.id.btn_guide_ok);
         help_guide = findViewById(R.id.help_guide);
         textClock = findViewById(R.id.textClock);
+        notification_num = findViewById(R.id.notification_num);
+        notification_num.setText("8");
 
     //profile drawer
         text_group_name = findViewById(R.id.text_group_name);
@@ -84,6 +93,8 @@ public class HomeActivity extends AppCompatActivity {
         textViewRoom = findViewById(R.id.textViewRoom);
         profileImg = findViewById(R.id.profileImg);
         btn_editProfile = findViewById(R.id.btn_editProfile);
+
+
         Drawable drawable;
         Resources res = this.getResources();
         if(isElder()){
@@ -143,10 +154,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     }
                 case R.id.btn_magnifier:
-                    Intent intent1 = new Intent(getApplicationContext(),GroupMemberActivity.class);
-                    intent1.putExtra("groupNum",groupNum);
-                    startActivity(intent1);
-                    finish();
+                    Toast.makeText(HomeActivity.this, "mag !", Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.btn_guide_ok:
                     closeGuide();
@@ -176,7 +184,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         setSupportActionBar(myToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar_title.setText("您好，" + myName);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_person_white);
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -200,8 +208,8 @@ public class HomeActivity extends AppCompatActivity {
         cursor.moveToPosition(0);
         groupNum = cursor.getString(cursor.getColumnIndex("room"));
         text_group_name.setText(groupNum);
-
-        textViewName.setText( cursor.getString(cursor.getColumnIndex("name")) );
+        myName = cursor.getString(cursor.getColumnIndex("name"));
+        textViewName.setText( myName );
         textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
         textViewAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
         textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
@@ -214,6 +222,12 @@ public class HomeActivity extends AppCompatActivity {
             dbHelper.close();
             // Show Image from DB in ImageView
             profileImg.setImageBitmap(Utils.getImage(bytes));
+
+//            BitmapDrawable drawable = (BitmapDrawable) profileImg.getDrawable();
+//            bitmap = drawable.getBitmap();
+//            roundedImage = new RoundImage(bitmap);
+//            profileImg.setImageDrawable(roundedImage);
+
         } catch (Exception e) {
             //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
             dbHelper.close();
@@ -246,6 +260,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_map.setClickable(false);
         btn_magnifier.setClickable(false);
         textClock.setVisibility(View.INVISIBLE);
+        notification_num.setVisibility(View.INVISIBLE);
     }
     private void closeGuide(){
         help_guide.setVisibility(View.GONE);
@@ -255,6 +270,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_video.setClickable(true);
         btn_map.setClickable(true);
         btn_magnifier.setClickable(true);
+        notification_num.setVisibility(View.VISIBLE);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//

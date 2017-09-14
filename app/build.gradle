@@ -43,8 +43,11 @@ dependencies {
     compile 'com.google.firebase:firebase-storage:11.0.4'
     compile 'com.airbnb.android:lottie:1.0.1'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.+'
+    compile 'com.android.support:support-v4:26.+'
     testCompile 'junit:junit:4.12'
 }
+
+
 
 
 

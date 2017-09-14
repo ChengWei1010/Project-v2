@@ -30,7 +30,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="85dp"
-        android:ems="20"
+        android:ems="30"
         android:hint="姓名"
         android:inputType="text"
         android:gravity="center"

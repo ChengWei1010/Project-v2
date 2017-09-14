@@ -132,7 +132,7 @@ public class PeriodiclyUpload extends BroadcastReceiver{
 
     //上傳完畢
     public void uploadDone(Context context){
-        Intent repeating_intent = new Intent(context, HomeActivity.class);
+        Intent repeating_intent = new Intent(context, FamilyActivity.class);
         repeating_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(context,100,repeating_intent,PendingIntent.FLAG_UPDATE_CURRENT);
 

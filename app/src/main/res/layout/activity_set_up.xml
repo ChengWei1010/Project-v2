@@ -201,7 +201,7 @@
         android:id="@+id/btn_back"
         android:layout_width="60dp"
         android:layout_height="50dp"
-        android:background="@drawable/ic_arrow_back_pink_50dp"
+        android:background="@drawable/ic_back_left_white_50dp"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="4dp"
         android:layout_marginStart="4dp"

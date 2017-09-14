@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ElderlyFun</string>
+    <string name="app_name">FAMIFILM</string>
     <string name="toolbar_name"> </string>
     <string name="name">name</string>
     <string name="phone">phone</string>
@@ -16,5 +16,9 @@
     <string name="dialog_message" />
     <string name="drawer_open">1</string>
     <string name="drawer_close">0</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

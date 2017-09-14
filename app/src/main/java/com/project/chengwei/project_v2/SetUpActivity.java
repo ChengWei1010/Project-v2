@@ -29,8 +29,11 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,12 +65,14 @@ public class SetUpActivity extends AppCompatActivity {
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
-    private DatabaseReference mDBref1,mDBref2;
+    private DatabaseReference mDBref1,mDBref2,mDatabaseRef;
     private String uuId = UUID.randomUUID().toString();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups");
 //        currentUser = mAuth.getCurrentUser();
 //        uId = currentUser.getUid();
         super.onCreate(savedInstanceState);
@@ -296,7 +301,7 @@ public class SetUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, true).commit();
-                if(hasName()==true) {
+                if(hasName()) {
                     signIn();
                     showSelectRoom();
                 }
@@ -306,7 +311,7 @@ public class SetUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, false).commit();
-                if(hasName()==true) {
+                if(hasName()) {
                     signIn();
                     showSelectRoom();
                     showCreateRoom();
@@ -324,17 +329,8 @@ public class SetUpActivity extends AppCompatActivity {
 //                String num4 = edit_group_num4.getText().toString();
 //                strRoom = num1 + num2 + num3 +num4;
 
-                if(hasName()==true && isValidRoomNum(strRoom)==true) {
-                    saveSQLite();
-                    if (isElder()) {
-                        strStatus = "e";
-                        FireBasePutData(uuId, strName, strRoom, strStatus, getMyPhoneNumber());
-                        ElderEnter();
-                    } else {
-                        strStatus = "f";
-                        FireBasePutData(uuId, strName, strRoom, strStatus, getMyPhoneNumber());
-                        FamilyEnter();
-                    }
+                if(hasName()==true) {
+                    isValidRoomNum(strRoom);
                 }
             }
         });
@@ -352,7 +348,7 @@ public class SetUpActivity extends AppCompatActivity {
                 strStatus = "f";
                 FireBaseCreateGroup(uuId, strName,strStatus);
                 saveSQLite();
-                FamilyEnter();
+                //FamilyEnter();
             }
         });
     }
@@ -384,8 +380,7 @@ public class SetUpActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("hi", "signInAnonymously:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(SetUpActivity.this, "login success. "+user.getUid(),
-                                    Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(SetUpActivity.this, "login success. "+user.getUid(),Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("hi", "signInAnonymously:failure", task.getException());
@@ -413,8 +408,10 @@ public class SetUpActivity extends AppCompatActivity {
         int randomGroupNum = (int)(Math.random()*9000)+1000;
         String createRoom = Integer.toString(randomGroupNum);
         strRoom = createRoom;
+
         FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
         Toast.makeText(SetUpActivity.this, "create room: " + createRoom, Toast.LENGTH_SHORT).show();
+        editTextGroupNum.setText(strRoom);
     }
     @Override
     public void onStart() {
@@ -424,7 +421,7 @@ public class SetUpActivity extends AppCompatActivity {
         //currentUser = mAuth.getCurrentUser();
     }
     //--------------------------------------------------------------------------------------------//
-    //------------------------------------------- show UI ----------------------------------------//
+    //--------------------------------------- show UI --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     public void showSelectRoom(){
         btn_back.setVisibility(FrameLayout.VISIBLE);
@@ -484,18 +481,39 @@ public class SetUpActivity extends AppCompatActivity {
     //--------------------------------------- check valid ----------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private boolean hasName(){
-        if(editTextName==null){
+        strName = editTextName.getText().toString();
+        if(strName.isEmpty()){
             showMessage("請輸入姓名！");
             return false;
+        }else{
+            return true;
         }
-        return true;
     }
-    private boolean isValidRoomNum(String editTextRoom){
-        if(editTextRoom.length()!=4){
-            showMessage("請出入正確的群組號碼");
-            return false;
-        }
-        return true;
+    private void isValidRoomNum(final String editTextRoom){
+        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(editTextRoom)){
+                    Toast.makeText(SetUpActivity.this,"可加入此房間",Toast.LENGTH_SHORT).show();
+
+                    saveSQLite();
+                    if (isElder()) {
+                        strStatus = "e";
+                        FireBasePutData(uuId, strName, strRoom, strStatus, getMyPhoneNumber());
+                        ElderEnter();
+                    } else {
+                        strStatus = "f";
+                        FireBasePutData(uuId, strName, strRoom, strStatus, getMyPhoneNumber());
+
+                        FamilyEnter();
+                    }
+                }else{
+                    Toast.makeText(SetUpActivity.this,"房號錯誤，請重新輸入",Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
     // Show simple message using SnackBar
     private void showMessage(String message) {
@@ -504,13 +522,14 @@ public class SetUpActivity extends AppCompatActivity {
     }
     public void alertSetPhone() {
         Toast.makeText(SetUpActivity.this, "請插入SIM卡，並稍後設定手機號碼", Toast.LENGTH_SHORT).show();
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 2 * 1000);
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//
+//                finish();
+//            }
+//        }, 2 * 1000);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------ setAnimationListener ----------------------------------------//
