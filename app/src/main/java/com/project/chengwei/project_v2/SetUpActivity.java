@@ -35,12 +35,16 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -79,12 +83,11 @@ public class SetUpActivity extends AppCompatActivity {
     ByteArrayOutputStream bytearrayoutputstream;
 
     private FrameLayout step1,step2,step3;
-    private EditText editTextName,editTextGroupNum,editTextPhone;
-    private String uId,strName,strRoom,strStatus;
+    private EditText editTextName,editTextGroupNum,editTextPhone,editTextGroupPwd;
+    private String uId,strName,strRoom,strStatus,strPwd,correctPwd="0";
 
-    private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
-    private DatabaseReference mDBref1,mDBref2;
+    private DatabaseReference mDBref1,mDBref2,mDatabaseRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -301,11 +304,12 @@ public class SetUpActivity extends AppCompatActivity {
         btnCamera = findViewById(R.id.cameraBtn);
         btnChoose = findViewById(R.id.chooseBtn);
         btn_create = findViewById(R.id.btn_create);
-        editTextGroupNum  = findViewById(R.id.editTextGroupNum);
-//        editTextName.setSelectAllOnFocus(true);
-//        editTextGroupNum.setSelectAllOnFocus(true);
+        editTextGroupNum = findViewById(R.id.editTextGroupNum);
+        editTextGroupPwd = findViewById(R.id.editTextGroupPwd);
         btn_elder = findViewById(R.id.btn_elder);
         btn_family = findViewById(R.id.btn_family);
+        //        editTextName.setSelectAllOnFocus(true);
+        //        editTextGroupNum.setSelectAllOnFocus(true);
     }
     //--------------------------------------------------------------------------------------------//
     //----------------------------------- Onclick Listeners --------------------------------------//
@@ -318,7 +322,7 @@ public class SetUpActivity extends AppCompatActivity {
                 btn_family.setBackgroundResource(R.drawable.btn_family0);
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, true).commit();
                 if(hasName()) {
-                    showMessage("e");
+                    //showMessage("e");
                     strStatus = "e";
                     btn_next.setBackgroundResource(R.drawable.next);
                 }
@@ -331,7 +335,7 @@ public class SetUpActivity extends AppCompatActivity {
                 btn_elder.setBackgroundResource(R.drawable.btn_elder0);
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, false).commit();
                 if(hasName()) {
-                    showMessage("f");
+                    //showMessage("f");
                     strStatus = "f";
                     btn_next.setBackgroundResource(R.drawable.next);
                 }
@@ -382,36 +386,14 @@ public class SetUpActivity extends AppCompatActivity {
 
             }
         });
-//        btn_start.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                strName = editTextName.getText().toString();
-//                strRoom = editTextGroupNum.getText().toString();
-
-//                if(hasName()==true && isValidRoomNum(strRoom)==true) {
-//                    saveSQLite();
-//                    if (isElder()) {
-//                        strStatus = "e";
-//                        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
-//                        ElderEnter();
-//                    } else {
-//                        strStatus = "f";
-//                        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
-//                        FamilyEnter();
-//                    }
-//                }
-//            }
-//        });
         btn_create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    showMessage("create");
-//                strName = editTextName.getText().toString();
-//                strRoom = editTextGroupNum.getText().toString();
-//                strStatus = "f";
-//                FireBaseCreateGroup(uId, strName,strStatus);
-//                saveSQLite();
-                //FamilyEnter();
+                    //showMessage("create");
+                strName = editTextName.getText().toString();
+                strRoom = editTextGroupNum.getText().toString();
+                strStatus = "f";
+                FireBaseCreateGroup();
             }
         });
     }
@@ -461,13 +443,23 @@ public class SetUpActivity extends AppCompatActivity {
         mDBref1.child(uId).setValue(userData);
         mDBref2.child(uId).setValue(userData);
     }
-    public void FireBaseCreateGroup(String uId, String strName, String strStatus) {
+    public void FireBaseCreateGroup() {
         int randomGroupNum = (int)(Math.random()*9000)+1000;
-        String createRoom = Integer.toString(randomGroupNum);
-        strRoom = createRoom;
-        FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber());
-        Toast.makeText(SetUpActivity.this, "create room: " + createRoom, Toast.LENGTH_SHORT).show();
+        strRoom = Integer.toString(randomGroupNum);
+
+        int randomGroupPwd = (int)(Math.random()*9000)+1000;
+        strPwd = Integer.toString(randomGroupPwd);
+
+        mDBref1 = FirebaseDatabase.getInstance().getReference("groups").child(strRoom);
+        Map<String, String> roomPwd = new HashMap<>();
+        roomPwd.put("pwd", strPwd);
+        mDBref1.setValue(roomPwd);
+
+        Toast.makeText(SetUpActivity.this, "create room: " + strRoom, Toast.LENGTH_SHORT).show();
         editTextGroupNum.setText(strRoom);
+        editTextGroupNum.setEnabled(false);
+        editTextGroupPwd.setText(strPwd);
+        editTextGroupPwd.setEnabled(false);
     }
     @Override
     public void onStart() {
@@ -513,6 +505,27 @@ public class SetUpActivity extends AppCompatActivity {
             finish();
         }
     }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- SQLiteDB -------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void initDB(){
+        dbHelper = new SQLiteDBHelper(getApplicationContext());
+    }
+    public void saveSQLite() {
+        String hadsetup = "1";
+
+        initDB();
+        Cursor cursor = dbHelper.getProfileData();
+        cursor.moveToPosition(0);
+        dbHelper.setProfileData(uId ,hadsetup, strName, strRoom, getMyPhoneNumber());
+        closeDB();
+    }
+    private void closeDB(){
+        dbHelper.close();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- save photo -----------------------------------------//
+    //--------------------------------------------------------------------------------------------//
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //選擇相簿裡的照片
@@ -537,7 +550,6 @@ public class SetUpActivity extends AppCompatActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
     private void cropImage() {
         try{
             cropIntent = new Intent("com.android.camera.action.CROP");
@@ -555,87 +567,6 @@ public class SetUpActivity extends AppCompatActivity {
             startActivityForResult(cropIntent,REQUEST_CROP_IMAGE);
         }
         catch (ActivityNotFoundException ex){
-        }
-    }
-
-//    public void showSelectRoom(){
-//        btn_back.setVisibility(FrameLayout.VISIBLE);
-//        //instruction1.setVisibility(FrameLayout.INVISIBLE);
-//        editTextName.setVisibility(FrameLayout.INVISIBLE);
-//        guide_room.setVisibility(FrameLayout.VISIBLE);
-//        btn_elder.setClickable(false);
-//        btn_family.setClickable(false);
-//    }
-//    public void showCreateRoom(){
-//        btn_back.setVisibility(FrameLayout.VISIBLE);
-//        guide_create_room.setVisibility(FrameLayout.VISIBLE);
-//    }
-//    public void hideSelectRoom(){
-//        btn_back.setVisibility(FrameLayout.INVISIBLE);
-//        //instruction1.setVisibility(FrameLayout.VISIBLE);
-//        editTextName.setVisibility(FrameLayout.VISIBLE);
-//        guide_room.setVisibility(FrameLayout.INVISIBLE);
-//        guide_create_room.setVisibility(FrameLayout.INVISIBLE);
-//        btn_elder.setClickable(true);
-//        btn_family.setClickable(true);
-//    }
-//    public void ElderEnter(){
-//        Intent intent = new Intent();
-//        intent.setClass(SetUpActivity.this , HomeActivity.class);
-//        startActivity(intent);
-//        finish();
-//    }
-//    public void FamilyEnter(){
-//        startActivity(new Intent(SetUpActivity.this, FamilyActivity.class));
-//        finish();
-//    }
-    //--------------------------------------------------------------------------------------------//
-    //--------------------------------------- SQLiteDB -------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    //Database : initial database
-    private void initDB(){
-        dbHelper = new SQLiteDBHelper(getApplicationContext());
-    }
-    //Database : save the change to database
-    public void saveSQLite() {
-        String hadsetup = "1";
-
-        initDB();
-        Cursor cursor = dbHelper.getProfileData();
-        cursor.moveToPosition(0);
-        dbHelper.setProfileData(uId ,hadsetup, strName, strRoom, getMyPhoneNumber());
-        closeDB();
-    }
-    //Database : close database
-    private void closeDB(){
-        dbHelper.close();
-    }
-    //--------------------------------------------------------------------------------------------//
-    //------------------------------------ CheckPreferences --------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    public boolean isElder() {
-        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
-    }
-    //--------------------------------------------------------------------------------------------//
-    //--------------------------------------- check valid ----------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    private boolean hasName(){
-        strName = editTextName.getText().toString();
-        if(strName.isEmpty()){
-            showMessage("請輸入姓名！");
-            pageId = 1;
-            return false;
-        }else{
-            return true;
-        }
-    }
-    private boolean hasStatus(){
-        if(strStatus.isEmpty()){
-            showMessage("請點選身份！");
-            pageId = 1;
-            return false;
-        }else{
-            return true;
         }
     }
     private boolean savePhoto(){
@@ -672,16 +603,59 @@ public class SetUpActivity extends AppCompatActivity {
             return true;
         }
     }
-    private boolean isValidRoomNum(){
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- check valid ----------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private boolean hasName(){
+        strName = editTextName.getText().toString();
+        if(strName.isEmpty()){
+            showMessage("請輸入姓名！");
+            pageId = 1;
+            return false;
+        }else{
+            return true;
+        }
+    }
+    private boolean hasStatus(){
+        if(strStatus.isEmpty()){
+            showMessage("請點選身份！");
+            pageId = 1;
+            return false;
+        }else{
+            return true;
+        }
+    }
+    private boolean isValidRoomNum() {
         strRoom = editTextGroupNum.getText().toString();
-        if(strRoom.length()!=4 || strRoom.equals(null)){
+        strPwd = editTextGroupPwd.getText().toString();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("pwd");
+        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                correctPwd = dataSnapshot.getValue(String.class);
+                //do what you want with the email
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        if (strRoom.length() == 4 && strPwd.equals(correctPwd)) {
+            btn_next.setBackgroundResource(R.drawable.start);
+            return true;
+        }else if (strRoom.length() != 4 || strRoom.equals(null)) {
             btn_next.setBackgroundResource(R.drawable.start0);
             showMessage("請出入正確的群組號碼");
             pageId = 3;
             return false;
-        }else {
-            btn_next.setBackgroundResource(R.drawable.start);
-            return true;
+        } else if (!strPwd.equals(correctPwd)) {
+            btn_next.setBackgroundResource(R.drawable.start0);
+            showMessage("密碼錯誤");
+            pageId = 3;
+            return false;
+        }else{
+            return false;
         }
     }
     private void showMessage(String message) {
@@ -698,6 +672,12 @@ public class SetUpActivity extends AppCompatActivity {
 //                finish();
 //            }
 //        }, 2 * 1000);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //------------------------------------ CheckPreferences --------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public boolean isElder() {
+        return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
     }
 }
 

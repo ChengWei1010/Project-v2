@@ -193,7 +193,7 @@
         </android.support.constraint.ConstraintLayout>
     </FrameLayout>
 
-    <!--3: join room-->
+    <!--3: group-->
     <FrameLayout
         android:visibility="invisible"
         android:id="@+id/step3"
