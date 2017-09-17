@@ -50,9 +50,12 @@ public class VideoElderActivity extends AppCompatActivity {
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
-    private String groupNum;
-    private ImageButton toolbar_guide;
+
+
     private Button btn_list;
+
+    private String myGroup;
+    private ImageButton showBtn,toolbar_guide;
     private Toolbar myToolbar;
     private Date formattedDate;
     private TextView toolbar_title;
@@ -63,8 +66,8 @@ public class VideoElderActivity extends AppCompatActivity {
     private FirebaseData firebaseData;
     private MemberData memberData;
 
-    private ArrayList<String> memberList, groupMemberList;
-    private ArrayList<String> storagePathList;
+    private ArrayList<String> memberList, groupMemberList, storagePathList, imagePathList, mIdVideoList;
+    private ArrayList<MemberData> memberDataList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +78,8 @@ public class VideoElderActivity extends AppCompatActivity {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         //取得房號
-        groupNum = getIntent().getExtras().get("groupNum").toString();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum);
+        myGroup = getIntent().getExtras().get("myGroup").toString();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup);
 
         findViews();
         showVideo();
@@ -141,9 +144,13 @@ public class VideoElderActivity extends AppCompatActivity {
     //--------------------------------------- Download --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
 
+
     private void showVideo() {
         memberList = new ArrayList<>();
         storagePathList = new ArrayList<>();
+        imagePathList = new ArrayList<>();
+        memberDataList = new ArrayList<>();
+        mIdVideoList = new ArrayList<>();
 
         gallery.setUnselectedAlpha((float) 0.5);
         gallery.setSpacing(10);
@@ -157,6 +164,23 @@ public class VideoElderActivity extends AppCompatActivity {
         }catch(ParseException parseEx){
             parseEx.printStackTrace();
         }
+
+        //抓group裡面所有member
+        mDatabaseRef.child("members").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // get all of the children at this level.
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                // shake hands with each of them.'
+                for (DataSnapshot child : children) {
+                    //抓出成員存到arrayList
+                    memberData = child.getValue(MemberData.class);
+                    memberDataList.add(memberData);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
 
         //取得房間裡所有member當日傳的資料
         mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
@@ -182,10 +206,13 @@ public class VideoElderActivity extends AppCompatActivity {
 
                     //比較firebase存的日期跟今天的日期有沒有一樣
                     if(formattedDate.equals(firebaseDate)){
-//                        Log.d("today"," and firebase date is equal");
+                        //Log.d("today"," and firebase date is equal");
                         String member = firebaseData.getMember();
+                        String mId = firebaseData.getmId();
                         String storagePath = firebaseData.getStoragePath();
                         memberList.add(member);
+                        //抓mVideo裡面的mId
+                        mIdVideoList.add(mId);
                         storagePathList.add(storagePath);
                     }
                 }
@@ -193,7 +220,19 @@ public class VideoElderActivity extends AppCompatActivity {
                 if(memberList.isEmpty()){
                     Toast.makeText(VideoElderActivity.this,"今天還沒有影片喔!",Toast.LENGTH_SHORT).show();
                 }else{
-                    galleryAdapter = new GalleryAdapter(VideoElderActivity.this, R.layout.gallery_item,memberList,storagePathList);
+                    for(int i=0; i<mIdVideoList.size(); i++){
+                        String mIdVideo = mIdVideoList.get(i);
+
+                        for(int j=0; j<memberDataList.size(); j++){
+                            String mIdMember = memberDataList.get(j).getmId();
+                            if(mIdVideo.equals(mIdMember)){
+                                //Log.d("SameMid",mIdVideo);
+                                imagePathList.add(memberDataList.get(j).getmImage());
+                            }
+                        }
+                    }
+
+                    galleryAdapter = new GalleryAdapter(VideoElderActivity.this, R.layout.gallery_item,memberList,storagePathList,imagePathList);
                     gallery.setAdapter(galleryAdapter);
 
                     gallery.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -227,7 +266,7 @@ public class VideoElderActivity extends AppCompatActivity {
                 }
                 //顯示arrayList的所有成員
                 new AlertDialog.Builder(VideoElderActivity.this)
-                        .setTitle(groupNum + "裡的成員")
+                        .setTitle(myGroup + "裡的成員")
                         .setItems(groupMemberList.toArray(new String[groupMemberList.size()]), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -241,6 +280,22 @@ public class VideoElderActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         });
     }
+    
+    private void setShowBtn() {}
+
+
+//    private void setDownloadBtn() {
+//        downloadBtn.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+//                //這裡的uri就抓你存在聊天室裡msg的downloadUri
+//                DownloadManager.Request request = new DownloadManager.Request(mUri);
+//                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+//                downloadManager.enqueue(request);
+//            }
+//        });
+//    }
+
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ FireBase sign In --------------------------------------//
     //--------------------------------------------------------------------------------------------//

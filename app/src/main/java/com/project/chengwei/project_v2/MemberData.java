@@ -10,15 +10,17 @@ public class MemberData {
     private String mName;
     private String mStatus;
     private String mPhone;
+    private String mImage;
 
     private MemberData(){}
 
-    public MemberData(String mGroup, String mId, String mName, String mStatus, String mPhone){
+    public MemberData(String mGroup, String mId, String mName, String mStatus, String mPhone, String mImage){
         this.mGroup = mGroup;
         this.mId = mId;
         this.mName = mName;
         this.mStatus = mStatus;
         this.mPhone = mPhone;
+        this.mImage = mImage;
     }
 
     public String getmGroup(){
@@ -39,5 +41,9 @@ public class MemberData {
 
     public String getmPhone(){
         return mPhone;
+    }
+
+    public String getmImage(){
+        return mImage;
     }
 }

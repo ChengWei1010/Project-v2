@@ -17,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.bumptech.glide.Glide;
+
 import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
@@ -35,6 +37,7 @@ public class GalleryAdapter extends BaseAdapter {
 
     private ArrayList<String> memberList;
     private ArrayList<String> storagePathList;
+    private ArrayList<String> imagePathList;
 
     private TextView textView;
     private ImageView imageView;
@@ -43,12 +46,13 @@ public class GalleryAdapter extends BaseAdapter {
     private DownloadManager downloadManager;
     private Uri uri;
 
-    public GalleryAdapter(Context context, int layout, ArrayList<String> memberList, ArrayList<String> storagePathList){
+    public GalleryAdapter(Context context, int layout, ArrayList<String> memberList, ArrayList<String> storagePathList, ArrayList<String> imagePathList){
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.layout = layout;
         this.memberList = memberList;
         this.storagePathList = storagePathList;
+        this.imagePathList = imagePathList;
     }
 
     @Override
@@ -76,7 +80,7 @@ public class GalleryAdapter extends BaseAdapter {
         btnDownload = view.findViewById(R.id.btnDownload);
 
         //成員照片
-        imageView.setImageResource(R.drawable.ic_elder);
+        Glide.with(context).load("").into(imageView);
         //成員名字
         textView.setText(memberList.get(position));
         //播放影片按鈕

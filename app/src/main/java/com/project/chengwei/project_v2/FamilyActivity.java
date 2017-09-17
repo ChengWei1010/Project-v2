@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -76,6 +79,8 @@ public class FamilyActivity extends AppCompatActivity {
     private TextView textViewName, textViewPhone, textViewAddress, textViewBirthday, textViewRoom;
     private ImageView profileImg;
     private ImageButton btn_editProfile,toolbar_guide;
+    RoundImage roundedImage;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,11 +122,11 @@ public class FamilyActivity extends AppCompatActivity {
         Resources res = this.getResources();
         if(isElder()){
             drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
-            profileImg.setBackground(drawable);
+            profileImg.setImageDrawable(drawable);
         }
         else{
             drawable = res.getDrawable(R.drawable.ic_family, getTheme());
-            profileImg.setBackground(drawable);
+            profileImg.setImageDrawable(drawable);
         }
     }
     //--------------------------------------------------------------------------------------------//
@@ -141,8 +146,15 @@ public class FamilyActivity extends AppCompatActivity {
         textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
         textViewRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
 
-        mId = cursor.getString(cursor.getColumnIndex("uuid"));
+        String imageString = dbHelper.retrieveImageFromDB();
+        profileImg.setImageURI(Uri.parse(imageString));
 
+        BitmapDrawable drawable = (BitmapDrawable) profileImg.getDrawable();
+        bitmap = drawable.getBitmap();
+        roundedImage = new RoundImage(bitmap);
+        profileImg.setImageDrawable(roundedImage);
+
+        mId = cursor.getString(cursor.getColumnIndex("uid"));
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum);
     }
 
@@ -203,7 +215,7 @@ public class FamilyActivity extends AppCompatActivity {
         }
     };
     //--------------------------------------------------------------------------------------------//
-    //-------------------------- Set video send time-----------------------------------------//
+    //------------------------------- Set video send time-----------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void setSendTime(){
         //抓現在的時間為預設時間
@@ -424,6 +436,7 @@ public class FamilyActivity extends AppCompatActivity {
                             Log.d("hi", "signInAnonymously:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             //Toast.makeText(FamilyActivity.this, "login success. " + user.getUid(), Toast.LENGTH_SHORT).show();
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("hi", "signInAnonymously:failure", task.getException());
@@ -433,6 +446,13 @@ public class FamilyActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        mAuth = FirebaseAuth.getInstance();
+        //currentUser = mAuth.getCurrentUser();
     }
 
     //--------------------------------------------------------------------------------------------//

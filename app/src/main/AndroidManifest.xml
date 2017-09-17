@@ -81,13 +81,17 @@
         <activity
             android:name=".VideoFamilyActivity"
             android:screenOrientation="portrait" />
-
         <receiver android:name=".PeriodiclyUpload" />
 
         <activity
             android:name=".VideoPopUpActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.PopUpTheme"></activity>
+
+        <activity
+            android:name=".NavigationPopUpActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopUpTheme" />
     </application>
 
 </manifest>

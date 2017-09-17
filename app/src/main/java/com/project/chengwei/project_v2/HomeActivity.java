@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -41,12 +42,12 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton btn_phone, btn_video, btn_map, btn_magnifier, btn_sos, btn_guide_ok,toolbar_guide;
     private FrameLayout help_guide;
     private TextClock textClock;
-    private String groupNum, myName;
+    private String myGroup, myName, myPhone;
     private TextView toolbar_title;
 
     private DrawerLayout drawer;
-    private TextView textViewName, textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
-    private ImageView profileImg;
+    private TextView textViewName,textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
+    private ImageView profileImg,ic_one;
     private ImageButton btn_editProfile;
 
     RoundImage roundedImage;
@@ -81,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_guide_ok = findViewById(R.id.btn_guide_ok);
         help_guide = findViewById(R.id.help_guide);
         textClock = findViewById(R.id.textClock);
+        ic_one = findViewById(R.id.ic_one);
         notification_num = findViewById(R.id.notification_num);
         notification_num.setText("8");
 
@@ -99,11 +101,11 @@ public class HomeActivity extends AppCompatActivity {
         Resources res = this.getResources();
         if(isElder()){
             drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
-            profileImg.setBackground(drawable);
+            profileImg.setImageDrawable(drawable);
         }
         else{
             drawable = res.getDrawable(R.drawable.ic_family, getTheme());
-            profileImg.setBackground(drawable);
+            profileImg.setImageDrawable(drawable);
         }
     }
     //--------------------------------------------------------------------------------------------//
@@ -120,7 +122,10 @@ public class HomeActivity extends AppCompatActivity {
         btn_sos.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                SosActivity();
+                Intent intent = new Intent(getApplicationContext(),SosActivity.class);
+                intent.putExtra("myGroup",myGroup);
+                intent.putExtra("myPhone",myPhone);
+                startActivity(intent);
                 return true;
             }
         });
@@ -140,7 +145,7 @@ public class HomeActivity extends AppCompatActivity {
                 case R.id.btn_video:
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
                     Intent intent = new Intent(getApplicationContext(),VideoElderActivity.class);
-                    intent.putExtra("groupNum",groupNum);
+                    intent.putExtra("myGroup",myGroup);
                     startActivity(intent);
                     finish();
                     break;
@@ -150,7 +155,8 @@ public class HomeActivity extends AppCompatActivity {
                         finish();
                         break;
                     } else{
-                        Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(HomeActivity.this, NavigationPopUpActivity.class));
+                        //Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
                         break;
                     }
                 case R.id.btn_magnifier:
@@ -206,33 +212,40 @@ public class HomeActivity extends AppCompatActivity {
         dbHelper = new SQLiteDBHelper(getApplicationContext());
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
-        groupNum = cursor.getString(cursor.getColumnIndex("room"));
-        text_group_name.setText(groupNum);
+        myGroup = cursor.getString(cursor.getColumnIndex("room"));
         myName = cursor.getString(cursor.getColumnIndex("name"));
+        myPhone = cursor.getString(cursor.getColumnIndex("phone"));
+        text_group_name.setText(myGroup);
         textViewName.setText( myName );
-        textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
+        textViewPhone.setText( myPhone );
         textViewAddress.setText( cursor.getString(cursor.getColumnIndex("address")) );
         textViewBirthday.setText( cursor.getString(cursor.getColumnIndex("birthday")) );
         textViewRoom.setText( cursor.getString(cursor.getColumnIndex("room")) );
         // Load image from Database
         try {
             //initDB();
-            byte[] bytes = dbHelper.retrieveImageFromDB();
-            Log.d("byte load from DB",bytes.toString());
+            //byte[] bytes = dbHelper.retrieveImageFromDB();
+            //Log.d("byte load from DB",bytes.toString());
+            String imageString = dbHelper.retrieveImageFromDB();
+            Log.d("String load from DB",imageString);
             dbHelper.close();
             // Show Image from DB in ImageView
-            profileImg.setImageBitmap(Utils.getImage(bytes));
+            //profileImg.setImageBitmap(Utils.getImage(bytes));
+            profileImg.setImageURI(Uri.parse(imageString));
 
-//            BitmapDrawable drawable = (BitmapDrawable) profileImg.getDrawable();
-//            bitmap = drawable.getBitmap();
-//            roundedImage = new RoundImage(bitmap);
-//            profileImg.setImageDrawable(roundedImage);
+            BitmapDrawable drawable = (BitmapDrawable) profileImg.getDrawable();
+            bitmap = drawable.getBitmap();
+            roundedImage = new RoundImage(bitmap);
+            profileImg.setImageDrawable(roundedImage);
 
         } catch (Exception e) {
             //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
             dbHelper.close();
         }
     }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- Valid Address ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
     private boolean hasValidAddress(){
         dbHelper = new SQLiteDBHelper(getApplicationContext());
         cursor = dbHelper.getProfileData();
@@ -260,17 +273,21 @@ public class HomeActivity extends AppCompatActivity {
         btn_map.setClickable(false);
         btn_magnifier.setClickable(false);
         textClock.setVisibility(View.INVISIBLE);
+
         notification_num.setVisibility(View.INVISIBLE);
+        ic_one.setVisibility(View.INVISIBLE);
     }
     private void closeGuide(){
-        help_guide.setVisibility(View.GONE);
+        help_guide.setVisibility(View.INVISIBLE);
         textClock.setVisibility(View.VISIBLE);
         btn_sos.setClickable(true);
         btn_phone.setClickable(true);
         btn_video.setClickable(true);
         btn_map.setClickable(true);
         btn_magnifier.setClickable(true);
+
         notification_num.setVisibility(View.VISIBLE);
+        ic_one.setVisibility(View.VISIBLE);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//
