@@ -85,6 +85,8 @@ public class SetUpActivity extends AppCompatActivity {
     FileOutputStream fileoutputstream;
     ByteArrayOutputStream bytearrayoutputstream;
 
+    Boolean Room=false, Pwd=false;
+
     private FrameLayout step1,step2,step3;
     private EditText editTextName,editTextGroupNum,editTextPhone,editTextGroupPwd;
     String uId,strName,strRoom,strStatus,strPwd,correctPwd;
@@ -375,9 +377,14 @@ public class SetUpActivity extends AppCompatActivity {
                             pageId=3;
                         }break;
                     case 3:
-                        if(isValidRoomNum() && isValidPwd()){
-                            showMessage("start!");
+                        checkValidRoomNum();
+                        checkValidPwdNum();
+                        if(Room && Pwd) {
+                            showMessage("welcome!");
                         }
+//                        if(isValidRoomNum() && isValidPwd()){
+//                            showMessage("start!");
+//                        }
 //                        else{
 //                            showMessage("群組或密碼錯誤");
 //                        }
@@ -627,8 +634,46 @@ public class SetUpActivity extends AppCompatActivity {
             return true;
         }
     }
-    public boolean isValidRoomNum() {
+    private void checkValidRoomNum() {
+        strRoom = editTextGroupNum.getText().toString();
+        if (strRoom.length() != 4 || strRoom.equals(null)) {
+            btn_next.setBackgroundResource(R.drawable.start0);
+            Log.e("QQ", "room not valid");
+            showMessage("群組有誤");
+            pageId = 3;
+            Room = false;
+        }else{
+            Room = true;
+        }
+    }
+    private void checkValidPwdNum(){
+        strPwd = editTextGroupPwd.getText().toString();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("pwd");
+        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                correctPwd = dataSnapshot.getValue(String.class);
+                if (strRoom.length() == 4 && strPwd.equals(correctPwd)) {
+                    Log.e("YA","pwd correct");
+                    btn_next.setBackgroundResource(R.drawable.start);
+                    Pwd = true;
+                    start();
+                    showMessage("start");
+                } else{
+                    btn_next.setBackgroundResource(R.drawable.start0);
+                    Log.e("QQ","pwd not correct");
+                    showMessage("密碼有誤");
+                    pageId = 3;
+                    Pwd = false;
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+    public boolean isValidRoomNum() {
         strRoom = editTextGroupNum.getText().toString();
         if (strRoom.length() != 4 || strRoom.equals(null)) {
              btn_next.setBackgroundResource(R.drawable.start0);
@@ -640,6 +685,7 @@ public class SetUpActivity extends AppCompatActivity {
              return true;
          }
     }
+
     public boolean isValidPwd(){
         strPwd = editTextGroupPwd.getText().toString();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("pwd");
