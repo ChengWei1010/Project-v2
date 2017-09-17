@@ -23,6 +23,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -80,10 +82,11 @@ public class SetUpActivity extends AppCompatActivity {
     final int REQUEST_IMAGE_CAPTURE = 99;
     final int REQUEST_CROP_IMAGE = 9;
 
-    private ImageButton btn_elder, btn_family;
-    private Button btn_next, btnCamera, btnChoose, btn_add;
+    ImageButton btn_elder, btn_family;
+    Button btn_next, btnCamera, btnChoose, btn_add;
     private ImageView r1, r2, r3, myPhoto;
     private TextView btn_create;
+    boolean check=false, canStart=false;
     int pageId=1;
     String uriString;
     Intent cropIntent;
@@ -93,9 +96,11 @@ public class SetUpActivity extends AppCompatActivity {
     FileOutputStream fileoutputstream;
     ByteArrayOutputStream bytearrayoutputstream;
 
+    Boolean Room=false, Pwd=false;
+
     private FrameLayout step1,step2,step3;
     private EditText editTextName,editTextGroupNum,editTextPhone,editTextGroupPwd;
-    private String uId,strName,strRoom,strStatus,strPwd,correctPwd="0",strImage;
+    String uId,strName,strRoom,strStatus,strPwd,correctPwd,strImage;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDBref1,mDBref2,mDatabaseRef;
@@ -325,7 +330,7 @@ public class SetUpActivity extends AppCompatActivity {
         //        editTextGroupNum.setSelectAllOnFocus(true);
     }
     //--------------------------------------------------------------------------------------------//
-    //----------------------------------- Onclick Listeners --------------------------------------//
+    //------------------------------------------- Listeners --------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void setUpListeners(){
         btn_elder.setOnClickListener(new View.OnClickListener() {
@@ -348,7 +353,6 @@ public class SetUpActivity extends AppCompatActivity {
                 btn_elder.setBackgroundResource(R.drawable.btn_elder0);
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, false).commit();
                 if(hasName()) {
-                    //showMessage("f");
                     strStatus = "f";
                     btn_next.setBackgroundResource(R.drawable.next);
                 }
@@ -386,17 +390,21 @@ public class SetUpActivity extends AppCompatActivity {
                             pageId=3;
                         }break;
                     case 3:
-                        if(isValidRoomNum()){
-                            start();
+                        checkValidRoomNum();
+                        checkValidPwdNum();
+                        if(Room && Pwd) {
+                            showMessage("welcome!");
                         }
-                        else{
-                            //showMessage("on no");
-                        }
+//                        if(isValidRoomNum() && isValidPwd()){
+//                            showMessage("start!");
+//                        }
+//                        else{
+//                            showMessage("群組或密碼錯誤");
+//                        }
                         break;
                     default:
                         showMessage("error");
                 }
-
             }
         });
         btn_create.setOnClickListener(new View.OnClickListener() {
@@ -589,7 +597,8 @@ public class SetUpActivity extends AppCompatActivity {
         if(bitmap == null){
             showMessage("請設置照片！");
             pageId = 2;
-            return false;
+            //return false;
+            return true;
         }else{
             //儲存剪裁後的照片到外部空間
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytearrayoutputstream);
@@ -687,39 +696,87 @@ public class SetUpActivity extends AppCompatActivity {
             return true;
         }
     }
-    private boolean isValidRoomNum() {
+    private void checkValidRoomNum() {
         strRoom = editTextGroupNum.getText().toString();
+        if (strRoom.length() != 4 || strRoom.equals(null)) {
+            btn_next.setBackgroundResource(R.drawable.start0);
+            Log.e("QQ", "room not valid");
+            showMessage("群組有誤");
+            pageId = 3;
+            Room = false;
+        }else{
+            Room = true;
+        }
+    }
+    private void checkValidPwdNum(){
         strPwd = editTextGroupPwd.getText().toString();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("pwd");
         mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 correctPwd = dataSnapshot.getValue(String.class);
-                //do what you want with the email
+                if (strRoom.length() == 4 && strPwd.equals(correctPwd)) {
+                    Log.e("YA","pwd correct");
+                    btn_next.setBackgroundResource(R.drawable.start);
+                    Pwd = true;
+                    start();
+                    showMessage("start");
+                } else{
+                    btn_next.setBackgroundResource(R.drawable.start0);
+                    Log.e("QQ","pwd not correct");
+                    showMessage("密碼有誤");
+                    pageId = 3;
+                    Pwd = false;
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-
-        if (strRoom.length() == 4 && strPwd.equals(correctPwd)) {
-            btn_next.setBackgroundResource(R.drawable.start);
-            return true;
-        }else if (strRoom.length() != 4 || strRoom.equals(null) || !strPwd.equals(correctPwd)) {
-            btn_next.setBackgroundResource(R.drawable.start0);
-            showMessage("請出入正確的群組號碼");
-            pageId = 3;
-            return false;
-//        } else if (!strPwd.equals(correctPwd)) {
-//            btn_next.setBackgroundResource(R.drawable.start0);
-//            showMessage("密碼錯誤");
-//            pageId = 3;
-//            return false;
-        }else{
-            return false;
-        }
     }
+//    public boolean isValidRoomNum() {
+//        strRoom = editTextGroupNum.getText().toString();
+//        if (strRoom.length() != 4 || strRoom.equals(null)) {
+//             btn_next.setBackgroundResource(R.drawable.start0);
+//             Log.e("QQ","room not valid");
+//             showMessage("請輸入正確的群組號碼");
+//             pageId = 3;
+//             return false;
+//         }else{
+//             return true;
+//         }
+//    }
+
+
+//    public boolean isValidPwd(){
+//        strPwd = editTextGroupPwd.getText().toString();
+//        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(strRoom).child("pwd");
+//        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                correctPwd = dataSnapshot.getValue(String.class);
+//                if (strRoom.length() == 4 && strPwd.equals(correctPwd)) {
+//                    Log.e("YA","pwd correct");
+//                    btn_next.setBackgroundResource(R.drawable.start);
+//                    start();
+//                    check = true;
+//                } else{
+//                    btn_next.setBackgroundResource(R.drawable.start0);
+//                    Log.e("QQ","pwd not correct");
+//                    showMessage("密碼錯誤");
+//                    pageId = 3;
+//                    check = false;
+//                }
+//            }
+//
+//        @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//            }
+//        });
+//        return check;
+//
+//    }
     private void showMessage(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();

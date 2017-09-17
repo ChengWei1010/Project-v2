@@ -57,10 +57,10 @@ public class FamilyActivity extends AppCompatActivity {
     private Toolbar myToolbar;
     private FrameLayout left_drawer;
     private ImageButton btn_video;
-    private Button btn_time, btn_showMember;
+    private Button btn_time, btn_showMember,btn_watch_video;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
-    private String groupNum, mName, mId;
+    private String mGroup, mName, mId;
     final int RequestCameraCode = 1;
     final int RequestCallCode = 2;
     final int RequestExternalStorageCode = 3;
@@ -76,7 +76,7 @@ public class FamilyActivity extends AppCompatActivity {
     private ArrayList<String> memberList;
 
     private DrawerLayout drawer;
-    private TextView textViewName, textViewPhone, textViewAddress, textViewBirthday, textViewRoom;
+    private TextView textViewName, textViewPhone, textViewAddress, textViewBirthday, textViewRoom, toolbar_title;
     private ImageView profileImg;
     private ImageButton btn_editProfile,toolbar_guide;
     RoundImage roundedImage;
@@ -92,9 +92,9 @@ public class FamilyActivity extends AppCompatActivity {
             signIn();
         }
         findViews();
+        initDB();
         setToolbar();
         setListeners();
-        initDB();
         closeDB();
     }
     //--------------------------------------------------------------------------------------------//
@@ -107,8 +107,10 @@ public class FamilyActivity extends AppCompatActivity {
         btn_video = findViewById(R.id.btn_video);
         left_drawer = findViewById(R.id.left_drawer);
 
-        btn_time = (Button) findViewById(R.id.timeBtn);
-        btn_showMember = (Button) findViewById(R.id.showMemberBtn);
+        btn_watch_video = findViewById(R.id.btn_watch_video);
+        btn_time = findViewById(R.id.timeBtn);
+        btn_showMember = findViewById(R.id.showMemberBtn);
+        toolbar_title = findViewById(R.id.toolbar_title);
 
         //profile drawer
         textViewName = findViewById(R.id.textViewName);
@@ -138,7 +140,7 @@ public class FamilyActivity extends AppCompatActivity {
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
         mName = cursor.getString(cursor.getColumnIndex("name"));
-        groupNum = cursor.getString(cursor.getColumnIndex("room"));
+        mGroup = cursor.getString(cursor.getColumnIndex("room"));
 
         textViewName.setText( cursor.getString(cursor.getColumnIndex("name")) );
         textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
@@ -155,7 +157,7 @@ public class FamilyActivity extends AppCompatActivity {
         profileImg.setImageDrawable(roundedImage);
 
         mId = cursor.getString(cursor.getColumnIndex("uid"));
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum);
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(mGroup);
     }
 
     //Database : close database
@@ -169,6 +171,7 @@ public class FamilyActivity extends AppCompatActivity {
     private void setListeners() {
         btn_video.setOnClickListener(ImageBtnListener);
         btn_editProfile.setOnClickListener(ImageBtnListener);
+        btn_watch_video.setOnClickListener(BtnListener);
         btn_time.setOnClickListener(BtnListener);
         btn_showMember.setOnClickListener(BtnListener);
     }
@@ -184,7 +187,7 @@ public class FamilyActivity extends AppCompatActivity {
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
                     Intent intent = new Intent(getApplicationContext(), VideoFamilyActivity.class);
                     intent.putExtra("mName",mName);
-                    intent.putExtra("groupNum",groupNum);
+                    intent.putExtra("groupNum",mGroup);
                     intent.putExtra("mId",mId);
                     intent.putExtra("hour", hour);
                     intent.putExtra("minute", minute);
@@ -210,6 +213,12 @@ public class FamilyActivity extends AppCompatActivity {
                     break;
                 case R.id.showMemberBtn:
                     listMember();
+                    break;
+                case R.id.btn_watch_video:
+                    Intent intent = new Intent(getApplicationContext(),SosActivity.class);
+                    intent.putExtra("myGroup",mGroup);
+                    startActivity(intent);
+                    finish();
                     break;
             }
         }
@@ -251,7 +260,7 @@ public class FamilyActivity extends AppCompatActivity {
                 }
                 //顯示arrayList的所有成員
                 new AlertDialog.Builder(FamilyActivity.this)
-                        .setTitle(groupNum + "裡的成員")
+                        .setTitle(mGroup + "裡的成員")
                         .setItems(memberList.toArray(new String[memberList.size()]), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -454,7 +463,6 @@ public class FamilyActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         //currentUser = mAuth.getCurrentUser();
     }
-
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -467,6 +475,7 @@ public class FamilyActivity extends AppCompatActivity {
         });
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar_title.setText("您好，" + mName);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_person_white);
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -477,8 +486,6 @@ public class FamilyActivity extends AppCompatActivity {
                 } else {
                     drawer.openDrawer(GravityCompat.START);
                 }
-//                startActivity(new Intent(FamilyActivity.this, ProfileActivity.class));
-//                finish();
             }
         });
     }
