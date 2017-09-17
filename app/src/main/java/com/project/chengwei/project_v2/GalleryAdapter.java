@@ -80,7 +80,9 @@ public class GalleryAdapter extends BaseAdapter {
         btnDownload = view.findViewById(R.id.btnDownload);
 
         //成員照片
-        Glide.with(context).load("").into(imageView);
+//        String imageString = "https://firebasestorage.googleapis.com/v0/b/elderlyproject-46505.appspot.com/o/images%2F1765%2FIYG7ZEw3lOcoauzUhVOx36Kf5T72.jpg?alt=media&token=d7b1b95e-a813-41fb-bac5-dd6bc4d3396f";
+        String imageString = imagePathList.get(position);
+        Glide.with(context).load(imageString).into(imageView);
         //成員名字
         textView.setText(memberList.get(position));
         //播放影片按鈕
@@ -111,6 +113,7 @@ public class GalleryAdapter extends BaseAdapter {
                 downloadManager.enqueue(request);
             }
         });
+
 
 //        View row = view;
 //        GalleryAdapter.ViewHolder holder = new GalleryAdapter.ViewHolder();

@@ -151,6 +151,8 @@ public class VideoElderActivity extends AppCompatActivity {
         imagePathList = new ArrayList<>();
         memberDataList = new ArrayList<>();
         mIdVideoList = new ArrayList<>();
+//        mIdMemberList = new ArrayList<>();
+//        memberImageList = new ArrayList<>();
 
         gallery.setUnselectedAlpha((float) 0.5);
         gallery.setSpacing(10);
@@ -175,47 +177,54 @@ public class VideoElderActivity extends AppCompatActivity {
                 for (DataSnapshot child : children) {
                     //抓出成員存到arrayList
                     memberData = child.getValue(MemberData.class);
+                    String img = memberData.getmImage();
+                    Log.d("MemberImage",img);
+                    //String id = memberData.getmId();
+                    //String img = memberData.getmImage();
+                    //Log.d("MemberImage",img);
+                    //mIdMemberList.add(id);
+//                    memberImageList.add(img);
                     memberDataList.add(memberData);
+                    //Log.d("KKKK",memberDataList.get(0).getmId());
                 }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
 
-        //取得房間裡所有member當日傳的資料
-        mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // get all of the children at this level.
-                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                // shake hands with each of them.'
-                for (DataSnapshot child : children) {
-                    firebaseData = child.getValue(FirebaseData.class);
+//                for(int i=0; i<memberImageList.size(); i++){
+//                    Log.d("ForLoop",memberImageList.get(i));
+//                }
+                //取得房間裡所有member當日傳的資料
+                mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // get all of the children at this level.
+                        Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                        // shake hands with each of them.'
+                        for (DataSnapshot child : children) {
+                            firebaseData = child.getValue(FirebaseData.class);
 
-                    //取得firebase存的Date
-                    String date = firebaseData.getDate();
-                    String subDate = date.substring(0,11);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-                    Date firebaseDate = null;
-                    try {
-                        firebaseDate = sdf.parse(subDate);
-                        //Log.d("firebaseDay",firebaseDate.toString());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                            //取得firebase存的Date
+                            String date = firebaseData.getDate();
+                            String subDate = date.substring(0,11);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+                            Date firebaseDate = null;
+                            try {
+                                firebaseDate = sdf.parse(subDate);
+                                //Log.d("firebaseDay",firebaseDate.toString());
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
 
-                    //比較firebase存的日期跟今天的日期有沒有一樣
-                    if(formattedDate.equals(firebaseDate)){
-                        //Log.d("today"," and firebase date is equal");
-                        String member = firebaseData.getMember();
-                        String mId = firebaseData.getmId();
-                        String storagePath = firebaseData.getStoragePath();
-                        memberList.add(member);
-                        //抓mVideo裡面的mId
-                        mIdVideoList.add(mId);
-                        storagePathList.add(storagePath);
-                    }
-                }
+                            //比較firebase存的日期跟今天的日期有沒有一樣
+                            if(formattedDate.equals(firebaseDate)){
+                                //Log.d("today"," and firebase date is equal");
+                                String member = firebaseData.getMember();
+                                String mId = firebaseData.getmId();
+                                String storagePath = firebaseData.getStoragePath();
+                                memberList.add(member);
+                                //抓mVideo裡面的mId
+                                mIdVideoList.add(mId);
+                                storagePathList.add(storagePath);
+                            }
+                        }
 
                 if(memberList.isEmpty()){
                     Toast.makeText(VideoElderActivity.this,"今天還沒有影片喔!",Toast.LENGTH_SHORT).show();
@@ -227,6 +236,7 @@ public class VideoElderActivity extends AppCompatActivity {
                             String mIdMember = memberDataList.get(j).getmId();
                             if(mIdVideo.equals(mIdMember)){
                                 //Log.d("SameMid",mIdVideo);
+                                Log.d("ImagePath",memberDataList.get(j).getmImage());
                                 imagePathList.add(memberDataList.get(j).getmImage());
                             }
                         }
@@ -242,6 +252,10 @@ public class VideoElderActivity extends AppCompatActivity {
                         }
                     });
                 }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}

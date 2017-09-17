@@ -7,20 +7,20 @@ package com.project.chengwei.project_v2;
 public class MemberData {
     private String mGroup;
     private String mId;
-    private String mName;
-    private String mStatus;
-    private String mPhone;
     private String mImage;
+    private String mName;
+    private String mPhone;
+    private String mStatus;
 
     private MemberData(){}
 
-    public MemberData(String mGroup, String mId, String mName, String mStatus, String mPhone, String mImage){
+    public MemberData(String mGroup, String mId, String mImage, String mName, String mPhone, String mStatus){
         this.mGroup = mGroup;
         this.mId = mId;
-        this.mName = mName;
-        this.mStatus = mStatus;
-        this.mPhone = mPhone;
         this.mImage = mImage;
+        this.mName = mName;
+        this.mPhone = mPhone;
+        this.mStatus = mStatus;
     }
 
     public String getmGroup(){
@@ -31,19 +31,21 @@ public class MemberData {
         return mId;
     }
 
-    public String getmName(){
-        return mName;
+    public String getmImage(){
+        return mImage;
     }
 
-    public String getmStatus(){
-        return mStatus;
+    public String getmName(){
+        return mName;
     }
 
     public String getmPhone(){
         return mPhone;
     }
 
-    public String getmImage(){
-        return mImage;
+    public String getmStatus(){
+        return mStatus;
     }
+
+
 }
