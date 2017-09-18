@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -74,6 +76,7 @@ public class ProfileAddActivity extends AppCompatActivity {
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
     private String uuId,groupNum;
+    Boolean hadCrop = false;
 
     final int REQUEST_EXTERNAL_STORAGE = 999;
     final int REQUEST_IMAGE_CAPTURE = 99;
@@ -137,6 +140,7 @@ public class ProfileAddActivity extends AppCompatActivity {
         btn_camera = findViewById(R.id.cameraBtn);
         btn_choose = findViewById(R.id.chooseBtn);
         ImgView_photo = findViewById(R.id.ImgView_photo);
+
         Drawable drawable;
         Resources res = this.getResources();
         if(isElder()){
@@ -165,8 +169,8 @@ public class ProfileAddActivity extends AppCompatActivity {
         btn_saveProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveImageInLocal();
-                save();
+                //saveImageInLocal();
+                saveDB();
             }
         });
     }
@@ -268,6 +272,7 @@ public class ProfileAddActivity extends AppCompatActivity {
             cropIntent.putExtra("return-data",true);
 
             startActivityForResult(cropIntent,REQUEST_CROP_IMAGE);
+            hadCrop = true;
         }
         catch (ActivityNotFoundException ex){
         }
@@ -326,7 +331,7 @@ public class ProfileAddActivity extends AppCompatActivity {
 //        }
 //    }
     //Database : save the change to database
-    public void save() {
+    public void saveDB() {
         String hadSetUp = "1";
         String strPhone = editTextPhone.getText().toString();
         String strName = editTextName.getText().toString();
@@ -343,7 +348,12 @@ public class ProfileAddActivity extends AppCompatActivity {
         birthday =  year + "-" + month + "-" + date;
         if(isValidPhoneNum(strPhone)==true){
             dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday);
-            dbHelper.saveEditImage(uriString);
+            if(hadCrop){
+                saveImageInLocal();
+                dbHelper.saveEditImage(uriString);
+            } else{
+                dbHelper.saveEditImage(uriString);
+            }
             initDB();
             closeDB();
             FireBaseUpdateImage(uri_crop);

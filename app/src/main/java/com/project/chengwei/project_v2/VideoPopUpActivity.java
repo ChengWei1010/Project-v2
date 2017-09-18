@@ -49,7 +49,6 @@ public class VideoPopUpActivity extends AppCompatActivity {
         //Interface definition for a callback to be invoked when the media source is ready for playback.
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             public void onPrepared(MediaPlayer mp) {
-                // TODO Auto-generated method stub
                 progressDialog.dismiss();
                 vidControl.setAnchorView(videoView);
                 videoView.setMediaController(vidControl);

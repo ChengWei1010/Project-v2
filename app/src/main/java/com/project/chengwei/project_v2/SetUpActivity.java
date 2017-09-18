@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -596,9 +597,11 @@ public class SetUpActivity extends AppCompatActivity {
     private boolean savePhoto(){
         if(bitmap == null){
             showMessage("請設置照片！");
+            //TODO : 預設一張照片給它
+            //bitmap = DrawableCompat();
             pageId = 2;
-            //return false;
-            return true;
+            return false;
+            //return true;
         }else{
             //儲存剪裁後的照片到外部空間
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytearrayoutputstream);
