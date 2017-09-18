@@ -826,7 +826,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         });
         setSupportActionBar(myToolbar);
         myToolbar.setTitle("觀看今日影片");
-        myToolbar.setNavigationIcon(R.drawable.ic_home);
+        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
 
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
