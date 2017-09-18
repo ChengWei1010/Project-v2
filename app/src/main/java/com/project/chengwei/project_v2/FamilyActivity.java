@@ -60,7 +60,7 @@ public class FamilyActivity extends AppCompatActivity {
     private Button btn_time, btn_showMember,btn_watch_video;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
-    private String mGroup, mName, mId;
+    private String mGroup, mName, myId;
     final int RequestCameraCode = 1;
     final int RequestCallCode = 2;
     final int RequestExternalStorageCode = 3;
@@ -141,6 +141,7 @@ public class FamilyActivity extends AppCompatActivity {
         cursor.moveToPosition(0);
         mName = cursor.getString(cursor.getColumnIndex("name"));
         mGroup = cursor.getString(cursor.getColumnIndex("room"));
+        myId = cursor.getString(cursor.getColumnIndex("uid"));
 
         textViewName.setText( cursor.getString(cursor.getColumnIndex("name")) );
         textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
@@ -156,7 +157,6 @@ public class FamilyActivity extends AppCompatActivity {
         roundedImage = new RoundImage(bitmap);
         profileImg.setImageDrawable(roundedImage);
 
-        mId = cursor.getString(cursor.getColumnIndex("uid"));
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(mGroup);
     }
 
@@ -188,7 +188,7 @@ public class FamilyActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), VideoFamilyActivity.class);
                     intent.putExtra("mName",mName);
                     intent.putExtra("groupNum",mGroup);
-                    intent.putExtra("mId",mId);
+                    intent.putExtra("mId",myId);
                     intent.putExtra("hour", hour);
                     intent.putExtra("minute", minute);
                     startActivity(intent);
@@ -215,8 +215,9 @@ public class FamilyActivity extends AppCompatActivity {
                     listMember();
                     break;
                 case R.id.btn_watch_video:
-                    Intent intent = new Intent(getApplicationContext(),SosActivity.class);
+                    Intent intent = new Intent(getApplicationContext(),VideoElderActivity.class);
                     intent.putExtra("myGroup",mGroup);
+                    intent.putExtra("myId",myId);
                     startActivity(intent);
                     finish();
                     break;
