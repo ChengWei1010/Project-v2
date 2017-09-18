@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton btn_phone, btn_video, btn_map, btn_magnifier, btn_sos, btn_guide_ok,toolbar_guide;
     private FrameLayout help_guide;
     private TextClock textClock;
-    private String myGroup, myName, myPhone;
+    private String myId, myGroup, myName, myPhone;
     private TextView toolbar_title;
 
     private DrawerLayout drawer;
@@ -146,6 +146,7 @@ public class HomeActivity extends AppCompatActivity {
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
                     Intent intent = new Intent(getApplicationContext(),VideoElderActivity.class);
                     intent.putExtra("myGroup",myGroup);
+                    intent.putExtra("myId", myId);
                     startActivity(intent);
                     finish();
                     break;
@@ -212,6 +213,7 @@ public class HomeActivity extends AppCompatActivity {
         dbHelper = new SQLiteDBHelper(getApplicationContext());
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
+        myId = cursor.getString(cursor.getColumnIndex("uid"));
         myGroup = cursor.getString(cursor.getColumnIndex("room"));
         myName = cursor.getString(cursor.getColumnIndex("name"));
         myPhone = cursor.getString(cursor.getColumnIndex("phone"));

@@ -13,6 +13,7 @@
     <color name="sosBG">#BAF8DC</color>
     <color name="colorPopUp">#efd3d0</color>
     <color name="colorEdit">#df6e6e</color>
+    <color name="colorDownload">#62a6ce</color>
 
     <!--done or cancel-->
     <color name="colorDone">#46a41e</color>

@@ -54,7 +54,7 @@ public class VideoElderActivity extends AppCompatActivity {
 
     private Button btn_list;
 
-    private String myGroup;
+    private String myGroup, myId;
     private ImageButton showBtn,toolbar_guide;
     private Toolbar myToolbar;
     private Date formattedDate;
@@ -78,6 +78,7 @@ public class VideoElderActivity extends AppCompatActivity {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         //取得房號
+        myId = getIntent().getExtras().get("myId").toString();
         myGroup = getIntent().getExtras().get("myGroup").toString();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup);
 
@@ -151,6 +152,11 @@ public class VideoElderActivity extends AppCompatActivity {
         imagePathList = new ArrayList<>();
         memberDataList = new ArrayList<>();
         mIdVideoList = new ArrayList<>();
+        memberList.clear();
+        storagePathList.clear();
+        imagePathList.clear();
+        memberDataList.clear();
+        mIdVideoList.clear();
 //        mIdMemberList = new ArrayList<>();
 //        memberImageList = new ArrayList<>();
 
@@ -216,8 +222,13 @@ public class VideoElderActivity extends AppCompatActivity {
                             //比較firebase存的日期跟今天的日期有沒有一樣
                             if(formattedDate.equals(firebaseDate)){
                                 //Log.d("today"," and firebase date is equal");
-                                String member = firebaseData.getMember();
+                                String member;
                                 String mId = firebaseData.getmId();
+                                if(mId.equals(myId)){
+                                    member = "我";
+                                }else{
+                                    member = firebaseData.getMember();
+                                }
                                 String storagePath = firebaseData.getStoragePath();
                                 memberList.add(member);
                                 //抓mVideo裡面的mId
