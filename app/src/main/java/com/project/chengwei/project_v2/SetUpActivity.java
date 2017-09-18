@@ -54,6 +54,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.onesignal.OneSignal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -107,12 +108,14 @@ public class SetUpActivity extends AppCompatActivity {
     private DatabaseReference mDBref1,mDBref2,mDatabaseRef;
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
+    static String LoggedIn_User_mId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
+        OneSignal.startInit(this).init();
         pageId=1;
 
         checkPermission();
@@ -442,10 +445,15 @@ public class SetUpActivity extends AppCompatActivity {
                             Log.d("hi", "signInAnonymously:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             uId = user.getUid();
+
+                            //send Tag to Onesignal
+                            LoggedIn_User_mId = user.getUid().toString();
+                            OneSignal.sendTag("User_ID", LoggedIn_User_mId);
                             //Toast.makeText(SetUpActivity.this, "login success. "+user.getUid(),Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("hi", "signInAnonymously:failure", task.getException());
+
                             showMessage("請檢查網路連線");
                         }
 

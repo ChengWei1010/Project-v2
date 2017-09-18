@@ -7,14 +7,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.PowerManager;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
@@ -22,10 +31,15 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Created by Angela on 2017/8/28.
@@ -33,15 +47,29 @@ import java.util.Map;
 
 public class PeriodiclyUpload extends BroadcastReceiver{
 
-    private DatabaseReference mDatabaseRef;
+    //private DatabaseReference mDatabaseRef;
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
     private String date, groupNum, mId, mName, storagePath;
 
+    final FirebaseDatabase database = FirebaseDatabase.getInstance(); // Get a reference to our posts
+    DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups"); // From groups in Database
+    MemberData memberData;
+    private ArrayList<String> memberList_ID = new ArrayList<>();
+    private ArrayList<String> memberList_NAME = new ArrayList<>();
+    static public FirebaseAuth mAuth;
+    FirebaseUser user;
+    static String currentUserID_Notification;
+    static boolean signal = false;
+
     @Override
     public void onReceive(final Context context, Intent intent) {
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        currentUserID_Notification = user.getUid();
 
         //取得目前時間
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
@@ -147,5 +175,210 @@ public class PeriodiclyUpload extends BroadcastReceiver{
                 .setContentText("上傳完畢")
                 .setAutoCancel(true);
         mNotifyManager.notify(100, mBuilder.build());
+
+        Log.d("TESTING", "GETGROUP..... init");
+        Test_getGroupsAllMember();
+    }
+
+    private void Test_getGroupsAllMember() {
+
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups");
+        /*
+        mDatabaseRef.child(groupNum).child("mVideo").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // get all of the children at this level.
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+
+                videoList.clear();
+                for (DataSnapshot child : children) { // shake hands with each of them.'
+
+                    videoData = child.getValue(VideoData.class); //抓出成員
+                    videoList.add(videoData.getmId()); //存 member.mId 到 arrayList
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        */
+        mDatabaseRef.child(groupNum).child("members").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                // get all of the children at this level.
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+
+                memberList_ID.clear();
+                memberList_NAME.clear();
+                for (DataSnapshot child : children) { // shake hands with each of them.'
+
+                    memberData = child.getValue(MemberData.class); //抓出成員
+                    memberList_ID.add(memberData.getmId()); //存 member.mId 到 arrayList
+                    memberList_NAME.add(memberData.getmName());
+                }
+                //Toast.makeText(SignIn.this, "count: "+ memberList.size(), Toast.LENGTH_SHORT).show();
+                //Log.i("Member mId: ", memberList.get(1));
+                /*
+                for (int i = 0; i<memberList.size(); i++){
+                    Log.i("Member mId: ", memberList.get(i));
+                }
+                */
+                if (memberList_ID.size() <= 1){
+
+                }else
+                    Log.d("TESTING", "Send init");
+                sendNotification();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        /*
+        if (memberList.size() <= 1 || videoList.size() <= 1) {
+
+            //Toast.makeText(SignIn.this, "You'r the only member, no sendNotification", Toast.LENGTH_SHORT).show();
+            Log.d("TESTING", "You'r the only member, no sendNotification");
+        } else if(memberList.size() > 1 && videoList.size() > 0) {
+
+            //Toast.makeText(SignIn.this, "check send", Toast.LENGTH_SHORT).show();
+            Log.d("TESTING", "check sent");
+            //CheckUpdate();
+            sendNotification();
+        }
+        else {
+            //Toast.makeText(SignIn.this, "memberCount < 2 or no Video , no sendNotification", Toast.LENGTH_SHORT).show();
+            Log.d("TESTING", "memberCount < 2 or no Video , no sendNotification");
+        }
+        */
+
+    }
+
+
+    private void CheckUpdate() {
+        mDatabaseRef.child("mVideo").addChildEventListener(new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String PreviousChild) {
+
+                sendNotification();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                sendNotification();
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+        /*----------------------------------------------------------------------------------------*/
+        /*-------------------------------------Send method----------------------------------------*/
+        /*----------------------------------------------------------------------------------------*/
+
+    public void sendNotification()
+    {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                if (SDK_INT > 8) {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                            .permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    String send_mId, send_mName;
+
+                    Log.d("TESTING", "Send start");
+                    //Log.d("TESTING", "ThisUser_mId_f: "+ FamilyActivity.currentUserID_Notification);
+                    //Log.d("TESTING", "ThisUser_mId_s: "+ SetUpActivity.LoggedIn_User_mId);
+                    Log.d("TESTING", "ThisUser_mId_c: "+ currentUserID_Notification);
+                    //Logic which Send Notificat_ion different Device Programmatically....
+                    for (int i=0; i<memberList_ID.size(); i++) {
+
+                        send_mId = memberList_ID.get(i);
+                        send_mName = memberList_NAME.get(i);
+                        Log.d("TESTING", "looper_mId: "+ send_mId);
+
+                        //mAuth = FirebaseAuth.getInstance(); // important Call
+                        //FirebaseUser user = FamilyActivity.mAuth.getCurrentUser();
+                        if (send_mId.equals(currentUserID_Notification)) {
+                            continue;
+                        }
+
+                        try {
+                            String jsonResponse;
+
+                            URL url = new URL("https://onesignal.com/api/v1/notifications");
+                            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                            con.setUseCaches(false);
+                            con.setDoOutput(true);
+                            con.setDoInput(true);
+
+                            con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                            con.setRequestProperty("Authorization", "Basic ODI3MjUzNDUtMmQ2Mi00ODczLWFmMGMtYmNjOTgxZjJkZDkw");
+                            con.setRequestMethod("POST");
+
+                            String strJsonBody = "{"
+                                    + "\"app_id\": \"121eb60c-9642-4d9c-9c1c-45f5bf970bbc\","
+
+                                    + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + send_mId + "\"}],"
+
+                                    + "\"data\": {\"foo\": \"bar\"},"
+                                    + "\"contents\": {\"en\": \"message\"},"
+                                    + "\"contents\": {\"en\": \"來自一則 "+ send_mName +" 傳的新影片\"}"
+                                    + "}";
+
+
+                            System.out.println("strJsonBody:\n" + strJsonBody);
+
+                            byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                            con.setFixedLengthStreamingMode(sendBytes.length);
+
+                            OutputStream outputStream = con.getOutputStream();
+                            outputStream.write(sendBytes);
+
+                            int httpResponse = con.getResponseCode();
+                            System.out.println("httpResponse: " + httpResponse);
+
+                            if (httpResponse >= HttpURLConnection.HTTP_OK
+                                    && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+                                Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
+                                jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                                scanner.close();
+                            } else {
+                                Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
+                                jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                                scanner.close();
+                            }
+                            System.out.println("jsonResponse:\n" + jsonResponse);
+                            signal = true;
+
+                        } catch(Throwable t){
+                            t.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
     }
 }
