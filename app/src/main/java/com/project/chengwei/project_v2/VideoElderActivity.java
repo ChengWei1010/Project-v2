@@ -1,5 +1,6 @@
 package com.project.chengwei.project_v2;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,7 +52,6 @@ public class VideoElderActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
 
-
     private Button btn_list;
 
     private String myGroup, myId;
@@ -62,6 +62,7 @@ public class VideoElderActivity extends AppCompatActivity {
 
     private Gallery gallery;
     private GalleryAdapter galleryAdapter = null;
+    private ProgressDialog progressDialog;
 
     private FirebaseData firebaseData;
     private MemberData memberData;
@@ -157,9 +158,6 @@ public class VideoElderActivity extends AppCompatActivity {
         imagePathList.clear();
         memberDataList.clear();
         mIdVideoList.clear();
-//        mIdMemberList = new ArrayList<>();
-//        memberImageList = new ArrayList<>();
-
         gallery.setUnselectedAlpha((float) 0.5);
         gallery.setSpacing(10);
 
@@ -184,19 +182,10 @@ public class VideoElderActivity extends AppCompatActivity {
                     //抓出成員存到arrayList
                     memberData = child.getValue(MemberData.class);
                     String img = memberData.getmImage();
-                    Log.d("MemberImage",img);
-                    //String id = memberData.getmId();
-                    //String img = memberData.getmImage();
                     //Log.d("MemberImage",img);
-                    //mIdMemberList.add(id);
-//                    memberImageList.add(img);
                     memberDataList.add(memberData);
-                    //Log.d("KKKK",memberDataList.get(0).getmId());
                 }
 
-//                for(int i=0; i<memberImageList.size(); i++){
-//                    Log.d("ForLoop",memberImageList.get(i));
-//                }
                 //取得房間裡所有member當日傳的資料
                 mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
                     @Override
@@ -236,33 +225,32 @@ public class VideoElderActivity extends AppCompatActivity {
                                 storagePathList.add(storagePath);
                             }
                         }
+//                        progressDialog.dismiss();
+                        if(memberList.isEmpty()){
+                            Toast.makeText(VideoElderActivity.this,"今天還沒有影片喔!",Toast.LENGTH_SHORT).show();
+                        }else{
+                            for(int i=0; i<mIdVideoList.size(); i++){
+                                String mIdVideo = mIdVideoList.get(i);
 
-                if(memberList.isEmpty()){
-                    Toast.makeText(VideoElderActivity.this,"今天還沒有影片喔!",Toast.LENGTH_SHORT).show();
-                }else{
-                    for(int i=0; i<mIdVideoList.size(); i++){
-                        String mIdVideo = mIdVideoList.get(i);
-
-                        for(int j=0; j<memberDataList.size(); j++){
-                            String mIdMember = memberDataList.get(j).getmId();
-                            if(mIdVideo.equals(mIdMember)){
-                                //Log.d("SameMid",mIdVideo);
-                                Log.d("ImagePath",memberDataList.get(j).getmImage());
-                                imagePathList.add(memberDataList.get(j).getmImage());
+                                for(int j=0; j<memberDataList.size(); j++){
+                                    String mIdMember = memberDataList.get(j).getmId();
+                                    if(mIdVideo.equals(mIdMember)){
+                                        //Log.d("SameMid",mIdVideo);
+                                        //Log.d("ImagePath",memberDataList.get(j).getmImage());
+                                        imagePathList.add(memberDataList.get(j).getmImage());
+                                    }
+                                }
                             }
-                        }
-                    }
+                            galleryAdapter = new GalleryAdapter(VideoElderActivity.this, R.layout.gallery_item,memberList,storagePathList,imagePathList);
+                            gallery.setAdapter(galleryAdapter);
 
-                    galleryAdapter = new GalleryAdapter(VideoElderActivity.this, R.layout.gallery_item,memberList,storagePathList,imagePathList);
-                    gallery.setAdapter(galleryAdapter);
-
-                    gallery.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View arg1, final int position, long id) {
-                            Toast.makeText(VideoElderActivity.this, memberList.get(position) ,Toast.LENGTH_SHORT).show();
+                            gallery.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View arg1, final int position, long id) {
+                                    Toast.makeText(VideoElderActivity.this, memberList.get(position) ,Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-                    });
-                }
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {}

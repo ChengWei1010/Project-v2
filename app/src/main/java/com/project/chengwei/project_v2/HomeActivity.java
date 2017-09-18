@@ -83,8 +83,8 @@ public class HomeActivity extends AppCompatActivity {
         help_guide = findViewById(R.id.help_guide);
         textClock = findViewById(R.id.textClock);
         ic_one = findViewById(R.id.ic_one);
-        notification_num = findViewById(R.id.notification_num);
-        notification_num.setText("8");
+        //notification_num = findViewById(R.id.notification_num);
+        //notification_num.setText("8");
 
     //profile drawer
         text_group_name = findViewById(R.id.text_group_name);
@@ -144,6 +144,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case R.id.btn_video:
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
+                    ic_one.setVisibility(View.INVISIBLE);
                     Intent intent = new Intent(getApplicationContext(),VideoElderActivity.class);
                     intent.putExtra("myGroup",myGroup);
                     intent.putExtra("myId", myId);
@@ -276,8 +277,8 @@ public class HomeActivity extends AppCompatActivity {
         btn_magnifier.setClickable(false);
         textClock.setVisibility(View.INVISIBLE);
 
-        notification_num.setVisibility(View.INVISIBLE);
-        ic_one.setVisibility(View.INVISIBLE);
+        //notification_num.setVisibility(View.INVISIBLE);
+        //ic_one.setVisibility(View.INVISIBLE);
     }
     private void closeGuide(){
         help_guide.setVisibility(View.INVISIBLE);
@@ -288,8 +289,8 @@ public class HomeActivity extends AppCompatActivity {
         btn_map.setClickable(true);
         btn_magnifier.setClickable(true);
 
-        notification_num.setVisibility(View.VISIBLE);
-        ic_one.setVisibility(View.VISIBLE);
+        //notification_num.setVisibility(View.VISIBLE);
+        //ic_one.setVisibility(View.VISIBLE);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//

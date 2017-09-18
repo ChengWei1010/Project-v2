@@ -141,6 +141,7 @@ public class FamilyActivity extends AppCompatActivity {
         cursor.moveToPosition(0);
         mName = cursor.getString(cursor.getColumnIndex("name"));
         mGroup = cursor.getString(cursor.getColumnIndex("room"));
+        myId = cursor.getString(cursor.getColumnIndex("uid"));
 
         textViewName.setText( cursor.getString(cursor.getColumnIndex("name")) );
         textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
@@ -155,7 +156,6 @@ public class FamilyActivity extends AppCompatActivity {
         bitmap = drawable.getBitmap();
         roundedImage = new RoundImage(bitmap);
         profileImg.setImageDrawable(roundedImage);
-
         myId = cursor.getString(cursor.getColumnIndex("uid"));
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(mGroup);
     }

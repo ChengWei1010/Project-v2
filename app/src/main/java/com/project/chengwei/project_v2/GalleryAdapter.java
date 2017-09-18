@@ -13,11 +13,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import org.w3c.dom.Text;
 
@@ -42,6 +46,7 @@ public class GalleryAdapter extends BaseAdapter {
     private TextView textView;
     private ImageView imageView;
     private ImageButton btnVideo, btnDownload;
+    private ProgressBar progressBar;
 
     private DownloadManager downloadManager;
     private Uri uri;
@@ -75,14 +80,31 @@ public class GalleryAdapter extends BaseAdapter {
         view = inflater.inflate(layout, null);
 
         imageView = view.findViewById(R.id.imgMember);
+        progressBar = view.findViewById(R.id.progressbar);
         textView = view.findViewById(R.id.txtMember);
         btnVideo = view.findViewById(R.id.btnVideo);
         btnDownload = view.findViewById(R.id.btnDownload);
 
         //成員照片
-//        String imageString = "https://firebasestorage.googleapis.com/v0/b/elderlyproject-46505.appspot.com/o/images%2F1765%2FIYG7ZEw3lOcoauzUhVOx36Kf5T72.jpg?alt=media&token=d7b1b95e-a813-41fb-bac5-dd6bc4d3396f";
+        //String imageString = "https://firebasestorage.googleapis.com/v0/b/elderlyproject-46505.appspot.com/o/images%2F1765%2FIYG7ZEw3lOcoauzUhVOx36Kf5T72.jpg?alt=media&token=d7b1b95e-a813-41fb-bac5-dd6bc4d3396f";
         String imageString = imagePathList.get(position);
-        Glide.with(context).load(imageString).into(imageView);
+        Glide.with(context)
+                .load(imageString)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                //.placeholder(R.drawable.ic_cake)//loading時候的Drawable
+                .error(R.drawable.ic_family)//load失敗的Drawable
+                .into(imageView);
         //成員名字
         textView.setText(memberList.get(position));
         //播放影片按鈕

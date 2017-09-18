@@ -95,6 +95,7 @@
         app:layout_constraintTop_toBottomOf="@+id/include"
         app:layout_constraintVertical_bias="0.766" />
         <ImageView
+            android:visibility="invisible"
             android:id="@+id/ic_one"
             android:layout_width="70dp"
             android:layout_height="70dp"
@@ -103,17 +104,17 @@
             android:layout_marginBottom="157dp"
             android:layout_marginStart="157dp"
             app:layout_constraintLeft_toLeftOf="@+id/btn_video" />
-        <TextView
-            android:textSize="50sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorText"
-            android:id="@+id/notification_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_video"
-            android:layout_marginBottom="161dp"
-            android:layout_marginStart="178dp"
-            app:layout_constraintLeft_toLeftOf="@+id/btn_video" />
+        <!--<TextView-->
+            <!--android:textSize="50sp"-->
+            <!--android:textStyle="bold"-->
+            <!--android:textColor="@color/colorText"-->
+            <!--android:id="@+id/notification_num"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:layout_constraintBottom_toBottomOf="@+id/btn_video"-->
+            <!--android:layout_marginBottom="161dp"-->
+            <!--android:layout_marginStart="178dp"-->
+            <!--app:layout_constraintLeft_toLeftOf="@+id/btn_video" />-->
 
         <ImageButton
         android:id="@+id/btn_map"
