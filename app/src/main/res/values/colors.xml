@@ -4,11 +4,11 @@
     <color name="colorPrimaryDark">#910534</color>
     <color name="colorAccent">#960334</color>
 
-    <!--<color name="colorToolbar">#ed7b7b</color>-->
-    <color name="colorIcon">#e18888</color>
-    <color name="colorIcon2">#ffffff</color>
+    <color name="colorIcon">#df6e6e</color>
+    <color name="colorToolBarIcon">#ffffff</color>
+    <color name="colorToolbar">#ef6262</color>
     <color name="colorBG">#fdc7c7</color>
-    <color name="colorText">#FFFFFF</color>
+    <color name="colorText">#ffffff</color>
     <color name="guideBG">#EAE8E8</color>
     <color name="sosBG">#BAF8DC</color>
     <color name="colorPopUp">#efd3d0</color>

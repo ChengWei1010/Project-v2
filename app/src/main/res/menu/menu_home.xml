@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/help"
-        android:icon="@drawable/ic_help_white_24dp"
+        android:icon="@drawable/ic_help_24dp"
         android:layout_gravity="right"
         app:showAsAction="always"
         android:title="Guide"/>

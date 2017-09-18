@@ -41,7 +41,7 @@ public class ContactPopUpActivity extends Activity {
             final String getImage = getIntent().getStringExtra("IMAGE");
 
             //顯示照片
-            imageView = (ImageView) findViewById(R.id.imageView);
+            imageView = findViewById(R.id.imageView);
             imageView.setImageURI(Uri.parse(getImage));
 
             //以下4行是顯示圓形照片
@@ -66,11 +66,11 @@ public class ContactPopUpActivity extends Activity {
             name.setText(getName);
 
             //顯示電話號碼
-            phone = (TextView) findViewById(R.id.phone);
+            phone = findViewById(R.id.phone);
             phone.setText(getPhone);
 
             //撥打電話
-            callBtn = (Button) findViewById(R.id.callBtn);
+            callBtn = findViewById(R.id.callBtn);
             callBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent call = new Intent(Intent.ACTION_CALL, Uri.EMPTY.parse("tel:" + getPhone));
@@ -79,7 +79,7 @@ public class ContactPopUpActivity extends Activity {
             });
 
             //跳到修改那頁
-            modifyBtn = (Button) findViewById(R.id.editBtn);
+            modifyBtn =  findViewById(R.id.editBtn);
             modifyBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent intent = new Intent(ContactPopUpActivity.this,ContactModifyActivity.class);
