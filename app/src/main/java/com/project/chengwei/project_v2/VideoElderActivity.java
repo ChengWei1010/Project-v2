@@ -46,6 +46,7 @@ public class VideoElderActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
 
+    private SQLiteDBHelper dbHelper;
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
     private FirebaseStorage mStorage;
@@ -54,6 +55,7 @@ public class VideoElderActivity extends AppCompatActivity {
 
     private Button btn_list;
 
+    private int firebaseVideo;
     private String myGroup, myId;
     private ImageButton showBtn,toolbar_guide;
     private Toolbar myToolbar;
@@ -111,12 +113,16 @@ public class VideoElderActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            startActivity(new Intent(VideoElderActivity.this, HomeActivity.class));
-            finish();
+            if(isElder()) {
+                startActivity(new Intent(VideoElderActivity.this, HomeActivity.class));
+                finish();
+            }else{
+                startActivity(new Intent(VideoElderActivity.this, FamilyActivity.class));
+                finish();
+            }
         }
         return super.onKeyDown(keyCode, event);
     }
-
     public void setToolbar(){
         toolbar_guide.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,8 +229,15 @@ public class VideoElderActivity extends AppCompatActivity {
                                 //抓mVideo裡面的mId
                                 mIdVideoList.add(mId);
                                 storagePathList.add(storagePath);
+                                firebaseVideo++;
+                                // TODO : check if word well
                             }
                         }
+                        // TODO : check if word well
+                        dbHelper = new SQLiteDBHelper(getApplicationContext());
+                        dbHelper.setNotification(firebaseVideo);
+                        dbHelper.close();
+
 //                        progressDialog.dismiss();
                         if(memberList.isEmpty()){
                             Toast.makeText(VideoElderActivity.this,"今天還沒有影片喔!",Toast.LENGTH_SHORT).show();
@@ -342,6 +355,7 @@ public class VideoElderActivity extends AppCompatActivity {
 //        FirebaseUser currentUser = mAuth.getCurrentUser();
 //        updateUI(currentUser);
 //    }
+
     private void updateUI(FirebaseUser user) {}
     //--------------------------------------------------------------------------------------------//
     //-------------------------------------- help and Guide --------------------------------------//

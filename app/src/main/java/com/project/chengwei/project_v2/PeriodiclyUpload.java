@@ -319,8 +319,6 @@ public class PeriodiclyUpload extends BroadcastReceiver{
                     //Log.d("TESTING", "ThisUser_mId_f: "+ FamilyActivity.currentUserID_Notification);
                     //Log.d("TESTING", "ThisUser_mId_s: "+ SetUpActivity.LoggedIn_User_mId);
                     Log.d("TESTING", "ThisUser_mId_c: "+ currentUserID_Notification);
-                    // TODO : send_mName = SQLite
-                    //
                     //Logic which Send Notificat_ion different Device Programmatically....
                     for (int i=0; i<memberList_ID.size(); i++) {
 

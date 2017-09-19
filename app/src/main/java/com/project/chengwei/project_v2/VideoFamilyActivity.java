@@ -198,7 +198,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_family);
-        mTextureView = (TextureView)findViewById(R.id.textureView);
+        mTextureView = findViewById(R.id.textureView);
         findViews();
         setToolbar();
         createVideoFolder();

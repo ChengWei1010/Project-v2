@@ -82,7 +82,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_guide_ok = findViewById(R.id.btn_guide_ok);
         help_guide = findViewById(R.id.help_guide);
         textClock = findViewById(R.id.textClock);
-        ic_one = findViewById(R.id.ic_one);
+        //ic_one = findViewById(R.id.ic_one);
         //notification_num = findViewById(R.id.notification_num);
         //notification_num.setText("8");
 
@@ -97,16 +97,16 @@ public class HomeActivity extends AppCompatActivity {
         btn_editProfile = findViewById(R.id.btn_editProfile);
 
 
-        Drawable drawable;
-        Resources res = this.getResources();
-        if(isElder()){
-            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
-            profileImg.setImageDrawable(drawable);
-        }
-        else{
-            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
-            profileImg.setImageDrawable(drawable);
-        }
+//        Drawable drawable;
+//        Resources res = this.getResources();
+//        if(isElder()){
+//            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
+//            profileImg.setImageDrawable(drawable);
+//        }
+//        else{
+//            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
+//            profileImg.setImageDrawable(drawable);
+//        }
     }
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//
@@ -144,7 +144,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case R.id.btn_video:
                     //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
-                    ic_one.setVisibility(View.INVISIBLE);
+                    //ic_one.setVisibility(View.INVISIBLE);
                     Intent intent = new Intent(getApplicationContext(),VideoElderActivity.class);
                     intent.putExtra("myGroup",myGroup);
                     intent.putExtra("myId", myId);

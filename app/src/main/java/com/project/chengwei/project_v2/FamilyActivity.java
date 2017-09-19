@@ -8,6 +8,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -21,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -31,6 +35,7 @@ import android.widget.Button;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -70,10 +75,13 @@ public class FamilyActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDatabaseRef, sendTimeRef;
+    private FirebaseData firebaseData;
+    private Boolean hasNewVideo=false;
     private int TimeDialogID = 0;
-    private int hour, minute;
+    private int hour, minute, firebaseVideo = 0, mSQLiteVideo;
     private MemberData memberData;
-    private ArrayList<String> memberList;
+    private ArrayList<String> memberList,countList;
+    private pl.droidsonroids.gif.GifTextView notificationGif;
 
     private DrawerLayout drawer;
     private TextView textViewName, textViewPhone, textViewAddress, textViewBirthday, textViewRoom, toolbar_title;
@@ -95,6 +103,7 @@ public class FamilyActivity extends AppCompatActivity {
         initDB();
         setToolbar();
         setListeners();
+        countFirebaseVideo();
         closeDB();
     }
     //--------------------------------------------------------------------------------------------//
@@ -120,16 +129,20 @@ public class FamilyActivity extends AppCompatActivity {
         textViewRoom = findViewById(R.id.textViewRoom);
         profileImg = findViewById(R.id.profileImg);
         btn_editProfile = findViewById(R.id.btn_editProfile);
-        Drawable drawable;
-        Resources res = this.getResources();
-        if(isElder()){
-            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
-            profileImg.setImageDrawable(drawable);
-        }
-        else{
-            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
-            profileImg.setImageDrawable(drawable);
-        }
+
+        notificationGif = findViewById(R.id.notificationGif);
+        notificationGif.setZ(999);
+        notificationGif.setBackgroundResource(R.drawable.gif_notification);
+//        Drawable drawable;
+//        Resources res = this.getResources();
+//        if(isElder()){
+//            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
+//            profileImg.setImageDrawable(drawable);
+//        }
+//        else{
+//            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
+//            profileImg.setImageDrawable(drawable);
+//        }
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Database -------------------------------------------//
@@ -142,6 +155,7 @@ public class FamilyActivity extends AppCompatActivity {
         mName = cursor.getString(cursor.getColumnIndex("name"));
         mGroup = cursor.getString(cursor.getColumnIndex("room"));
         myId = cursor.getString(cursor.getColumnIndex("uid"));
+        mSQLiteVideo = cursor.getInt(cursor.getColumnIndex("notification"));
 
         textViewName.setText( cursor.getString(cursor.getColumnIndex("name")) );
         textViewPhone.setText( cursor.getString(cursor.getColumnIndex("phone")) );
@@ -202,8 +216,9 @@ public class FamilyActivity extends AppCompatActivity {
             }
         }
     };
-
-    //------------------------------------ BtnListener --------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    //----------------------------------------- BtnListener --------------------------------------//
+    //--------------------------------------------------------------------------------------------//
     private Button.OnClickListener BtnListener = new Button.OnClickListener(){
         @Override
         public void onClick(View view) {
@@ -243,7 +258,7 @@ public class FamilyActivity extends AppCompatActivity {
         }, hour, minute, false).show();
     }
     //--------------------------------------------------------------------------------------------//
-    //-------------------------- List members in the same room-----------------------------//
+    //--------------------------------- List members in the same room-----------------------------//
     //--------------------------------------------------------------------------------------------//
     public void listMember(){
         memberList = new ArrayList<>();
@@ -275,6 +290,40 @@ public class FamilyActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         });
     }
+    private void countFirebaseVideo(){
+        countList = new ArrayList<>();
+        countList.clear();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(mGroup);
+        mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // get all of the children at this level.
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                // shake hands with each of them.'
+                for (DataSnapshot child : children) {
+                    firebaseData = child.getValue(FirebaseData.class);
+                    firebaseVideo++;
+//                    String count = firebaseData.getStoragePath();
+//                    countList.add(count);
+
+                }
+                Log.d("HowMuch", String.valueOf(firebaseVideo));
+                if(firebaseVideo != mSQLiteVideo){
+                    hasNewVideo = true;
+                    Log.d("hello", "have new video");
+                    if(hasNewVideo) {
+                        notificationGif.setVisibility(View.VISIBLE);
+                        Log.d("hasNewVideo?", "yes");
+                    }else{
+                        notificationGif.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
     //--------------------------------------------------------------------------------------------//
     //-------------------------- Version and Permission ------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -489,6 +538,20 @@ public class FamilyActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            if(isElder()) {
+                startActivity(new Intent(FamilyActivity.this, HomeActivity.class));
+                finish();
+            }else{
+                startActivity(new Intent(FamilyActivity.this, FamilyActivity.class));
+                finish();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//

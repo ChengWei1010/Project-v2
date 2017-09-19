@@ -29,6 +29,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     private final static String FIELD_ADDRESS = "address";
     private final static String FIELD_BIRTHDAY = "birthday";
     private final static String FIELD_ROOM = "room";
+    private final static String FIELD_NOTIFICATION = "notification";
     private static final String IMAGE = "image";
 
     public SQLiteDBHelper(Context context)
@@ -63,13 +64,14 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
                 FIELD_PHONE + " TEXT, " +
                 FIELD_ADDRESS + " TEXT, " +
                 FIELD_BIRTHDAY + " TEXT, " +
+                FIELD_NOTIFICATION + " INTEGER, " +
                 IMAGE + " TEXT )";
     }
     //SQL : create first row
     byte[] ByteExample = "abc".getBytes();
 
     private String sql_firstRow;{
-        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uid, hadSetUp, name, phone, address, birthday, room, image) VALUES (0, 0, '姓名', '未設置手機', '未設置地址', '2000-01-01', '0000','"+ByteExample+"')");}
+        sql_firstRow = ("INSERT INTO " + TABLE_NAME + " (uid, hadSetUp, name, phone, address, birthday, room, notification, image) VALUES (0, 0, '姓名', '未設置手機', '未設置地址', '2000-01-01', '0000', 0,'"+ByteExample+"')");}
 
     //Database : setProfileData to the table
     public long setProfileData(String uuid, String hadsetup, String name, String room, String phone){
@@ -105,17 +107,25 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     }
 
     //Database : cursor pointer to the table
-    public Cursor getProfileData()
-    {
+    public Cursor getProfileData() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] cols = new String[] {FIELD_UID,FIELD_HADSETUP,FIELD_NAME, FIELD_PHONE, FIELD_ADDRESS, FIELD_BIRTHDAY,FIELD_ROOM};
+        String[] cols = new String[] {FIELD_UID,FIELD_HADSETUP,FIELD_NAME, FIELD_PHONE, FIELD_ADDRESS, FIELD_BIRTHDAY,FIELD_ROOM,FIELD_NOTIFICATION};
         Cursor mCursor = db.query(true,TABLE_NAME,cols, null, null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
         return mCursor; // iterate to get each value.
     }
+    //-------------------------------------------------------------------------------------//
+    //-------------------------------- About Notification ---------------------------------//
+    //-------------------------------------------------------------------------------------//
+    public long setNotification(int notification){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(FIELD_NOTIFICATION,notification);
 
+        return db.update(TABLE_NAME, cv, "_id=1", null);
+    }
     //-------------------------------------------------------------------------------------//
     //---------------------------------About Profile Photo---------------------------------//
     //-------------------------------------------------------------------------------------//

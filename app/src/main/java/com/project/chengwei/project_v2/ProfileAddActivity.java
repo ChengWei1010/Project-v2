@@ -118,6 +118,7 @@ public class ProfileAddActivity extends AppCompatActivity {
             Log.d("String load from DB",imageString);
             dbHelper.close();
             ImgView_photo.setImageURI(Uri.parse(imageString));
+            uriString = imageString;
         } catch (Exception e) {
             dbHelper.close();
         }
@@ -141,16 +142,16 @@ public class ProfileAddActivity extends AppCompatActivity {
         btn_choose = findViewById(R.id.chooseBtn);
         ImgView_photo = findViewById(R.id.ImgView_photo);
 
-        Drawable drawable;
-        Resources res = this.getResources();
-        if(isElder()){
-            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
-            ImgView_photo.setImageDrawable(drawable);
-        }
-        else{
-            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
-            ImgView_photo.setImageDrawable(drawable);
-        }
+//        Drawable drawable;
+//        Resources res = this.getResources();
+//        if(isElder()){
+//            drawable = res.getDrawable(R.drawable.ic_elder, getTheme());
+//            ImgView_photo.setImageDrawable(drawable);
+//        }
+//        else{
+//            drawable = res.getDrawable(R.drawable.ic_family, getTheme());
+//            ImgView_photo.setImageDrawable(drawable);
+//        }
     }
     //--------------------------------------------------------------------------------------------//
     //---------------------------------- OnClick Listeners ---------------------------------------//

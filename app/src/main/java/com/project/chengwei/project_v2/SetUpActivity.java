@@ -326,6 +326,9 @@ public class SetUpActivity extends AppCompatActivity {
         btnCamera = findViewById(R.id.cameraBtn);
         btnChoose = findViewById(R.id.chooseBtn);
         btn_create = findViewById(R.id.btn_create);
+        if(isElder()){
+            btn_create.setVisibility(View.INVISIBLE);
+        }
         editTextGroupNum = findViewById(R.id.editTextGroupNum);
         editTextGroupPwd = findViewById(R.id.editTextGroupPwd);
         btn_elder = findViewById(R.id.btn_elder);
@@ -551,6 +554,7 @@ public class SetUpActivity extends AppCompatActivity {
         Cursor cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
         dbHelper.setProfileData(uId ,hadsetup, strName, strRoom, getMyPhoneNumber());
+        dbHelper.setNotification(0);
         closeDB();
     }
     private void closeDB(){
@@ -699,6 +703,7 @@ public class SetUpActivity extends AppCompatActivity {
     }
 
     private boolean hasStatus(){
+        // TODO have some problems
         if(strStatus.isEmpty()){
             showMessage("請點選身份！");
             pageId = 1;
