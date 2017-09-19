@@ -62,6 +62,7 @@ public class PeriodiclyUpload extends BroadcastReceiver{
     static public FirebaseAuth mAuth;
     FirebaseUser user;
     static String currentUserID_Notification;
+    static String send_NAME;
     static boolean signal = false;
 
     @Override
@@ -214,11 +215,17 @@ public class PeriodiclyUpload extends BroadcastReceiver{
                 memberList_ID.clear();
                 memberList_NAME.clear();
                 for (DataSnapshot child : children) { // shake hands with each of them.'
-
                     memberData = child.getValue(MemberData.class); //抓出成員
                     memberList_ID.add(memberData.getmId()); //存 member.mId 到 arrayList
                     memberList_NAME.add(memberData.getmName());
                 }
+
+                for (int i = 0; i<memberList_ID.size(); i++) {
+                    if (memberList_ID.get(i).equals(user.getUid())) {
+                        send_NAME = memberList_NAME.get(i);
+                    }
+                }
+                Log.d("TESTING", "NAME: " + send_NAME);
                 //Toast.makeText(SignIn.this, "count: "+ memberList.size(), Toast.LENGTH_SHORT).show();
                 //Log.i("Member mId: ", memberList.get(1));
                 /*
@@ -306,13 +313,14 @@ public class PeriodiclyUpload extends BroadcastReceiver{
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                             .permitAll().build();
                     StrictMode.setThreadPolicy(policy);
-                    String send_mId, send_mName;
+                    String send_mId;
 
                     Log.d("TESTING", "Send start");
                     //Log.d("TESTING", "ThisUser_mId_f: "+ FamilyActivity.currentUserID_Notification);
                     //Log.d("TESTING", "ThisUser_mId_s: "+ SetUpActivity.LoggedIn_User_mId);
                     Log.d("TESTING", "ThisUser_mId_c: "+ currentUserID_Notification);
                     // TODO : send_mName = SQLite
+                    //
                     //Logic which Send Notificat_ion different Device Programmatically....
                     for (int i=0; i<memberList_ID.size(); i++) {
 
@@ -345,7 +353,7 @@ public class PeriodiclyUpload extends BroadcastReceiver{
 
                                     + "\"data\": {\"foo\": \"bar\"},"
                                     + "\"contents\": {\"en\": \"message\"},"
-                                    + "\"contents\": {\"en\": \"來自一則 "+ send_mName +" 傳的新影片\"}"
+                                    + "\"contents\": {\"en\": \"來自一則 "+ send_NAME +" 傳的新影片\"}"
                                     + "}";
 
 
