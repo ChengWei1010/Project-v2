@@ -69,6 +69,7 @@ import com.kbeanie.multipicker.api.callbacks.VideoPickerCallback;
 import com.kbeanie.multipicker.api.entity.ChosenVideo;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -225,7 +226,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
             }
         });
 
-        mSelectButton.setOnClickListener(new View.OnClickListener() {
+        /*mSelectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 VideoPicker videoPicker =  new VideoPicker(VideoFamilyActivity.this);
@@ -251,6 +252,13 @@ public class VideoFamilyActivity extends AppCompatActivity {
                 });
                 videoPicker.allowMultiple();
                 videoPicker.pickVideo();
+            }
+        });*/
+        mSelectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG,"Clicked");
+                getVideoList();
             }
         });
     }
@@ -480,10 +488,12 @@ public class VideoFamilyActivity extends AppCompatActivity {
 
     private File createVideoFileName() throws IOException{
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        Log.d(TAG,"The timestamp is:"+timestamp);
         String prepend = "Video_"+timestamp+"_";
         File videoFile = File.createTempFile(prepend,".mp4",mVideoFolder); //創造mp4格式的檔案;
         mVideoFileName = videoFile.getAbsolutePath();
         //mVideoFileName = "test01";
+        Log.d(TAG,"The file name is:"+mVideoFileName);
         return videoFile;
 
     }
@@ -552,6 +562,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
                 if(i == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED){
                     Toast.makeText(getApplicationContext(),"已達到最長錄製時間",Toast.LENGTH_SHORT).show();
                     if(mMediaRecorder!=null){
+                        Log.d(TAG,"The mRecordCaptureSession is:"+mRecordCaptureSession.toString());
                         mRecordCaptureSession.close();
                         mChronometer.stop();
                         mChronometer.setVisibility(View.INVISIBLE);
@@ -620,7 +631,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest( CameraDevice.TEMPLATE_RECORD);
             mCaptureRequestBuilder.addTarget(previewSurface);
             mCaptureRequestBuilder.addTarget(recordSurface);
-
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recordSurface),
                     new CameraCaptureSession.StateCallback() {
                         @Override
@@ -638,6 +648,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
 
                         @Override
                         public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+                            Log.d(TAG,"Configure error");
                         }
 
                         @Override
@@ -719,6 +730,33 @@ public class VideoFamilyActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_LONG ).show();
                 //uploadVideo(uploadFile);
             }
+        }
+    }
+
+    class VideoFilter implements FilenameFilter{
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String regex = "Video_"+timestamp+".*[.]mp4";
+        @Override
+        public boolean accept(File file, String s) {
+            return (s.matches(regex));
+        }
+    }
+
+    private void getVideoList() {
+        File home = mVideoFolder;
+        List<String> list = new ArrayList<String>();
+        Log.d(TAG,"The number of file is:"+ home.listFiles(new VideoFilter()).length);
+        if(home.listFiles(new VideoFilter()).length>0){
+            for(File file: home.listFiles(new VideoFilter())) {
+                System.out.println("musicName is: " + file.getName());
+                Log.d(TAG,"File name is:"+file.getAbsolutePath());
+                list.add(file.getAbsoluteFile().toString());
+                Log.d(TAG,list.toString());
+            }
+            doMp4Append(list);
+        }else{
+            Log.d(TAG,"Today has no Video!");
+            Toast.makeText(getApplicationContext(),"本日尚無影片!",Toast.LENGTH_SHORT).show();
         }
     }
 
