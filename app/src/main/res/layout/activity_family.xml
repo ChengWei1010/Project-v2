@@ -45,7 +45,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/ic_launcher"
+            android:background="@drawable/btn_video_activity"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/textView5"
             app:layout_constraintLeft_toLeftOf="parent"

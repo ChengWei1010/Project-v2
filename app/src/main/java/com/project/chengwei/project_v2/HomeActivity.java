@@ -32,6 +32,18 @@ import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 public class HomeActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
@@ -44,6 +56,13 @@ public class HomeActivity extends AppCompatActivity {
     private TextClock textClock;
     private String myId, myGroup, myName, myPhone;
     private TextView toolbar_title;
+    private ArrayList<String> countList;
+    private pl.droidsonroids.gif.GifTextView notificationGif;
+    private DatabaseReference mDatabaseRef;
+    private FirebaseData firebaseData;
+    private int firebaseVideo=0 ,mSQLiteVideo=0;
+    private Boolean hasNewVideo=false;
+    private Date formattedDate;
 
     private DrawerLayout drawer;
     private TextView textViewName,textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
@@ -63,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
         initDB();
         setToolbar();
         setListeners();
+        countFirebaseVideo();
         closeDB();
     }
 
@@ -96,6 +116,9 @@ public class HomeActivity extends AppCompatActivity {
         profileImg = findViewById(R.id.profileImg);
         btn_editProfile = findViewById(R.id.btn_editProfile);
 
+        notificationGif = findViewById(R.id.notificationGif);
+        notificationGif.setZ(999);
+        notificationGif.setBackgroundResource(R.drawable.gif_notification);
 
 //        Drawable drawable;
 //        Resources res = this.getResources();
@@ -181,6 +204,68 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(homeIntent);
     }
     //--------------------------------------------------------------------------------------------//
+    //----------------------------------- Firebase Notification ----------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void countFirebaseVideo(){
+        //取得當天日期
+        Date currentDate = new Date();
+        DateFormat dateFormat= new SimpleDateFormat("yyyy年MM月dd日");
+        try{
+            formattedDate = dateFormat.parse(dateFormat.format(currentDate));
+            //Log.d("today",formattedDate.toString());
+        }catch(ParseException parseEx){
+            parseEx.printStackTrace();
+        }
+
+        countList = new ArrayList<>();
+        countList.clear();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup);
+        mDatabaseRef.child("mVideo").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // get all of the children at this level.
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                // shake hands with each of them.'
+                for (DataSnapshot child : children) {
+                    firebaseData = child.getValue(FirebaseData.class);
+
+                    //取得firebase存的Date
+                    String date = firebaseData.getDate();
+                    String subDate = date.substring(0,11);
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+                    Date firebaseDate = null;
+                    try {
+                        firebaseDate = sdf.parse(subDate);
+                        //Log.d("firebaseDay",firebaseDate.toString());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    //比較firebase存的日期跟今天的日期有沒有一樣
+                    if(formattedDate.equals(firebaseDate)){
+                        //Log.d("today"," and firebase date is equal");
+                        firebaseVideo++;
+                    }
+
+//                    String count = firebaseData.getStoragePath();
+//                    countList.add(count);
+                }
+                Log.d("home page firebaseVnum", String.valueOf(firebaseVideo));
+                if(firebaseVideo != mSQLiteVideo){
+                    hasNewVideo = true;
+                    Log.d("hello", "have new video");
+                }
+                if(hasNewVideo) {
+                    notificationGif.setVisibility(View.VISIBLE);
+                    Log.d("hasNewVideo?", "yes");
+                }else{
+                    notificationGif.setVisibility(View.INVISIBLE);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+    //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void setToolbar(){
@@ -218,6 +303,8 @@ public class HomeActivity extends AppCompatActivity {
         myGroup = cursor.getString(cursor.getColumnIndex("room"));
         myName = cursor.getString(cursor.getColumnIndex("name"));
         myPhone = cursor.getString(cursor.getColumnIndex("phone"));
+        mSQLiteVideo = cursor.getInt(cursor.getColumnIndex("notification"));
+
         text_group_name.setText(myGroup);
         textViewName.setText( myName );
         textViewPhone.setText( myPhone );

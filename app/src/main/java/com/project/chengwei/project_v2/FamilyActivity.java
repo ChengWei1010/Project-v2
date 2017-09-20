@@ -48,8 +48,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,10 +82,11 @@ public class FamilyActivity extends AppCompatActivity {
     private FirebaseData firebaseData;
     private Boolean hasNewVideo=false;
     private int TimeDialogID = 0;
-    private int hour, minute, firebaseVideo = 0, mSQLiteVideo;
+    private int hour, minute, firebaseVideo=0, mSQLiteVideo=0;
     private MemberData memberData;
     private ArrayList<String> memberList,countList;
     private pl.droidsonroids.gif.GifTextView notificationGif;
+    private Date formattedDate;
 
     private DrawerLayout drawer;
     private TextView textViewName, textViewPhone, textViewAddress, textViewBirthday, textViewRoom, toolbar_title;
@@ -290,7 +295,20 @@ public class FamilyActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         });
     }
+    //--------------------------------------------------------------------------------------------//
+    //----------------------------------- Firebase Notification ----------------------------------//
+    //--------------------------------------------------------------------------------------------//
     private void countFirebaseVideo(){
+        //取得當天日期
+        Date currentDate = new Date();
+        DateFormat dateFormat= new SimpleDateFormat("yyyy年MM月dd日");
+        try{
+            formattedDate = dateFormat.parse(dateFormat.format(currentDate));
+            //Log.d("today",formattedDate.toString());
+        }catch(ParseException parseEx){
+            parseEx.printStackTrace();
+        }
+
         countList = new ArrayList<>();
         countList.clear();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(mGroup);
@@ -302,21 +320,36 @@ public class FamilyActivity extends AppCompatActivity {
                 // shake hands with each of them.'
                 for (DataSnapshot child : children) {
                     firebaseData = child.getValue(FirebaseData.class);
-                    firebaseVideo++;
+
+                    //取得firebase存的Date
+                    String date = firebaseData.getDate();
+                    String subDate = date.substring(0,11);
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+                    Date firebaseDate = null;
+                    try {
+                        firebaseDate = sdf.parse(subDate);
+                        //Log.d("firebaseDay",firebaseDate.toString());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    //比較firebase存的日期跟今天的日期有沒有一樣
+                    if(formattedDate.equals(firebaseDate)){
+                        //Log.d("today"," and firebase date is equal");
+                        firebaseVideo++;
+                    }
 //                    String count = firebaseData.getStoragePath();
 //                    countList.add(count);
-
                 }
-                Log.d("HowMuch", String.valueOf(firebaseVideo));
+                Log.d("home page firebaseVnum", String.valueOf(firebaseVideo));
                 if(firebaseVideo != mSQLiteVideo){
                     hasNewVideo = true;
                     Log.d("hello", "have new video");
-                    if(hasNewVideo) {
-                        notificationGif.setVisibility(View.VISIBLE);
-                        Log.d("hasNewVideo?", "yes");
-                    }else{
-                        notificationGif.setVisibility(View.INVISIBLE);
-                    }
+                }
+                if(hasNewVideo) {
+                    notificationGif.setVisibility(View.VISIBLE);
+                    Log.d("hasNewVideo?", "yes");
+                }else{
+                    notificationGif.setVisibility(View.INVISIBLE);
                 }
             }
             @Override

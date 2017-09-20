@@ -230,13 +230,13 @@ public class VideoElderActivity extends AppCompatActivity {
                                 mIdVideoList.add(mId);
                                 storagePathList.add(storagePath);
                                 firebaseVideo++;
-                                // TODO : check if word well
                             }
+                            Log.e("video page firebaseVnum", String.valueOf(firebaseVideo));
+                            // TODO : check if word well
+                            dbHelper = new SQLiteDBHelper(getApplicationContext());
+                            dbHelper.setNotification(firebaseVideo);
+                            dbHelper.close();
                         }
-                        // TODO : check if word well
-                        dbHelper = new SQLiteDBHelper(getApplicationContext());
-                        dbHelper.setNotification(firebaseVideo);
-                        dbHelper.close();
 
 //                        progressDialog.dismiss();
                         if(memberList.isEmpty()){

@@ -108,7 +108,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private Button mSelectButton;
     private ImageButton mRecordImageButton,toolbar_guide;
     private pl.droidsonroids.gif.GifTextView recordingGif;
-
+    private TextView toolbar_title;
     VideoPicker GlobalPicker;
     private File mVideoFolder;
     private String mVideoFileName;
@@ -271,6 +271,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         groupNum = getIntent().getExtras().get("groupNum").toString();
         mName = getIntent().getExtras().get("mName").toString();
         myToolbar = findViewById(R.id.toolbar_with_guide);
+        toolbar_title = findViewById(R.id.toolbar_title);
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
         mChronometer = findViewById(R.id.chronometer);
         mRecordImageButton = findViewById(R.id.recordButton);
@@ -863,7 +864,8 @@ public class VideoFamilyActivity extends AppCompatActivity {
             }
         });
         setSupportActionBar(myToolbar);
-        myToolbar.setTitle("觀看今日影片");
+        toolbar_title.setText("錄製影片");
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
 
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {

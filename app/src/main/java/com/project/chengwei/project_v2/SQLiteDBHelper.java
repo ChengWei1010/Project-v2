@@ -123,7 +123,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(FIELD_NOTIFICATION,notification);
-
         return db.update(TABLE_NAME, cv, "_id=1", null);
     }
     //-------------------------------------------------------------------------------------//

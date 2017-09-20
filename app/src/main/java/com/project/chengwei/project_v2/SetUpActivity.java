@@ -119,8 +119,8 @@ public class SetUpActivity extends AppCompatActivity {
         pageId=1;
 
         checkPermission();
-        initDB();
         signIn();
+        initDB();
         findViews();
         setUpListeners();
     }
@@ -326,9 +326,6 @@ public class SetUpActivity extends AppCompatActivity {
         btnCamera = findViewById(R.id.cameraBtn);
         btnChoose = findViewById(R.id.chooseBtn);
         btn_create = findViewById(R.id.btn_create);
-        if(isElder()){
-            btn_create.setVisibility(View.INVISIBLE);
-        }
         editTextGroupNum = findViewById(R.id.editTextGroupNum);
         editTextGroupPwd = findViewById(R.id.editTextGroupPwd);
         btn_elder = findViewById(R.id.btn_elder);
@@ -343,12 +340,11 @@ public class SetUpActivity extends AppCompatActivity {
         btn_elder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                strStatus = "e";
                 btn_elder.setBackgroundResource(R.drawable.btn_elder);
                 btn_family.setBackgroundResource(R.drawable.btn_family0);
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, true).commit();
                 if(hasName()) {
-                    //showMessage("e");
-                    strStatus = "e";
                     btn_next.setBackgroundResource(R.drawable.next);
                 }
             }
@@ -356,11 +352,11 @@ public class SetUpActivity extends AppCompatActivity {
         btn_family.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                strStatus = "f";
                 btn_family.setBackgroundResource(R.drawable.btn_family);
                 btn_elder.setBackgroundResource(R.drawable.btn_elder0);
                 getSharedPreferences(KEY, Context.MODE_PRIVATE).edit().putBoolean(ELDERLY_MODE, false).commit();
                 if(hasName()) {
-                    strStatus = "f";
                     btn_next.setBackgroundResource(R.drawable.next);
                 }
             }
@@ -397,6 +393,7 @@ public class SetUpActivity extends AppCompatActivity {
                             pageId=3;
                         }break;
                     case 3:
+
                         checkValidRoomNum();
                         checkValidPwdNum();
                         if(Room && Pwd) {
@@ -523,6 +520,9 @@ public class SetUpActivity extends AppCompatActivity {
         r2.setBackgroundResource(R.drawable.r02);
         r3.setBackgroundResource(R.drawable.r3);
         strRoom = editTextGroupNum.getText().toString();
+        if(strStatus.equals("e")){
+            btn_create.setVisibility(View.INVISIBLE);
+        }
     }
     private void start(){
         if(isElder()) {
