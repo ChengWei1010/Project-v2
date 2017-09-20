@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Gallery;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -53,7 +54,8 @@ public class VideoElderActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
 
-    private Button btn_list;
+    private Button btn_list,btn_guide_ok;
+    private FrameLayout help_guide;
 
     private int firebaseVideo;
     private String myGroup, myId;
@@ -88,7 +90,6 @@ public class VideoElderActivity extends AppCompatActivity {
         findViews();
         showVideo();
         setToolbar();
-
         btn_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,11 +101,14 @@ public class VideoElderActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        gallery = (Gallery)findViewById(R.id.gallery);
-        btn_list = (Button) findViewById(R.id.btnList);
+        //btn_guide_ok = findViewById(R.id.btn_guide_ok);
+        //help_guide = findViewById(R.id.help_guide);
+        gallery = findViewById(R.id.gallery);
+        btn_list =  findViewById(R.id.btnList);
         myToolbar = findViewById(R.id.toolbar_with_guide);
         toolbar_title = findViewById(R.id.toolbar_title);
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
+
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
@@ -124,6 +128,12 @@ public class VideoElderActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
     public void setToolbar(){
+//        btn_guide_ok.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                help_guide.setVisibility(View.INVISIBLE);
+//            }
+//        });
         toolbar_guide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -361,10 +371,8 @@ public class VideoElderActivity extends AppCompatActivity {
     //-------------------------------------- help and Guide --------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void openGuide(){
-        Toast.makeText(VideoElderActivity.this, "guide !", Toast.LENGTH_SHORT).show();
-    }
-    private void closeGuide(){
-
+        //help_guide.setVisibility(View.VISIBLE);
+        //Toast.makeText(VideoElderActivity.this, "guide !", Toast.LENGTH_SHORT).show();
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences ----------------------------------------//

@@ -41,9 +41,9 @@
         app:layout_constraintHorizontal_bias="0.0" />
 
     <Button
-        android:text="start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:background="@drawable/ic_home"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_alignBottom="@+id/map"
         android:layout_toStartOf="@+id/zoomin"
         android:id="@+id/start"
@@ -53,7 +53,7 @@
         android:layout_marginBottom="3dp" />
 
     <Button
-        android:text="GPS"
+        android:background="@drawable/ic_location_on"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:id="@+id/gps"
@@ -67,7 +67,7 @@
         android:layout_marginLeft="8dp" />
 
     <Button
-        android:text="-"
+        android:background="@drawable/ic_zoom_out"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:id="@+id/zoomout"
@@ -80,7 +80,7 @@
         android:layout_marginBottom="3dp" />
 
     <Button
-        android:text="+"
+        android:background="@drawable/ic_zoom_in"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:id="@+id/zoomin"
@@ -93,9 +93,9 @@
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
-        android:text="rotation"
-        android:layout_width="88dp"
-        android:layout_height="50dp"
+        android:background="@drawable/ic_rotate_90_degrees"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:id="@+id/rotation"
         android:layout_alignBaseline="@+id/start"
         android:layout_alignBottom="@+id/start"

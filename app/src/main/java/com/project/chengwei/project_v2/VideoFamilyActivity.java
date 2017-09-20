@@ -91,7 +91,7 @@ import java.util.TimerTask;
 import pl.droidsonroids.gif.GifTextView;
 
 public class VideoFamilyActivity extends AppCompatActivity {
-    //new angela branch
+    private FrameLayout help_guide;
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
     private String groupNum,mName,mId;
@@ -105,7 +105,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
 
     private Toolbar myToolbar;
-    private Button mSelectButton;
+    private Button mSelectButton,btn_guide_ok;
     private ImageButton mRecordImageButton,toolbar_guide;
     private pl.droidsonroids.gif.GifTextView recordingGif;
     private TextView toolbar_title;
@@ -268,6 +268,8 @@ public class VideoFamilyActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
+        //help_guide = findViewById(R.id.help_guide);
+        //btn_guide_ok = findViewById(R.id.btn_guide_ok);
         groupNum = getIntent().getExtras().get("groupNum").toString();
         mName = getIntent().getExtras().get("mName").toString();
         myToolbar = findViewById(R.id.toolbar_with_guide);
@@ -860,9 +862,15 @@ public class VideoFamilyActivity extends AppCompatActivity {
         toolbar_guide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(VideoFamilyActivity.this, "guide !", Toast.LENGTH_SHORT).show();
+                //help_guide.setVisibility(View.VISIBLE);
             }
         });
+//        btn_guide_ok.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                help_guide.setVisibility(View.INVISIBLE);
+//            }
+//        });
         setSupportActionBar(myToolbar);
         toolbar_title.setText("錄製影片");
         getSupportActionBar().setDisplayShowTitleEnabled(false);

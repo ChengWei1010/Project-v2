@@ -64,9 +64,9 @@ public class FamilyActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
     private Toolbar myToolbar;
-    private FrameLayout left_drawer;
+    private FrameLayout left_drawer,help_guide;
     private ImageButton btn_video;
-    private Button btn_time, btn_showMember,btn_watch_video;
+    private Button btn_time, btn_showMember,btn_watch_video,btn_guide_ok;
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
     private String mGroup, mName, myId;
@@ -120,11 +120,12 @@ public class FamilyActivity extends AppCompatActivity {
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
         btn_video = findViewById(R.id.btn_video);
         left_drawer = findViewById(R.id.left_drawer);
-
+        help_guide = findViewById(R.id.help_guide);
         btn_watch_video = findViewById(R.id.btn_watch_video);
         btn_time = findViewById(R.id.timeBtn);
         btn_showMember = findViewById(R.id.showMemberBtn);
         toolbar_title = findViewById(R.id.toolbar_title);
+        btn_guide_ok = findViewById(R.id.btn_guide_ok);
 
         //profile drawer
         textViewName = findViewById(R.id.textViewName);
@@ -193,6 +194,7 @@ public class FamilyActivity extends AppCompatActivity {
         btn_watch_video.setOnClickListener(BtnListener);
         btn_time.setOnClickListener(BtnListener);
         btn_showMember.setOnClickListener(BtnListener);
+        //btn_guide_ok.setOnClickListener(BtnListener);
     }
 
     //--------------------------------------------------------------------------------------------//
@@ -241,6 +243,9 @@ public class FamilyActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                     break;
+//                case R.id.btn_guide_ok:
+//                    help_guide.setVisibility(View.INVISIBLE);
+//                    break;
             }
         }
     };
@@ -553,6 +558,7 @@ public class FamilyActivity extends AppCompatActivity {
         toolbar_guide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //help_guide.setVisibility(View.VISIBLE);
                 Toast.makeText(FamilyActivity.this, "guide !", Toast.LENGTH_SHORT).show();
             }
         });
