@@ -79,6 +79,7 @@ public class SetUpActivity extends AppCompatActivity {
     final int RequestLocationCode = 4;
     final int RequestSmsCode = 5;
     final int RequestPermissionCode = 999;
+    final int RequestAudioCode = 307;
     private final int REQUEST_PERMISSION = 10;
     final int REQUEST_EXTERNAL_STORAGE = 999;
     final int REQUEST_IMAGE_CAPTURE = 99;
@@ -134,10 +135,12 @@ public class SetUpActivity extends AppCompatActivity {
         int callPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.CALL_PHONE);
         int smsPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.SEND_SMS);
         int locationPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        int audioPermission = ActivityCompat.checkSelfPermission(SetUpActivity.this, Manifest.permission.RECORD_AUDIO);
 
         if (readPermission != PackageManager.PERMISSION_GRANTED || writePermission != PackageManager.PERMISSION_GRANTED ||
                 callPermission != PackageManager.PERMISSION_GRANTED || cameraPermission != PackageManager.PERMISSION_GRANTED ||
-                locationPermission != PackageManager.PERMISSION_GRANTED || smsPermission != PackageManager.PERMISSION_GRANTED) {
+                locationPermission != PackageManager.PERMISSION_GRANTED || smsPermission != PackageManager.PERMISSION_GRANTED ||
+                audioPermission != PackageManager.PERMISSION_GRANTED) {
             //未取得權限，向使用者要求允許權限
             RequestRuntimePermission();
         }
@@ -247,10 +250,30 @@ public class SetUpActivity extends AppCompatActivity {
                     })
                     .show();
         }
+        //拒絕錄音
+        else if (ActivityCompat.shouldShowRequestPermissionRationale(SetUpActivity.this, Manifest.permission.RECORD_AUDIO)) {
+            new AlertDialog.Builder(SetUpActivity.this)
+                    .setMessage("此應用程式需要錄製聲音功能，請接受權限要求!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(SetUpActivity.this,
+                                    new String[]{Manifest.permission.RECORD_AUDIO},
+                                    RequestAudioCode);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(SetUpActivity.this,"Audio Permission Canceled",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
+        }
         //接受
         else{
             ActivityCompat.requestPermissions(SetUpActivity.this,new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.CALL_PHONE,
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE ,android.Manifest.permission.SEND_SMS, android.Manifest.permission.ACCESS_FINE_LOCATION},
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE ,android.Manifest.permission.SEND_SMS, android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO},
                     RequestPermissionCode);
         }
     }
@@ -304,6 +327,14 @@ public class SetUpActivity extends AppCompatActivity {
                     Toast.makeText(SetUpActivity.this,"SMS Permission Granted",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(SetUpActivity.this,"SMS Permission Canceled",Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            case RequestAudioCode: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(SetUpActivity.this,"Audio Permission Granted",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(SetUpActivity.this,"Audio Permission Canceled",Toast.LENGTH_SHORT).show();
                 }
                 return;
             }

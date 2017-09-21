@@ -357,7 +357,8 @@ public class VideoFamilyActivity extends AppCompatActivity {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ) {
                         Toast.makeText(this,"Video app required to camera", Toast.LENGTH_SHORT).show();
                     }
-                    requestPermissions(new String[]{Manifest.permission.CAMERA},REQUEST_CAMERA_PERMISSION_RESULT);
+                    requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
+                    },REQUEST_CAMERA_PERMISSION_RESULT);
                 }
             }else {
                 cameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mBackgroundHandler);
@@ -464,6 +465,10 @@ public class VideoFamilyActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         "Application will not run without camera services",Toast.LENGTH_SHORT).show();
             }
+            if(grantResult[1] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getApplicationContext(),
+                        "Application will not have audio on record.",Toast.LENGTH_SHORT).show();
+            }
         }
         if(requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT){
             if(grantResult[0] == PackageManager.PERMISSION_GRANTED){
@@ -555,8 +560,9 @@ public class VideoFamilyActivity extends AppCompatActivity {
     //用來設定影片的格式（如果要限制時間長短好像在這裡調整）
     private void setupMediaRecorder()throws IOException{
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mMediaRecorder.setMaxDuration(5000); //500ms 先設定五秒
         //設定時間到要做什麼
         mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
@@ -587,6 +593,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         mMediaRecorder.setVideoFrameRate(30);
         mMediaRecorder.setVideoSize(mVideoSize.getWidth(),mVideoSize.getHeight());
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
