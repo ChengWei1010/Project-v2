@@ -358,7 +358,7 @@ public class ProfileAddActivity extends AppCompatActivity {
             initDB();
             closeDB();
             FireBaseUpdateImage(uri_crop);
-            //FireBaseUpdateData(uuId, strName, strPhone, groupNum, strImg);
+            FireBaseUpdateData(uuId, strName, strPhone, groupNum, uriString);
             alertSuccess();
         }
         //可以改 room 時
