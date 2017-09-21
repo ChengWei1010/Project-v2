@@ -355,7 +355,6 @@ public class ProfileAddActivity extends AppCompatActivity {
             } else{
                 dbHelper.saveEditImage(uriString);
             }
-            initDB();
             closeDB();
             FireBaseUpdateImage(uri_crop);
             FireBaseUpdateData(uuId, strName, strPhone, groupNum, uriString);
