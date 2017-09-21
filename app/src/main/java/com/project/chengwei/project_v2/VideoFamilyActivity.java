@@ -113,7 +113,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     private File mVideoFolder;
     private String mVideoFileName;
     private boolean mIsRecording = false;
-    private String TAG ="C2VI";
+    private static String TAG ="C2VI";
     private static final int REQUEST_CAMERA_PERMISSION_RESULT = 0;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT = 1;
     private TextureView mTextureView;
@@ -676,6 +676,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     public static void appendMp4List(List<String> mp4PathList, String outPutPath) throws IOException{
         List<Movie> mp4MovieList = new ArrayList<>();
         for (String mp4Path : mp4PathList){
+            Log.d(TAG,"The mp4Path is:"+mp4Path);
             mp4MovieList.add(MovieCreator.build(mp4Path));
         }
 
@@ -760,9 +761,9 @@ public class VideoFamilyActivity extends AppCompatActivity {
             for(File file: home.listFiles(new VideoFilter())) {
                 System.out.println("musicName is: " + file.getName());
                 Log.d(TAG,"File name is:"+file.getAbsolutePath());
-                list.add(file.getAbsoluteFile().toString());
-                Log.d(TAG,list.toString());
+                list.add(file.getPath());
             }
+            Log.d(TAG,"list is:"+list.toString());
             doMp4Append(list);
         }else{
             Log.d(TAG,"Today has no Video!");
