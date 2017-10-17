@@ -254,10 +254,12 @@ public class VideoFamilyActivity extends AppCompatActivity {
                 videoPicker.pickVideo();
             }
         });*/
+
         mSelectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG,"Clicked");
+                // TODO 時間到的時候自動做這裡
                 getVideoList();
             }
         });
@@ -297,9 +299,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-
         startBackgroundThread();
-
         if(mTextureView.isAvailable()){
             setupCamera(mTextureView.getWidth(),mTextureView.getHeight());
             connectCamera();
@@ -398,7 +398,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
                 @Override
                 public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
                     Toast.makeText(getApplicationContext(),"Unable to setup camera preview.",Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(VideoFamilyActivity.this, FamilyActivity.class));
+                    startActivity(new Intent(VideoFamilyActivity.this, HomeActivity.class));
                     finish();
                 }
             },null );
@@ -838,6 +838,11 @@ public class VideoFamilyActivity extends AppCompatActivity {
 //        mDatabaseRef.push().setValue(videoData);
 //        Toast.makeText(this, "database StoragePath Uploaded", Toast.LENGTH_SHORT).show();
 //    }
+    private void detectTime(){
+        // TODO : get time from firebase
+        // TODO : 自動執行 click the button -> path
+        // TODO : path -> PeriodiclyUpload intent
+    }
     private void sendVideo(String storagePath){
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY,hour);
@@ -860,7 +865,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            startActivity(new Intent(VideoFamilyActivity.this, FamilyActivity.class));
+            startActivity(new Intent(VideoFamilyActivity.this, HomeActivity.class));
             finish();
         }
         return super.onKeyDown(keyCode, event);
@@ -887,7 +892,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(VideoFamilyActivity.this, FamilyActivity.class));
+                startActivity(new Intent(VideoFamilyActivity.this, HomeActivity.class));
                 finish();
             }
         });

@@ -11,7 +11,7 @@
     <string name="instruction_phone">enter phone</string>
     <string name="instruction_addr">enter address</string>
     <string name="title_activity_sos_gps">Map</string>
-    <string name="instruction_setup1">輸入姓名並選擇身份</string>
+    <string name="instruction_setup1">歡迎使用FamiFilm</string>
     <string name="dialog_title" />
     <string name="dialog_message" />
     <string name="drawer_open">1</string>

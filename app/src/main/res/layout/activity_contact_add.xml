@@ -59,7 +59,7 @@
         android:id="@+id/imageView"
         android:layout_width="170dp"
         android:layout_height="170dp"
-        app:srcCompat="@drawable/ic_family"
+        app:srcCompat="@drawable/btn_family"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"

@@ -59,7 +59,7 @@ public class WelcomeActivity extends AppCompatActivity {
                                 finish();
                             } else if (!isElder()) {
                                 Log.e("status","family, set up");
-                                startActivity(new Intent(WelcomeActivity.this, FamilyActivity.class));
+                                startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
                                 finish();
                             }
                         }

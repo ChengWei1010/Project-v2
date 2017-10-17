@@ -120,12 +120,12 @@ public class FamilyActivity extends AppCompatActivity {
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
         btn_video = findViewById(R.id.btn_video);
         left_drawer = findViewById(R.id.left_drawer);
-        help_guide = findViewById(R.id.help_guide);
+        //help_guide = findViewById(R.id.help_guide);
         btn_watch_video = findViewById(R.id.btn_watch_video);
         btn_time = findViewById(R.id.timeBtn);
         btn_showMember = findViewById(R.id.showMemberBtn);
         toolbar_title = findViewById(R.id.toolbar_title);
-        btn_guide_ok = findViewById(R.id.btn_guide_ok);
+        //btn_guide_ok = findViewById(R.id.btn_guide_ok);
 
         //profile drawer
         textViewName = findViewById(R.id.textViewName);

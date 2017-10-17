@@ -57,5 +57,3 @@
         app:layout_constraintTop_toBottomOf="@+id/ic" />
 
 </android.support.constraint.ConstraintLayout>
-
-    <!--app:lottie_colorFilter="@color/"-->

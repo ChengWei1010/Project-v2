@@ -1,6 +1,7 @@
 package com.project.chengwei.project_v2;
 
 import android.Manifest;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -42,7 +44,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
@@ -51,21 +56,22 @@ public class HomeActivity extends AppCompatActivity {
     private SQLiteDBHelper dbHelper;
     private Cursor cursor;
     private Toolbar myToolbar;
-    private ImageButton btn_phone, btn_video, btn_map, btn_magnifier, btn_sos, btn_guide_ok,toolbar_guide;
+    private ImageButton btn_phone, btn_video, btn_sos, btn_guide_ok,toolbar_guide,btn_record,btn_tool;
+    private Button btn_sendTime;
     private FrameLayout help_guide;
     private TextClock textClock;
     private String myId, myGroup, myName, myPhone;
     private TextView toolbar_title;
     private ArrayList<String> countList;
     private pl.droidsonroids.gif.GifTextView notificationGif;
-    private DatabaseReference mDatabaseRef;
+    private DatabaseReference refHour,refMinute,refSaveTime, mDatabaseRef;
     private FirebaseData firebaseData;
-    private int firebaseVideo=0 ,mSQLiteVideo=0;
+    private int firebaseVideo = 0 ,mSQLiteVideo = 0, hour = 0, minute = 0;
     private Boolean hasNewVideo=false;
     private Date formattedDate;
 
     private DrawerLayout drawer;
-    private TextView textViewName,textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name,notification_num;
+    private TextView textViewName,textViewPhone,textViewAddress,textViewBirthday,textViewRoom,text_group_name;
     private ImageView profileImg,ic_one;
     private ImageButton btn_editProfile;
 
@@ -83,6 +89,7 @@ public class HomeActivity extends AppCompatActivity {
         setToolbar();
         setListeners();
         countFirebaseVideo();
+        getFirebaseSendTime();
         closeDB();
     }
 
@@ -96,15 +103,14 @@ public class HomeActivity extends AppCompatActivity {
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
         btn_phone = findViewById(R.id.btn_phone);
         btn_video = findViewById(R.id.btn_video);
-        btn_map = findViewById(R.id.btn_map);
-        btn_magnifier = findViewById(R.id.btn_magnifier);
+        btn_tool = findViewById(R.id.btn_tool);
+//        btn_map = findViewById(R.id.btn_map);
+//        btn_magnifier = findViewById(R.id.btn_magnifier);
         btn_sos = findViewById(R.id.btn_sos);
         btn_guide_ok = findViewById(R.id.btn_guide_ok);
         help_guide = findViewById(R.id.help_guide);
-        textClock = findViewById(R.id.textClock);
-        //ic_one = findViewById(R.id.ic_one);
-        //notification_num = findViewById(R.id.notification_num);
-        //notification_num.setText("8");
+        btn_sendTime = findViewById(R.id.btn_sendTime);
+        btn_record = findViewById(R.id.btn_record);
 
     //profile drawer
         text_group_name = findViewById(R.id.text_group_name);
@@ -115,7 +121,6 @@ public class HomeActivity extends AppCompatActivity {
         textViewRoom = findViewById(R.id.textViewRoom);
         profileImg = findViewById(R.id.profileImg);
         btn_editProfile = findViewById(R.id.btn_editProfile);
-
         notificationGif = findViewById(R.id.notificationGif);
         notificationGif.setZ(999);
         notificationGif.setBackgroundResource(R.drawable.gif_notification);
@@ -137,8 +142,7 @@ public class HomeActivity extends AppCompatActivity {
     private void setListeners(){
         btn_phone.setOnClickListener(ImageBtnListener);
         btn_video.setOnClickListener(ImageBtnListener);
-        btn_map.setOnClickListener(ImageBtnListener);
-        btn_magnifier.setOnClickListener(ImageBtnListener);
+        btn_record.setOnClickListener(ImageBtnListener);
         btn_guide_ok.setOnClickListener(ImageBtnListener);
         btn_editProfile.setOnClickListener(ImageBtnListener);
         // SOS Button
@@ -150,6 +154,13 @@ public class HomeActivity extends AppCompatActivity {
                 intent.putExtra("myPhone",myPhone);
                 startActivity(intent);
                 return true;
+            }
+        });
+        // SendTime Button
+        btn_sendTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setSendTime();
             }
         });
     }
@@ -174,24 +185,33 @@ public class HomeActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                     break;
-                case R.id.btn_map:
-                    if (hasValidAddress()){
-                        startActivity(new Intent(HomeActivity.this, NavigationActivity.class));
-                        finish();
-                        break;
-                    } else{
-                        startActivity(new Intent(HomeActivity.this, NavigationPopUpActivity.class));
-                        //Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-                case R.id.btn_magnifier:
-                    Toast.makeText(HomeActivity.this, "mag !", Toast.LENGTH_SHORT).show();
+//                case R.id.btn_map:
+//                    if (hasValidAddress()){
+//                        startActivity(new Intent(HomeActivity.this, NavigationActivity.class));
+//                        finish();
+//                        break;
+//                    } else{
+//                        startActivity(new Intent(HomeActivity.this, NavigationPopUpActivity.class));
+//                        //Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
+//                        break;
+//                    }
+                case R.id.btn_record:
+                    Intent intent_record = new Intent(getApplicationContext(), VideoFamilyActivity.class);
+                    intent_record.putExtra("mName",myName);
+                    intent_record.putExtra("groupNum",myGroup);
+                    intent_record.putExtra("mId",myId);
+                    intent_record.putExtra("hour", hour);
+                    intent_record.putExtra("minute", minute);
+                    startActivity(intent_record);
+                    finish();
+                    break;
+                case R.id.btn_tool:
+                    Toast.makeText(HomeActivity.this, "btn_tool !", Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.btn_guide_ok:
                     closeGuide();
                     break;
                 case R.id.btn_editProfile:
-                    //Toast.makeText(HomeActivity.this, "edit !", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(HomeActivity.this, ProfileAddActivity.class));
                     finish();
                     break;
@@ -204,7 +224,58 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(homeIntent);
     }
     //--------------------------------------------------------------------------------------------//
-    //----------------------------------- Firebase Notification ----------------------------------//
+    //------------------------------- Set firebase send time--------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void getFirebaseSendTime(){
+        refHour = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("members").child(myId);
+        refMinute = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("members").child(myId);
+
+        refHour.child("TimeHour").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                hour = Integer.parseInt(dataSnapshot.getValue(String.class));
+                btn_sendTime.setText(hour + ":" + minute);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        refMinute.child("TimeMinute").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                minute = Integer.parseInt(dataSnapshot.getValue(String.class));
+                btn_sendTime.setText(hour + ":" + minute);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+    }
+    private void setSendTime(){
+        //抓現在時間
+        final Calendar c = Calendar.getInstance();
+        hour = c.get(Calendar.HOUR_OF_DAY);
+        minute = c.get(Calendar.MINUTE);
+
+        // Create a new instance of TimePickerDialog and return it
+        new TimePickerDialog(HomeActivity.this, new TimePickerDialog.OnTimeSetListener(){
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minutes) {
+                hour = hourOfDay;
+                minute = minutes;
+                Toast.makeText(HomeActivity.this, "Send Time is: "+ hour + ":" + minute, Toast.LENGTH_SHORT).show();
+                btn_sendTime.setText(hour + ":" + minute);
+                saveTimeToFirebase(Integer.toString(hour),Integer.toString(minute));
+            }
+        }, hour, minute, false).show();
+    }
+    private void saveTimeToFirebase(String hour, String minute){
+        refSaveTime = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("members").child(myId);
+        refSaveTime.child("TimeHour").setValue(hour);
+        refSaveTime.child("TimeMinute").setValue(minute);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //----------------------------------- Firebase Video -----------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void countFirebaseVideo(){
         //取得當天日期
@@ -360,8 +431,6 @@ public class HomeActivity extends AppCompatActivity {
         btn_sos.setClickable(false);
         btn_phone.setClickable(false);
         btn_video.setClickable(false);
-        btn_map.setClickable(false);
-        btn_magnifier.setClickable(false);
         textClock.setVisibility(View.INVISIBLE);
 
         //notification_num.setVisibility(View.INVISIBLE);
@@ -373,8 +442,8 @@ public class HomeActivity extends AppCompatActivity {
         btn_sos.setClickable(true);
         btn_phone.setClickable(true);
         btn_video.setClickable(true);
-        btn_map.setClickable(true);
-        btn_magnifier.setClickable(true);
+        btn_sendTime.setClickable(true);
+        btn_tool.setClickable(true);
 
         //notification_num.setVisibility(View.VISIBLE);
         //ic_one.setVisibility(View.VISIBLE);
