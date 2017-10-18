@@ -67,8 +67,8 @@
             app:layout_constraintRight_toLeftOf="@+id/guideline"
             android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
-            android:text=" : "
-            android:textSize="80px"
+            android:text="讀取中"
+            android:textSize="70px"
             android:gravity="bottom|center"
             android:paddingBottom="15dp"
             app:layout_constraintLeft_toLeftOf="parent" />

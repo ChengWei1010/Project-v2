@@ -592,6 +592,11 @@ public class SetUpActivity extends AppCompatActivity {
         cursor.moveToPosition(0);
         dbHelper.setProfileData(uId ,hadsetup, strName, strRoom, strPhone);
         dbHelper.setNotification(0);
+
+        Cursor cursor_time = dbHelper.getSendTime();
+        cursor.moveToPosition(0);
+        dbHelper.setSendTime(00,00);
+        dbHelper.setNotification(0);
         closeDB();
     }
     private void closeDB(){

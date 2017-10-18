@@ -48,13 +48,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
     static final String GROUP_NUM =  "0000";
     private SQLiteDBHelper dbHelper;
-    private Cursor cursor;
+    private Cursor cursor,cursor_time;
     private Toolbar myToolbar;
     private ImageButton btn_phone, btn_video, btn_sos, btn_guide_ok,toolbar_guide,btn_record,btn_tool;
     private Button btn_sendTime;
@@ -89,7 +91,13 @@ public class HomeActivity extends AppCompatActivity {
         setToolbar();
         setListeners();
         countFirebaseVideo();
-        getFirebaseSendTime();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //getFirebaseSendTime();
+            }
+        }, 2 * 1000);
         closeDB();
     }
 
@@ -104,8 +112,6 @@ public class HomeActivity extends AppCompatActivity {
         btn_phone = findViewById(R.id.btn_phone);
         btn_video = findViewById(R.id.btn_video);
         btn_tool = findViewById(R.id.btn_tool);
-//        btn_map = findViewById(R.id.btn_map);
-//        btn_magnifier = findViewById(R.id.btn_magnifier);
         btn_sos = findViewById(R.id.btn_sos);
         btn_guide_ok = findViewById(R.id.btn_guide_ok);
         help_guide = findViewById(R.id.help_guide);
@@ -145,6 +151,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_record.setOnClickListener(ImageBtnListener);
         btn_guide_ok.setOnClickListener(ImageBtnListener);
         btn_editProfile.setOnClickListener(ImageBtnListener);
+        btn_tool.setOnClickListener(ImageBtnListener);
         // SOS Button
         btn_sos.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -206,7 +213,8 @@ public class HomeActivity extends AppCompatActivity {
                     finish();
                     break;
                 case R.id.btn_tool:
-                    Toast.makeText(HomeActivity.this, "btn_tool !", Toast.LENGTH_SHORT).show();
+                    ToolBoxClass cdd = new ToolBoxClass(HomeActivity.this);
+                    cdd.show();
                     break;
                 case R.id.btn_guide_ok:
                     closeGuide();
@@ -226,37 +234,36 @@ public class HomeActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------//
     //------------------------------- Set firebase send time--------------------------------------//
     //--------------------------------------------------------------------------------------------//
-    private void getFirebaseSendTime(){
-        refHour = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("members").child(myId);
-        refMinute = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("members").child(myId);
-
-        refHour.child("TimeHour").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                hour = Integer.parseInt(dataSnapshot.getValue(String.class));
-                btn_sendTime.setText(hour + ":" + minute);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
-
-        refMinute.child("TimeMinute").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                minute = Integer.parseInt(dataSnapshot.getValue(String.class));
-                btn_sendTime.setText(hour + ":" + minute);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
-
-    }
+//    private void getFirebaseSendTime(){
+//        refHour = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("members").child(myId);
+//        refMinute = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("members").child(myId);
+//
+//        refHour.child("TimeHour").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                hour = Integer.parseInt(dataSnapshot.getValue(String.class));
+//                btn_sendTime.setText(hour + ":" + minute);
+//            }
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {}
+//        });
+//
+//        refMinute.child("TimeMinute").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                minute = Integer.parseInt(dataSnapshot.getValue(String.class));
+//                btn_sendTime.setText(hour + ":" + minute);
+//            }
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {}
+//        });
+//
+//    }
     private void setSendTime(){
         //抓現在時間
         final Calendar c = Calendar.getInstance();
         hour = c.get(Calendar.HOUR_OF_DAY);
         minute = c.get(Calendar.MINUTE);
-
         // Create a new instance of TimePickerDialog and return it
         new TimePickerDialog(HomeActivity.this, new TimePickerDialog.OnTimeSetListener(){
             @Override
@@ -266,6 +273,7 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(HomeActivity.this, "Send Time is: "+ hour + ":" + minute, Toast.LENGTH_SHORT).show();
                 btn_sendTime.setText(hour + ":" + minute);
                 saveTimeToFirebase(Integer.toString(hour),Integer.toString(minute));
+                dbHelper.setSendTime(hour,minute);
             }
         }, hour, minute, false).show();
     }
@@ -368,6 +376,13 @@ public class HomeActivity extends AppCompatActivity {
     //Database : initial database
     private void initDB(){
         dbHelper = new SQLiteDBHelper(getApplicationContext());
+        cursor_time = dbHelper.getSendTime();
+        cursor_time.moveToPosition(0);
+        hour = cursor_time.getInt(cursor_time.getColumnIndex("hour"));
+        minute = cursor_time.getInt(cursor_time.getColumnIndex("minute"));
+        Log.e("sendTime",Integer.toString(hour));
+        btn_sendTime.setText(hour + ":" + minute);
+
         cursor = dbHelper.getProfileData();
         cursor.moveToPosition(0);
         myId = cursor.getString(cursor.getColumnIndex("uid"));
