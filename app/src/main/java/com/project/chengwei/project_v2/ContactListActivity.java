@@ -40,7 +40,7 @@ public class ContactListActivity extends AppCompatActivity {
         setToolbar();
         setListeners();
         sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
-        sqLiteDBHelper.queryContactData("CREATE TABLE IF NOT EXISTS PERSON(Id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, image TEXT)");
+        /*sqLiteDBHelper.queryContactData("CREATE TABLE IF NOT EXISTS PERSON(Id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, image TEXT)");*/
 
 
         //initialize list data

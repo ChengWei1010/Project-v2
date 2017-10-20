@@ -7,6 +7,14 @@
 
     <!--android:background="@color/colorBG"-->
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_alignEnd="@+id/imgPerson"
+        android:layout_alignParentStart="true" />
+
     <ImageView
         android:layout_width="160dp"
         android:layout_height="160dp"

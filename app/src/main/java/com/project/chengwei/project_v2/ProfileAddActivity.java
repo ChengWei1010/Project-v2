@@ -33,6 +33,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -117,7 +118,11 @@ public class ProfileAddActivity extends AppCompatActivity {
             String imageString = dbHelper.retrieveImageFromDB();
             Log.d("String load from DB",imageString);
             dbHelper.close();
-            ImgView_photo.setImageURI(Uri.parse(imageString));
+//            ImgView_photo.setImageURI(Uri.parse(imageString));
+            Glide.with(this)
+                    .load(imageString)
+                    .error(R.drawable.ic_family)//load失敗的Drawable
+                    .into(ImgView_photo);
             uriString = imageString;
         } catch (Exception e) {
             dbHelper.close();
@@ -351,13 +356,13 @@ public class ProfileAddActivity extends AppCompatActivity {
             dbHelper.editProfileData(hadSetUp,strName, strPhone ,strAddr, birthday);
             if(hadCrop){
                 saveImageInLocal();
-                dbHelper.saveEditImage(uriString);
+//                dbHelper.saveEditImage(uriString);
             } else{
-                dbHelper.saveEditImage(uriString);
+//                dbHelper.saveEditImage(uriString);
             }
-            closeDB();
             FireBaseUpdateImage(uri_crop);
             FireBaseUpdateData(uuId, strName, strPhone, groupNum, uriString);
+            closeDB();
             alertSuccess();
         }
         //可以改 room 時
@@ -433,6 +438,8 @@ public class ProfileAddActivity extends AppCompatActivity {
                             strImage = downloadUri.toString();
                             FireBaseUpdateData(uuId, editTextName.getText().toString(), editTextPhone.getText().toString(), groupNum, strImage);
                             Log.d("Upload","Success");
+                            //存照片到sqlite
+                            dbHelper.saveEditImage(strImage);
                         }
                     })
                     //上傳失敗

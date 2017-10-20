@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -82,6 +83,8 @@ public class HomeActivity extends AppCompatActivity {
     RoundImage roundedImage;
     Bitmap bitmap;
 
+    private MemberData memberData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,13 +96,7 @@ public class HomeActivity extends AppCompatActivity {
         setToolbar();
         setListeners();
         countFirebaseVideo();
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                //getFirebaseSendTime();
-            }
-        }, 2 * 1000);
+        addFirebaseContact();
         closeDB();
     }
 
@@ -406,15 +403,20 @@ public class HomeActivity extends AppCompatActivity {
             //Log.d("byte load from DB",bytes.toString());
             String imageString = dbHelper.retrieveImageFromDB();
             Log.d("String load from DB",imageString);
-            dbHelper.close();
+            /*dbHelper.close();*/
             // Show Image from DB in ImageView
             //profileImg.setImageBitmap(Utils.getImage(bytes));
-            profileImg.setImageURI(Uri.parse(imageString));
-
-            BitmapDrawable drawable = (BitmapDrawable) profileImg.getDrawable();
-            bitmap = drawable.getBitmap();
-            roundedImage = new RoundImage(bitmap);
-            profileImg.setImageDrawable(roundedImage);
+//            profileImg.setImageURI(Uri.parse(imageString));
+//
+//            BitmapDrawable drawable = (BitmapDrawable) profileImg.getDrawable();
+//            bitmap = drawable.getBitmap();
+//            roundedImage = new RoundImage(bitmap);
+//            profileImg.setImageDrawable(roundedImage);
+            Glide.with(this)
+                    .load(imageString) // add your image url
+                    .transform(new CircleTransform(HomeActivity.this)) // applying the image transformer
+                    .error(R.drawable.ic_family)
+                    .into(profileImg);
 
         } catch (Exception e) {
             //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
@@ -435,7 +437,45 @@ public class HomeActivity extends AppCompatActivity {
             return false;
         }
     }
+    //--------------------------------------------------------------------------------------------//
+    //---------------------------------- Insert Firebase Contact-------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void addFirebaseContact(){
+        dbHelper.queryContactData("CREATE TABLE IF NOT EXISTS PERSON(Id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, image TEXT)");
 
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup);
+        mDatabaseRef.child("members").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // get all of the children at this level.
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                // shake hands with each of them.'
+                for (DataSnapshot child : children) {
+                    memberData = child.getValue(MemberData.class);
+                    String mId = memberData.getmId();
+                    String name = memberData.getmName();
+                    String phone = memberData.getmPhone();
+                    String img = memberData.getmImage();
+
+                    //儲存名字,電話號碼,照片進去資料庫
+                    //檢查是不是自己，如果不是再加到sqlite
+                    if(!mId.equals(myId)){
+                        //如果沒有存過再存到sqlite
+                        if(dbHelper.compareContactData(name, phone)==false){
+                            dbHelper.insertContactData(name, phone, img);
+                            Log.d("Add Contact", name + " " + phone + " " + img + "SUCCESS");
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- Close Database-----------------------------------//
+    //--------------------------------------------------------------------------------------------//
     //Database : close database
     private void closeDB(){
         dbHelper.close();

@@ -261,7 +261,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         database.close();
     }
 
-    public  void deleteContactData(int id) {
+    public void deleteContactData(int id) {
         SQLiteDatabase database = getWritableDatabase();
 
         String sql = "DELETE FROM PERSON WHERE id = ?";
@@ -276,6 +276,20 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public Cursor getContactData(String sql){
         SQLiteDatabase database = getReadableDatabase();
         return database.rawQuery(sql, null);
+    }
+
+    public boolean compareContactData(String name, String phone){
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor=database.rawQuery("SELECT * FROM PERSON WHERE name='"+name+"' and phone = '"+phone+"'" ,null);
+        if(cursor.getCount()==0){
+            Log.d("Contact","沒有存過");
+            cursor.close();
+            return false;
+        }else{
+            Log.d("Contact","已存過");
+            cursor.close();
+            return true;
+        }
     }
 
     //The database manager tool for android from github
