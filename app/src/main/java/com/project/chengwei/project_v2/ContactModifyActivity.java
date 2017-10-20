@@ -22,6 +22,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,7 +66,11 @@ public class ContactModifyActivity extends AppCompatActivity {
         //先把還沒更改的資料全部放上去
         modify_name.setText(getName);
         modify_phone.setText(getPhone);
-        modify_imageView.setImageURI(Uri.parse(getImage));
+//        modify_imageView.setImageURI(Uri.parse(getImage));
+        Glide.with(this)
+                .load(getImage)
+                .error(R.drawable.ic_family)//load失敗的Drawable
+                .into(modify_imageView);
 
         //按拍攝照片的按鈕
         cameraBtn.setOnClickListener(new View.OnClickListener() {

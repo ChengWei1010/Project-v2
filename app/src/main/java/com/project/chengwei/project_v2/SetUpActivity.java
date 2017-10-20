@@ -664,13 +664,13 @@ public class SetUpActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            //儲存名字,照片進去資料庫
-            try {
-                dbHelper.setProfileImg(strName, uriString);
-                //showMessage("SQLite added");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            //儲存名字,照片進去資料庫
+//            try {
+//                dbHelper.setProfileImg(strName, uriString);
+//                //showMessage("SQLite added");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             return true;
         }
     }
@@ -700,6 +700,14 @@ public class SetUpActivity extends AppCompatActivity {
                             //Database Upload
                             FireBasePutData(uId, strName, strRoom, strStatus, getMyPhoneNumber(), strImage);
                             Log.d("Upload","Success");
+
+                            //儲存名字,照片進去SQLite
+                            try {
+                                dbHelper.setProfileImg(strName, strImage);
+                                Log.d("Store into SQLite","Success");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     })
                     //上傳失敗
