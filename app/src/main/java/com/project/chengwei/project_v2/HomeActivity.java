@@ -1,6 +1,8 @@
 package com.project.chengwei.project_v2;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -442,26 +444,10 @@ public class HomeActivity extends AppCompatActivity {
     //-------------------------------------- help and Guide --------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void openGuide(){
-        help_guide.setVisibility(View.VISIBLE);
-        btn_sos.setClickable(false);
-        btn_phone.setClickable(false);
-        btn_video.setClickable(false);
-        textClock.setVisibility(View.INVISIBLE);
 
-        //notification_num.setVisibility(View.INVISIBLE);
-        //ic_one.setVisibility(View.INVISIBLE);
     }
     private void closeGuide(){
-        help_guide.setVisibility(View.INVISIBLE);
-        textClock.setVisibility(View.VISIBLE);
-        btn_sos.setClickable(true);
-        btn_phone.setClickable(true);
-        btn_video.setClickable(true);
-        btn_sendTime.setClickable(true);
-        btn_tool.setClickable(true);
 
-        //notification_num.setVisibility(View.VISIBLE);
-        //ic_one.setVisibility(View.VISIBLE);
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//

@@ -259,7 +259,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG,"Clicked");
-                // TODO 時間到的時候自動做這裡
                 getVideoList();
             }
         });
@@ -839,15 +838,23 @@ public class VideoFamilyActivity extends AppCompatActivity {
 //        Toast.makeText(this, "database StoragePath Uploaded", Toast.LENGTH_SHORT).show();
 //    }
     private void detectTime(){
-        TimerTask task = new TimerTask(){
-            public void run(){
-                //execute the task
-            }
-        };
 
         // TODO : get time from firebase
         // TODO : 自動執行 click the button -> path
         // TODO : path -> PeriodiclyUpload intent
+    }
+    // yyyy-MM-dd HH:mm:ss格式的字元串轉換為Date物件
+    private Date stringTransformDateOne(String strDate) {
+        // date : "yyyy-MM-dd HH:mm:ss"
+        SimpleDateFormat dateFormat = new SimpleDateFormat(strDate);
+        Date date = null;
+        try {
+            date = dateFormat.parse("2010-10-01 12:00:00");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+        //System.out.println("date object: " + date);
     }
     private void sendVideo(String storagePath){
         Calendar calendar = Calendar.getInstance();
