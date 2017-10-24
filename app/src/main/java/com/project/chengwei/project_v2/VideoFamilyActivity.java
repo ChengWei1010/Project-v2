@@ -90,7 +90,8 @@ import java.util.TimerTask;
 
 import pl.droidsonroids.gif.GifTextView;
 
-public class VideoFamilyActivity extends AppCompatActivity {
+public class VideoFamilyActivity extends AppCompatActivity{
+
     private FrameLayout help_guide;
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     static final String KEY =  "com.<your_app_name>";
@@ -226,42 +227,14 @@ public class VideoFamilyActivity extends AppCompatActivity {
             }
         });
 
-        /*mSelectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                VideoPicker videoPicker =  new VideoPicker(VideoFamilyActivity.this);
-                GlobalPicker = videoPicker;
-                GlobalPicker.setVideoPickerCallback(new VideoPickerCallback() {
-                    @Override
-                    public void onVideosChosen(List<ChosenVideo> list) {
-                        List<String> filePathList = new ArrayList<String>();
-                        for(ChosenVideo a_chosen:list){
-                            String temp = a_chosen.toString();
-                            String[] tempList = temp.split(",");
-                            String path = tempList[2].substring(16);
-                            filePathList.add(path);
-                        }
-                        Log.d("Path List","Path List is:"+filePathList.toString());
-                        doMp4Append(filePathList);
-                    }
 
-                    @Override
-                    public void onError(String s) {
-
-                    }
-                });
-                videoPicker.allowMultiple();
-                videoPicker.pickVideo();
-            }
-        });*/
-
-        mSelectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG,"Clicked");
-                getVideoList();
-            }
-        });
+//        mSelectButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(TAG,"Clicked");
+//                getVideoList();
+//            }
+//        });
     }
     //根據camera回傳的狀態進行調整
 
@@ -269,8 +242,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        //help_guide = findViewById(R.id.help_guide);
-        //btn_guide_ok = findViewById(R.id.btn_guide_ok);
         groupNum = getIntent().getExtras().get("groupNum").toString();
         mName = getIntent().getExtras().get("mName").toString();
         myToolbar = findViewById(R.id.toolbar_with_guide);
@@ -279,7 +250,7 @@ public class VideoFamilyActivity extends AppCompatActivity {
         mChronometer = findViewById(R.id.chronometer);
         mRecordImageButton = findViewById(R.id.recordButton);
         mRecordImageButton.setImageResource(R.mipmap.video_off);
-        mSelectButton = findViewById(R.id.btn_select);
+        //mSelectButton = findViewById(R.id.btn_select);
         recordingGif = findViewById(R.id.recordingGif);
 
         mId = getIntent().getExtras().get("mId").toString();
@@ -602,29 +573,9 @@ public class VideoFamilyActivity extends AppCompatActivity {
         mRecordImageButton.setBackground(null);
         recordingGif.setVisibility(View.VISIBLE);
         recordingGif.setBackgroundResource(R.drawable.gif_file);//your gif file
-
-//        Animation fadeout = new AlphaAnimation(1.f, 1.f);
-//        fadeout.setDuration(5000); // You can modify the duration here
-//        fadeout.setAnimationListener(new Animation.AnimationListener() {
-//
-//            @Override
-//            public void onAnimationStart(Animation animation) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animation animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animation animation) {
-//
-//            }
-//        });
-//        recordingGif.startAnimation(fadeout);
     }
     private void stopRecordingIcon(){
-        mRecordImageButton.setBackgroundResource(R.drawable.recordgif);
+        mRecordImageButton.setBackgroundResource(R.drawable.ic_record);
         mRecordImageButton.setImageResource(R.mipmap.video_off);
         recordingGif.setVisibility(View.GONE);
     }
@@ -672,65 +623,65 @@ public class VideoFamilyActivity extends AppCompatActivity {
         }
     }
 
-    public static void appendMp4List(List<String> mp4PathList, String outPutPath) throws IOException{
-        List<Movie> mp4MovieList = new ArrayList<>();
-        for (String mp4Path : mp4PathList){
-            Log.d(TAG,"The mp4Path is:"+mp4Path);
-            mp4MovieList.add(MovieCreator.build(mp4Path));
-        }
-
-        List<Track> audioTracks = new LinkedList<>();
-        List<Track> videoTracks = new LinkedList<>();
-
-        for (Movie mp4Movie : mp4MovieList){
-            for (Track inMovieTrack : mp4Movie.getTracks()){
-                if("soun".equals(inMovieTrack.getHandler())){
-                    audioTracks.add(inMovieTrack);
-                }
-                if("vide".equals(inMovieTrack.getHandler())){
-                    videoTracks.add(inMovieTrack);
-                }
-            }
-        }
-
-        Movie resultMovie = new Movie();
-        if(!audioTracks.isEmpty()){
-            resultMovie.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
-        }
-        if(!videoTracks.isEmpty()){
-            resultMovie.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
-        }
-
-        Container outContainer = new DefaultMp4Builder().build(resultMovie);
-        FileChannel fileChannel = new RandomAccessFile(String.format(outPutPath),"rw").getChannel();
-        outContainer.writeContainer(fileChannel);
-        fileChannel.close();
-    }
+//    public static void appendMp4List(List<String> mp4PathList, String outPutPath) throws IOException{
+//        List<Movie> mp4MovieList = new ArrayList<>();
+//        for (String mp4Path : mp4PathList){
+//            Log.d(TAG,"The mp4Path is:"+mp4Path);
+//            mp4MovieList.add(MovieCreator.build(mp4Path));
+//        }
+//
+//        List<Track> audioTracks = new LinkedList<>();
+//        List<Track> videoTracks = new LinkedList<>();
+//
+//        for (Movie mp4Movie : mp4MovieList){
+//            for (Track inMovieTrack : mp4Movie.getTracks()){
+//                if("soun".equals(inMovieTrack.getHandler())){
+//                    audioTracks.add(inMovieTrack);
+//                }
+//                if("vide".equals(inMovieTrack.getHandler())){
+//                    videoTracks.add(inMovieTrack);
+//                }
+//            }
+//        }
+//
+//        Movie resultMovie = new Movie();
+//        if(!audioTracks.isEmpty()){
+//            resultMovie.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+//        }
+//        if(!videoTracks.isEmpty()){
+//            resultMovie.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
+//        }
+//
+//        Container outContainer = new DefaultMp4Builder().build(resultMovie);
+//        FileChannel fileChannel = new RandomAccessFile(String.format(outPutPath),"rw").getChannel();
+//        outContainer.writeContainer(fileChannel);
+//        fileChannel.close();
+//    }
 
     //用來進行影片的Merge
-    private void doMp4Append(List<String> mp4PathList){
-        try{
-            File moviePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-
-            mVideoFolder = new File(moviePath,"MergeOutput");//在影片資料夾下再創一個專屬於此app的資料夾。
-            if(!mVideoFolder.exists()){ //如果影片資料夾中沒有這個資料夾則自己重創一個。
-                mVideoFolder.mkdirs();
-            }
-            String outputPath =createVideoMergeFileName().toString();
-            Log.d("new one", "Path is:" + outputPath);
-            //String outputPath = moviePath+"/MergeOutput/test02.mp4";
-
-            appendMp4List(mp4PathList,outputPath);
-            Toast.makeText(getApplicationContext(),"Merge Success!",Toast.LENGTH_LONG).show();
-            sendVideo(outputPath);
-            //uploadVideo(outputPath);
-            //Log.d("The Path","The Path is:"+outputPath);
-
-        }catch(IOException e){
-            e.printStackTrace();
-            Log.e("doMp4Append error","Error!");
-        }
-    }
+//    private void doMp4Append(List<String> mp4PathList){
+//        try{
+//            File moviePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+//
+//            mVideoFolder = new File(moviePath,"MergeOutput");//在影片資料夾下再創一個專屬於此app的資料夾。
+//            if(!mVideoFolder.exists()){ //如果影片資料夾中沒有這個資料夾則自己重創一個。
+//                mVideoFolder.mkdirs();
+//            }
+//            String outputPath =createVideoMergeFileName().toString();
+//            Log.d("new one", "Path is:" + outputPath);
+//            //String outputPath = moviePath+"/MergeOutput/test02.mp4";
+//
+//            appendMp4List(mp4PathList,outputPath);
+//            Toast.makeText(getApplicationContext(),"Merge Success!",Toast.LENGTH_LONG).show();
+//            sendVideo(outputPath);
+//            //uploadVideo(outputPath);
+//            //Log.d("The Path","The Path is:"+outputPath);
+//
+//        }catch(IOException e){
+//            e.printStackTrace();
+//            Log.e("doMp4Append error","Error!");
+//        }
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -743,32 +694,32 @@ public class VideoFamilyActivity extends AppCompatActivity {
         }
     }
 
-    class VideoFilter implements FilenameFilter{
-        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        String regex = "Video_"+timestamp+".*[.]mp4";
-        @Override
-        public boolean accept(File file, String s) {
-            return (s.matches(regex));
-        }
-    }
+//    class VideoFilter implements FilenameFilter{
+//        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+//        String regex = "Video_"+timestamp+".*[.]mp4";
+//        @Override
+//        public boolean accept(File file, String s) {
+//            return (s.matches(regex));
+//        }
+//    }
 
-    private void getVideoList() {
-        File home = mVideoFolder;
-        List<String> list = new ArrayList<String>();
-        Log.d(TAG,"The number of file is:"+ home.listFiles(new VideoFilter()).length);
-        if(home.listFiles(new VideoFilter()).length>0){
-            for(File file: home.listFiles(new VideoFilter())) {
-                System.out.println("musicName is: " + file.getName());
-                Log.d(TAG,"File name is:"+file.getAbsolutePath());
-                list.add(file.getPath());
-            }
-            Log.d(TAG,"list is:"+list.toString());
-            doMp4Append(list);
-        }else{
-            Log.d(TAG,"Today has no Video!");
-            Toast.makeText(getApplicationContext(),"本日尚無影片!",Toast.LENGTH_SHORT).show();
-        }
-    }
+//    private void getVideoList() {
+//        File home = mVideoFolder;
+//        List<String> list = new ArrayList<String>();
+//        Log.d(TAG,"The number of file is:"+ home.listFiles(new VideoFilter()).length);
+//        if(home.listFiles(new VideoFilter()).length>0){
+//            for(File file: home.listFiles(new VideoFilter())) {
+//                System.out.println("musicName is: " + file.getName());
+//                Log.d(TAG,"File name is:"+file.getAbsolutePath());
+//                list.add(file.getPath());
+//            }
+//            Log.d(TAG,"list is:"+list.toString());
+//            doMp4Append(list);
+//        }else{
+//            Log.d(TAG,"Today has no Video!");
+//            Toast.makeText(getApplicationContext(),"本日尚無影片!",Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
 //    private void uploadVideo(String mergePath){
 //        // Storage Upload
@@ -821,57 +772,39 @@ public class VideoFamilyActivity extends AppCompatActivity {
 //                    });
 //        }
 //    }
-//    private void uploadVideoDB(String downloadUri) {
-//        // Database upload
-//        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum).child("mVideo");
-//        //取得時間
-//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
-//        Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
-//        String date = formatter.format(curDate);
+    private void uploadVideoDB(String downloadUri) {
+        // Database upload
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum).child("mVideo");
+        //取得時間
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
+        Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
+        String date = formatter.format(curDate);
+
+        Map<String, Object> videoData = new HashMap<>();
+        videoData.put("mId", mId);
+        videoData.put("member", mName);
+        videoData.put("date", date);
+        videoData.put("storagePath", "This is storagePath~~~");
+        mDatabaseRef.push().setValue(videoData);
+        Toast.makeText(this, "database StoragePath Uploaded", Toast.LENGTH_SHORT).show();
+    }
+
+//    private void sendVideo(String storagePath){
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY,hour);
+//        calendar.set(Calendar.MINUTE,minute);
+//        calendar.set(Calendar.SECOND,00);
 //
-//        Map<String, Object> videoData = new HashMap<>();
-//        videoData.put("mId", mId);
-//        videoData.put("member", mName);
-//        videoData.put("date", date);
-//        videoData.put("storagePath", "This is storagePath~~~");
-//        mDatabaseRef.push().setValue(videoData);
-//        Toast.makeText(this, "database StoragePath Uploaded", Toast.LENGTH_SHORT).show();
+//        Intent intent = new Intent(getApplicationContext(),AutoMerge.class);
+//        intent.putExtra("groupNum", groupNum);
+//        intent.putExtra("mId",mId);
+//        intent.putExtra("member",mName);
+//        intent.putExtra("storagePath", storagePath);
+//
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+//        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
 //    }
-    private void detectTime(){
-
-        // TODO : get time from firebase
-        // TODO : 自動執行 click the button -> path
-        // TODO : path -> PeriodiclyUpload intent
-    }
-    // yyyy-MM-dd HH:mm:ss格式的字元串轉換為Date物件
-    private Date stringTransformDateOne(String strDate) {
-        // date : "yyyy-MM-dd HH:mm:ss"
-        SimpleDateFormat dateFormat = new SimpleDateFormat(strDate);
-        Date date = null;
-        try {
-            date = dateFormat.parse("2010-10-01 12:00:00");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date;
-        //System.out.println("date object: " + date);
-    }
-    private void sendVideo(String storagePath){
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY,hour);
-        calendar.set(Calendar.MINUTE,minute);
-        calendar.set(Calendar.SECOND,00);
-
-        Intent intent = new Intent(getApplicationContext(),PeriodiclyUpload.class);
-        intent.putExtra("groupNum", groupNum);
-        intent.putExtra("mId",mId);
-        intent.putExtra("member",mName);
-        intent.putExtra("storagePath", storagePath);
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
-    }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -885,18 +818,6 @@ public class VideoFamilyActivity extends AppCompatActivity {
     }
 
     public void setToolbar(){
-        toolbar_guide.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //help_guide.setVisibility(View.VISIBLE);
-            }
-        });
-//        btn_guide_ok.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                help_guide.setVisibility(View.INVISIBLE);
-//            }
-//        });
         setSupportActionBar(myToolbar);
         toolbar_title.setText("錄製影片");
         getSupportActionBar().setDisplayShowTitleEnabled(false);

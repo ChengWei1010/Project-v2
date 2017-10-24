@@ -15,6 +15,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -37,12 +40,23 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.coremedia.iso.boxes.Container;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.Track;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,9 +64,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class HomeActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
@@ -80,8 +97,6 @@ public class HomeActivity extends AppCompatActivity {
     private ImageView profileImg,ic_one;
     private ImageButton btn_editProfile;
 
-    RoundImage roundedImage;
-    Bitmap bitmap;
 
     private MemberData memberData;
 
@@ -273,8 +288,27 @@ public class HomeActivity extends AppCompatActivity {
                 btn_sendTime.setText(hour + ":" + minute);
                 saveTimeToFirebase(Integer.toString(hour),Integer.toString(minute));
                 dbHelper.setSendTime(hour,minute);
+
+                //呼叫自動上傳class
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY,hour);
+                calendar.set(Calendar.MINUTE,minute);
+                calendar.set(Calendar.SECOND,00);
+                Log.e("auto_merge",Integer.toString(hour));
+                Log.e("auto_merge",Integer.toString(minute));
+
+                Intent intent = new Intent(HomeActivity.this, AutoMerge.class);
+                intent.putExtra("mGroup", myGroup);
+                intent.putExtra("mId",myId);
+                intent.putExtra("mName",myName);
+                intent.putExtra("msg", "auto_merge");
+                Log.e("auto_merge","send Intent");
+                PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                am.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pi);
             }
         }, hour, minute, false).show();
+
     }
     private void saveTimeToFirebase(String hour, String minute){
         refSaveTime = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("members").child(myId);
@@ -495,4 +529,5 @@ public class HomeActivity extends AppCompatActivity {
     public boolean isElder() {
         return getSharedPreferences(KEY, Context.MODE_PRIVATE).getBoolean(ELDERLY_MODE, true);
     }
+
 }

@@ -86,7 +86,6 @@
         <activity
             android:name=".VideoFamilyActivity"
             android:screenOrientation="portrait" />
-        <receiver android:name=".PeriodiclyUpload" />
 
         <activity
             android:name=".VideoPopUpActivity"
@@ -96,6 +95,13 @@
             android:name=".NavigationPopUpActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.PopUpTheme" />
+
+        <!-- AutoMerge -->
+        <receiver android:name=".AutoMerge">
+            <intent-filter>
+                <action android:name="auto_merge" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
