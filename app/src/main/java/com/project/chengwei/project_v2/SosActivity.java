@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,6 +55,7 @@ public class SosActivity extends AppCompatActivity
     private DatabaseReference mDatabaseRef,mDatabaseRef2;
     private MemberData memberData;
     private ArrayList<String> mPhoneList;
+    private MediaPlayer sos_sound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,7 @@ public class SosActivity extends AppCompatActivity
         //TextView lat = (TextView)findViewById(R.id.lat);
         //TextView lng = (TextView)findViewById(R.id.lng);
         locationText = findViewById(R.id.locationText);
-
+        sos_sound = MediaPlayer.create(this, R.raw.sos);
         mPhoneList = new ArrayList<>();
 
         getOtherFirebaseMembers();
@@ -176,6 +178,7 @@ public class SosActivity extends AppCompatActivity
                         //Toast.makeText(getApplicationContext(), "can not send "+ memberData.getmPhone(), Toast.LENGTH_LONG).show();
                     }
                 }
+                sos_sound.start();
             }
 
             @Override
