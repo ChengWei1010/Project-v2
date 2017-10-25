@@ -230,9 +230,6 @@ public class HomeActivity extends AppCompatActivity {
                     ToolBoxClass cdd = new ToolBoxClass(HomeActivity.this);
                     cdd.show();
                     break;
-                case R.id.btn_guide_ok:
-                    closeGuide();
-                    break;
                 case R.id.btn_editProfile:
                     startActivity(new Intent(HomeActivity.this, ProfileAddActivity.class));
                     finish();
@@ -518,10 +515,7 @@ public class HomeActivity extends AppCompatActivity {
     //-------------------------------------- help and Guide --------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void openGuide(){
-
-    }
-    private void closeGuide(){
-
+        startActivity(new Intent(HomeActivity.this, GuidePageViewer.class));
     }
     //--------------------------------------------------------------------------------------------//
     //------------------------------------ CheckPreferences --------------------------------------//

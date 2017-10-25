@@ -90,6 +90,9 @@
         <activity
             android:name=".VideoPopUpActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".GuidePageViewer"
+            android:screenOrientation="portrait"/>
 
         <activity
             android:name=".NavigationPopUpActivity"

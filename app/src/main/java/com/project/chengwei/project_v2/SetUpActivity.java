@@ -573,10 +573,10 @@ public class SetUpActivity extends AppCompatActivity {
         strRoom = editTextGroupNum.getText().toString();
     }
     private void start(){
-            saveSQLite();
-            FireBasePutImage(uri_crop);
-            startActivity(new Intent(SetUpActivity.this, WelcomeActivity.class));
-            finish();
+        saveSQLite();
+        FireBasePutImage(uri_crop);
+        startActivity(new Intent(SetUpActivity.this, WelcomeActivity.class));
+        finish();
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- SQLiteDB -------------------------------------------//
