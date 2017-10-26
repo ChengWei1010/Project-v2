@@ -24,6 +24,7 @@ public class CalendarActivity extends ListActivity {
     private ImageButton toolbar_btn_guide,toolbar_btn_add;
     private String myGroup, myId;
     private DatabaseReference mDatabaseRef;
+    private ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,10 +35,11 @@ public class CalendarActivity extends ListActivity {
         myGroup = getIntent().getExtras().get("myGroup").toString();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup);
 
+
+        listView = findViewById(android.R.id.list);
         findViews();
         setToolbar();
 
-        //listView = (ListView) findViewById(R.id.list);
         String[] values = new String[] {
                 "阿公生日", "姿韶生日", "家庭聚餐",
                 "出遊日", "爸爸看牙醫", "家福森七七", };

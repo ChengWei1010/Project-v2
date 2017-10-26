@@ -211,7 +211,6 @@ public class HomeActivity extends AppCompatActivity {
 //                        break;
 //                    } else{
 //                        startActivity(new Intent(HomeActivity.this, NavigationPopUpActivity.class));
-//                        //Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
 //                        break;
 //                    }
                 case R.id.btn_calendar:
@@ -457,20 +456,6 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             //Log.e(TAG, "<loadImageFromDB> Error : " + e.getLocalizedMessage());
             dbHelper.close();
-        }
-    }
-    //--------------------------------------------------------------------------------------------//
-    //-------------------------------------- Valid Address ---------------------------------------//
-    //--------------------------------------------------------------------------------------------//
-    private boolean hasValidAddress(){
-        dbHelper = new SQLiteDBHelper(getApplicationContext());
-        cursor = dbHelper.getProfileData();
-        cursor.moveToPosition(0);
-        String address = cursor.getString(cursor.getColumnIndex("address"));
-        if((address.contains("路")||address.contains("街")) && address.contains("號")){
-            return true;
-        }else {
-            return false;
         }
     }
     //--------------------------------------------------------------------------------------------//
