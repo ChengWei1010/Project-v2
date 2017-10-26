@@ -78,7 +78,7 @@ public class HomeActivity extends AppCompatActivity {
     private SQLiteDBHelper dbHelper;
     private Cursor cursor,cursor_time;
     private Toolbar myToolbar;
-    private ImageButton btn_phone, btn_video, btn_sos, btn_guide_ok,toolbar_guide,btn_record,btn_tool;
+    private ImageButton btn_phone, btn_video, btn_sos, btn_guide_ok,toolbar_guide,btn_record,btn_tool,btn_calendar;
     private Button btn_sendTime;
     private FrameLayout help_guide;
     private TextClock textClock;
@@ -131,7 +131,7 @@ public class HomeActivity extends AppCompatActivity {
         help_guide = findViewById(R.id.help_guide);
         btn_sendTime = findViewById(R.id.btn_sendTime);
         btn_record = findViewById(R.id.btn_record);
-
+        btn_calendar = findViewById(R.id.btn_calendar);
     //profile drawer
         text_group_name = findViewById(R.id.text_group_name);
         textViewName = findViewById(R.id.textViewName);
@@ -166,6 +166,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_guide_ok.setOnClickListener(ImageBtnListener);
         btn_editProfile.setOnClickListener(ImageBtnListener);
         btn_tool.setOnClickListener(ImageBtnListener);
+        btn_calendar.setOnClickListener(ImageBtnListener);
         // SOS Button
         btn_sos.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -193,13 +194,10 @@ public class HomeActivity extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.btn_phone:
-                    //Toast.makeText(HomeActivity.this, "phone !", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(HomeActivity.this, ContactListActivity.class));
                     finish();
                     break;
                 case R.id.btn_video:
-                    //startActivity(new Intent(HomeActivity.this, WatchVideoActivity.class));
-                    //ic_one.setVisibility(View.INVISIBLE);
                     Intent intent = new Intent(getApplicationContext(),VideoElderActivity.class);
                     intent.putExtra("myGroup",myGroup);
                     intent.putExtra("myId", myId);
@@ -216,6 +214,13 @@ public class HomeActivity extends AppCompatActivity {
 //                        //Toast.makeText(HomeActivity.this, "set address !", Toast.LENGTH_SHORT).show();
 //                        break;
 //                    }
+                case R.id.btn_calendar:
+                    Intent intent_calendar = new Intent(getApplicationContext(),CalendarActivity.class);
+                    intent_calendar.putExtra("myGroup",myGroup);
+                    intent_calendar.putExtra("myId", myId);
+                    startActivity(intent_calendar);
+                    finish();
+                    break;
                 case R.id.btn_record:
                     Intent intent_record = new Intent(getApplicationContext(), VideoFamilyActivity.class);
                     intent_record.putExtra("mName",myName);
