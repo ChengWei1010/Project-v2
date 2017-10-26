@@ -106,6 +106,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         //if (Build.VERSION.SDK_INT >= 23) {
         //}
+        Intent intent = new Intent(this, CalendarIntentService.class);
+        startService(intent);
         findViews();
         initDB();
         setToolbar();

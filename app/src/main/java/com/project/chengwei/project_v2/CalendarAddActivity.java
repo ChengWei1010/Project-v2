@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -17,14 +18,19 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class CalendarAddActivity extends AppCompatActivity {
 
-    private DatePickerDialog.OnDateSetListener varDateSetListener;
     private TimePickerDialog.OnTimeSetListener varTimeSetListener;
     private EditText edit_title,edit_content;
     private Button btn_done,edit_date,edit_time;
@@ -32,15 +38,16 @@ public class CalendarAddActivity extends AppCompatActivity {
     private Toolbar myToolbar;
     private TextView toolbar_title;
     private CharSequence text1 ="請填寫欄位";
-
-    public static final String Database_Path = "Calendar";
     public String dateHolder,timeHolder, titleHolder, contentHolder;
     private String myGroup, myId;
     private DatabaseReference mDatabaseRef;
+    private String formattedMonth;
+    private String formattedDay;
+    private int mYear, mMonth, mDay;
+//    private CalendarDetails calendarDetails = new CalendarDetails();
+    CalendarDetails calendarDetails;
 
     int Year;
-    int MonthOfYear;
-    int DayOfMonth;
     int HourOfDay=30;
     int Minute;
 
@@ -52,25 +59,14 @@ public class CalendarAddActivity extends AppCompatActivity {
         //取得房號
         myId = getIntent().getExtras().get("myId").toString();
         myGroup = getIntent().getExtras().get("myGroup").toString();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup);
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("calendar");
 
         initView();
         setToolbar();
 
-        varDateSetListener = new DatePickerDialog.OnDateSetListener(){
-            @Override
-            public void onDateSet(DatePicker view , int year , int monthOfYear , int dayOfMonth){
-                edit_date.setText(year + "/" + (monthOfYear + 1) + "/" + dayOfMonth);
-                Year=year;
-                MonthOfYear=monthOfYear;
-                DayOfMonth=dayOfMonth;
-            }
-        };
-
         varTimeSetListener = new TimePickerDialog.OnTimeSetListener(){
             @Override
-            public void onTimeSet(
-                    TimePicker view , int hourOfDay , int minute){
+            public void onTimeSet(TimePicker view , int hourOfDay , int minute){
                 edit_time.setText(hourOfDay + "點" + minute+"分");
                 HourOfDay=hourOfDay;
                 Minute=minute;
@@ -78,18 +74,24 @@ public class CalendarAddActivity extends AppCompatActivity {
         };
 
         edit_date.setOnClickListener(new View.OnClickListener(){
-                    public void onClick(View view){
-                        Calendar calendar = Calendar.getInstance();
-                        DatePickerDialog dateDialog = new DatePickerDialog(
-                                CalendarAddActivity.this,
-                                varDateSetListener,
-                                calendar.get(Calendar.YEAR),
-                                calendar.get(Calendar.MONTH),
-                                calendar.get(Calendar.DAY_OF_MONTH)
-                        );
-                        dateDialog.show();
+            @Override
+            public void onClick(View view) {
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+                new DatePickerDialog(CalendarAddActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int day) {
+                        String format = setDateFormat(year,month,day);
+                        edit_date.setText(format);
                     }
-                });
+
+                }, mYear,mMonth, mDay).show();
+            }
+
+        });
+
         edit_time.setOnClickListener(new View.OnClickListener(){
                     public void onClick(View view){
                         Calendar calendar = Calendar.getInstance();
@@ -135,15 +137,12 @@ public class CalendarAddActivity extends AppCompatActivity {
                     Toast.makeText(context, text1+"7", Toast.LENGTH_SHORT).show();
 
                 else {
-                    CalendarDetails calendarDetails = new CalendarDetails();
                     GetDataFromEditText();
 
                     calendarDetails.setDate(dateHolder);
                     calendarDetails.setTime(timeHolder);
                     calendarDetails.setTitle(titleHolder);
                     calendarDetails.setContent(contentHolder);
-
-                    mDatabaseRef = mDatabaseRef.child("calendar");
 
                     String CalendarEventID = mDatabaseRef.push().getKey();
                     calendarDetails.seteventId(CalendarEventID);
@@ -154,6 +153,18 @@ public class CalendarAddActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private String setDateFormat(int year,int monthOfYear,int dayOfMonth){
+        monthOfYear++;
+        if(monthOfYear < 10){
+                formattedMonth = "0" + String.valueOf(monthOfYear);
+            }
+            if(dayOfMonth < 10){
+                formattedDay = "0" + String.valueOf(dayOfMonth);
+            }
+        return String.valueOf(year) + "-"
+                + formattedMonth + "-"
+                + formattedDay;
     }
     public void initView(){
         edit_title = findViewById(R.id.edit_title);
