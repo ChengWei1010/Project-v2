@@ -40,7 +40,7 @@ public class VideoPopUpActivity extends AppCompatActivity {
 //
 //        getWindow().setLayout((int)(width*.9),(int)(height*.75));
 
-        backBtn = (ImageButton) findViewById(R.id.backBtn);
+        backBtn = findViewById(R.id.backBtn);
 
         //接收uri
         final String uriString = getIntent().getStringExtra("URI");

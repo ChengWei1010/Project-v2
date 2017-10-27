@@ -54,8 +54,8 @@ public class MemberListAdapter extends BaseAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(layout, null);
 
-            holder.txtMember = (TextView) row.findViewById(R.id.txtMember);
-            holder.imgMember = (ImageView) row.findViewById(R.id.imgMember);
+            holder.txtMember = row.findViewById(R.id.txtMember);
+            holder.imgMember = row.findViewById(R.id.imgMember);
 
             row.setTag(holder);
         }else{

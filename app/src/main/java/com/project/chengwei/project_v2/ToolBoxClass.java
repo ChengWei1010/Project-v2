@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -19,6 +20,8 @@ public class ToolBoxClass extends Dialog implements android.view.View.OnClickLis
     public Activity c;
     public Dialog d;
     public ImageButton btn_map, btn_magnifier;
+    private SQLiteDBHelper dbHelper;
+    private Cursor cursor;
 
     public ToolBoxClass(Activity a) {
         super(a);
@@ -40,10 +43,17 @@ public class ToolBoxClass extends Dialog implements android.view.View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_map:
-                Intent intent = new Intent();
-                intent.setClass(v.getContext(), HomeActivity.class);
-                v.getContext().startActivity(intent);
-                break;
+                if (hasValidAddress()){
+                    Intent intent = new Intent();
+                    intent.setClass(v.getContext(), NavigationActivity.class);
+                    v.getContext().startActivity(intent);
+                    break;
+                } else{
+                    Intent intent = new Intent();
+                    intent.setClass(v.getContext(), NavigationPopUpActivity.class);
+                    v.getContext().startActivity(intent);
+                    break;
+                }
             case R.id.btn_magnifier:
                 Intent intent2 = new Intent();
                 intent2.setClass(v.getContext(), HomeActivity.class);
@@ -53,5 +63,19 @@ public class ToolBoxClass extends Dialog implements android.view.View.OnClickLis
                 break;
         }
         dismiss();
+    }
+    //--------------------------------------------------------------------------------------------//
+    //-------------------------------------- Valid Address ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private boolean hasValidAddress(){
+        dbHelper = new SQLiteDBHelper(c);
+        cursor = dbHelper.getProfileData();
+        cursor.moveToPosition(0);
+        String address = cursor.getString(cursor.getColumnIndex("address"));
+        if((address.contains("路")||address.contains("街")) && address.contains("號")){
+            return true;
+        }else {
+            return false;
+        }
     }
 }

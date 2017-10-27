@@ -107,7 +107,7 @@ public class VideoFamilyActivity extends AppCompatActivity{
 
     private Toolbar myToolbar;
     private Button mSelectButton,btn_guide_ok;
-    private ImageButton mRecordImageButton,toolbar_guide;
+    private ImageButton mRecordImageButton,toolbar_btn_guide;
     private pl.droidsonroids.gif.GifTextView recordingGif;
     private TextView toolbar_title;
     VideoPicker GlobalPicker;
@@ -246,7 +246,7 @@ public class VideoFamilyActivity extends AppCompatActivity{
         mName = getIntent().getExtras().get("mName").toString();
         myToolbar = findViewById(R.id.toolbar_with_guide);
         toolbar_title = findViewById(R.id.toolbar_title);
-        toolbar_guide = findViewById(R.id.toolbar_btn_guide);
+        toolbar_btn_guide = findViewById(R.id.toolbar_btn_guide);
         mChronometer = findViewById(R.id.chronometer);
         mRecordImageButton = findViewById(R.id.recordButton);
         mRecordImageButton.setImageResource(R.mipmap.video_off);
@@ -533,7 +533,7 @@ public class VideoFamilyActivity extends AppCompatActivity{
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mMediaRecorder.setMaxDuration(5000); //500ms 先設定五秒
+        mMediaRecorder.setMaxDuration(15000); //500ms 先設定五秒
         //設定時間到要做什麼
         mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
             @Override
@@ -828,6 +828,13 @@ public class VideoFamilyActivity extends AppCompatActivity{
             public void onClick(View v) {
                 startActivity(new Intent(VideoFamilyActivity.this, HomeActivity.class));
                 finish();
+            }
+        });
+
+        toolbar_btn_guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(VideoFamilyActivity.this, GuidePageViewer.class));
             }
         });
     }

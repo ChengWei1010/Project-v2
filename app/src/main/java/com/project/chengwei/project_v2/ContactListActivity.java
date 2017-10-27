@@ -127,7 +127,7 @@ public class ContactListActivity extends AppCompatActivity {
         toolbar_btn_guide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ContactListActivity.this,"guide",Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(ContactListActivity.this, GuidePageViewer.class));
             }
         });
 
