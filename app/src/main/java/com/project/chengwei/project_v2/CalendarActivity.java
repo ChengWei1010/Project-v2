@@ -30,6 +30,7 @@ public class CalendarActivity extends ListActivity {
     private String myGroup, myId;
     private DatabaseReference mDatabaseRef;
     private ListView listView;
+    private CalendarAdapter calendarAdapter;
     private CalendarDetails calendarDetails = new CalendarDetails();
     private ArrayList<String> calendarTitleList = new ArrayList<>();
     private ArrayList<String> calendarContentList = new ArrayList<>();
@@ -49,14 +50,13 @@ public class CalendarActivity extends ListActivity {
         myGroup = getIntent().getExtras().get("myGroup").toString();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(myGroup).child("calendar");
 
-        listView = findViewById(android.R.id.list);
         findViews();
         setListeners();
         setToolbar();
         DateFormat df = new SimpleDateFormat("yyyy" + "/" + "MM" + "/" + "dd");
 
         //設定ListView未取得內容時顯示的view, empty建構在list.xml中。
-        getListView().setEmptyView(progressbar);
+        //getListView().setEmptyView(progressbar);
         searchFunction(monthId);
     }
 
@@ -71,11 +71,9 @@ public class CalendarActivity extends ListActivity {
         ccc.show();
     }
     private void searchFunction(final int count) {
-        calendarDetails = new CalendarDetails();
-        calendarTitleList.clear();
-        calendarContentList.clear();
-        calendarTimeList.clear();
-        calendarDateList.clear();
+        clearLists();
+        initAdapter();
+
         DateFormat df = new SimpleDateFormat("yyyy" + "/" + "MM" + "/" + "dd");
         final String formattedDate = df.format(new java.util.Date());
         final String formattedDateCutYear = formattedDate.substring(0, 4);
@@ -116,15 +114,21 @@ public class CalendarActivity extends ListActivity {
                     Log.d("lily", "Calendar Title= " + calendarTitleList.get(i));
                     //Toast.makeText(MainActivity.this, "Calendar Title= " +calendarTitleListData.get(i), Toast.LENGTH_SHORT).show();
                 }
+                progressbar.setVisibility(View.INVISIBLE);
                 if(calendarTitleList.isEmpty()){
-                    progressbar.setVisibility(View.INVISIBLE);
                     Toast.makeText(CalendarActivity.this,"本月無行程!",Toast.LENGTH_SHORT).show();
                 }else{
                     progressbar.setVisibility(View.INVISIBLE);
-                    //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getStringArrayList());
-                    setListAdapter(new CalendarAdapter(CalendarActivity.this, calendarTitleList));
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            calendarAdapter.notifyDataSetChanged();
+                        }
+                    });
+                    //setListAdapter(new CalendarAdapter(CalendarActivity.this, calendarTitleList));
                 }
-                text_month.setText(calendarDetails.getDate().substring(5, 7)+"月");
+                text_month.setText(comparedYear+"/"+comparedMon+"月");
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -204,5 +208,17 @@ public class CalendarActivity extends ListActivity {
                 finish();
             }
         });
+    }
+
+    private void initAdapter(){
+        listView = findViewById(android.R.id.list);
+        setListAdapter(calendarAdapter = new CalendarAdapter(CalendarActivity.this, calendarTitleList));
+    }
+    private void clearLists(){
+        calendarDetails = new CalendarDetails();
+        calendarTitleList.clear();
+        calendarContentList.clear();
+        calendarTimeList.clear();
+        calendarDateList.clear();
     }
 }

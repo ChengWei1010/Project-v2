@@ -5,7 +5,6 @@ package com.project.chengwei.project_v2;
  */
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +20,10 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 
-public class ContactListAdapter extends BaseAdapter {
+public class ContactListAdapter extends BaseAdapter{
 
     private Context context;
-    private  int layout;
+    private int layout;
     private ArrayList<Contact> personsList;
 
     public ContactListAdapter(Context context, int layout, ArrayList<Contact> personsList) {
@@ -50,7 +49,7 @@ public class ContactListAdapter extends BaseAdapter {
 
     private class ViewHolder{
         ImageView imgPerson;
-        TextView txtName, txtPhone;
+        TextView txtName;
         ProgressBar progressBar;
     }
 
