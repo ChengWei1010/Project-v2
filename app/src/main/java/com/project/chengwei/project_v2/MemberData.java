@@ -10,17 +10,19 @@ public class MemberData {
     private String mImage;
     private String mName;
     private String mPhone;
-    private String mStatus;
+    private String TimeHour;
+    private String TimeMinute;
 
     private MemberData(){}
 
-    public MemberData(String mGroup, String mId, String mImage, String mName, String mPhone, String mStatus){
+    public MemberData(String mGroup, String mId, String mImage, String mName, String mPhone, String TimeHour, String TimeMinute){
         this.mGroup = mGroup;
         this.mId = mId;
         this.mImage = mImage;
         this.mName = mName;
         this.mPhone = mPhone;
-        this.mStatus = mStatus;
+        this.TimeHour = TimeHour;
+        this.TimeMinute = TimeMinute;
     }
 
     public String getmGroup(){
@@ -43,9 +45,11 @@ public class MemberData {
         return mPhone;
     }
 
-    public String getmStatus(){
-        return mStatus;
+    public String getTimeHour(){
+        return TimeHour;
     }
 
-
+    public String getTimeMinute(){
+        return TimeMinute;
+    }
 }

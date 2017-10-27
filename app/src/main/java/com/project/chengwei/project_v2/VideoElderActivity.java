@@ -50,16 +50,11 @@ public class VideoElderActivity extends AppCompatActivity {
     private SQLiteDBHelper dbHelper;
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
-    private FirebaseStorage mStorage;
-    private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
-
-    private Button btn_list,btn_guide_ok;
-    private FrameLayout help_guide;
-
+    private Button btn_list;
     private int firebaseVideo;
     private String myGroup, myId;
-    private ImageButton showBtn,toolbar_guide;
+    private ImageButton showBtn,toolbar_guide,toolbar_btn_guide;
     private Toolbar myToolbar;
     private Date formattedDate;
     private TextView toolbar_title;
@@ -70,7 +65,6 @@ public class VideoElderActivity extends AppCompatActivity {
 
     private FirebaseData firebaseData;
     private MemberData memberData;
-
     private ArrayList<String> memberList, groupMemberList, storagePathList, imagePathList, mIdVideoList;
     private ArrayList<MemberData> memberDataList;
 
@@ -101,8 +95,7 @@ public class VideoElderActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        //btn_guide_ok = findViewById(R.id.btn_guide_ok);
-        //help_guide = findViewById(R.id.help_guide);
+        toolbar_btn_guide = findViewById(R.id.toolbar_btn_guide);
         gallery = findViewById(R.id.gallery);
         btn_list =  findViewById(R.id.btnList);
         myToolbar = findViewById(R.id.toolbar_with_guide);
@@ -157,12 +150,16 @@ public class VideoElderActivity extends AppCompatActivity {
                 }
             }
         });
+        toolbar_btn_guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(VideoElderActivity.this, GuidePageViewer.class));
+            }
+        });
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Download --------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-
-
     private void showVideo() {
         memberList = new ArrayList<>();
         storagePathList = new ArrayList<>();

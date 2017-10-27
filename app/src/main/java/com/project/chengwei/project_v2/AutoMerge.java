@@ -1,5 +1,6 @@
 package com.project.chengwei.project_v2;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,17 +9,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.coremedia.iso.boxes.Container;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,30 +33,42 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.Track;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-/**
- * Created by Angela on 2017/8/28.
- */
+public class AutoMerge extends BroadcastReceiver {
+    //Merge
+    File mVideoFolder;
+    String mVideoFileName;
+    private static String TAG ="auto_merge";
 
-public class PeriodiclyUpload extends BroadcastReceiver{
-
-    //private DatabaseReference mDatabaseRef;
+    //Upload
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
-    private String date, groupNum, mId, mName, storagePath;
+    private String date, mGroup, mId, mName;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance(); // Get a reference to our posts
     DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups"); // From groups in Database
@@ -64,10 +80,124 @@ public class PeriodiclyUpload extends BroadcastReceiver{
     static String currentUserID_Notification;
     static String send_NAME;
     static boolean signal = false;
+    Context mContext;
 
     @Override
-    public void onReceive(final Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent) {
+        mContext = context;
+        Bundle bData = intent.getExtras();
+        mGroup = intent.getExtras().get("mGroup").toString();
+        mId = intent.getExtras().get("mId").toString();
+        mName = intent.getExtras().get("mName").toString();
 
+        if (bData.get("msg").equals("auto_merge")) {
+            Log.e(TAG, "start");
+            createVideoFolder();
+            getVideoList();
+        }
+    }
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- merge Videos ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void createVideoFolder(){
+        File movieFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);//取得裝置預設的影片存放位置。
+        mVideoFolder = new File(movieFile,"MergeInput");//在影片資料夾下再創一個專屬於此app的資料夾。
+        if(!mVideoFolder.exists()){ //如果影片資料夾中沒有這個資料夾則自己重創一個。
+            mVideoFolder.mkdirs();
+        }
+    }
+    public void getVideoList() {
+        File home = mVideoFolder;
+        List<String> list = new ArrayList<String>();
+        Log.d(TAG,"The number of file is:"+ home.listFiles(new VideoFilter()).length);
+        if(home.listFiles(new VideoFilter()).length>0){
+            for(File file: home.listFiles(new VideoFilter())) {
+                System.out.println("musicName is: " + file.getName());
+                Log.d(TAG,"File name is:"+file.getAbsolutePath());
+                list.add(file.getPath());
+            }
+            Log.d(TAG,"list is:"+list.toString());
+            doMp4Append(list);
+        }else{
+            Log.d(TAG,"Today has no Video!");
+        }
+    }
+    class VideoFilter implements FilenameFilter {
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String regex = "Video_"+timestamp+".*[.]mp4";
+        @Override
+        public boolean accept(File file, String s) {
+            return (s.matches(regex));
+        }
+    }
+    private void doMp4Append(List<String> mp4PathList){
+        try{
+            File moviePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+
+            mVideoFolder = new File(moviePath,"MergeOutput");//在影片資料夾下再創一個專屬於此app的資料夾。
+            if(!mVideoFolder.exists()){ //如果影片資料夾中沒有這個資料夾則自己重創一個。
+                mVideoFolder.mkdirs();
+            }
+            String outputPath =createVideoMergeFileName().toString();
+            Log.d("new one", "Path is:" + outputPath);
+            //String outputPath = moviePath+"/MergeOutput/test02.mp4";
+
+            appendMp4List(mp4PathList,outputPath);
+            Log.d(TAG, "Merge Success!");
+            uploadVideo(outputPath);
+
+        }catch(IOException e){
+            e.printStackTrace();
+            Log.e("doMp4Append error","Error!");
+        }
+    }
+    private File createVideoMergeFileName() throws IOException{
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String prepend = "Merge_"+timestamp+"_";
+        File videoFile = File.createTempFile(prepend,".mp4",mVideoFolder); //創造mp4格式的檔案;
+        mVideoFileName = videoFile.getAbsolutePath();
+        //mVideoFileName = "test01";
+        return videoFile;
+    }
+    public static void appendMp4List(List<String> mp4PathList, String outPutPath) throws IOException{
+        List<Movie> mp4MovieList = new ArrayList<>();
+        for (String mp4Path : mp4PathList){
+            Log.d(TAG,"The mp4Path is:"+mp4Path);
+            mp4MovieList.add(MovieCreator.build(mp4Path));
+        }
+
+        List<Track> audioTracks = new LinkedList<>();
+        List<Track> videoTracks = new LinkedList<>();
+
+        for (Movie mp4Movie : mp4MovieList){
+            for (Track inMovieTrack : mp4Movie.getTracks()){
+                if("soun".equals(inMovieTrack.getHandler())){
+                    audioTracks.add(inMovieTrack);
+                }
+                if("vide".equals(inMovieTrack.getHandler())){
+                    videoTracks.add(inMovieTrack);
+                }
+            }
+        }
+
+        Movie resultMovie = new Movie();
+        if(!audioTracks.isEmpty()){
+            resultMovie.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+        }
+        if(!videoTracks.isEmpty()){
+            resultMovie.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
+        }
+
+        Container outContainer = new DefaultMp4Builder().build(resultMovie);
+        FileChannel fileChannel = new RandomAccessFile(String.format(outPutPath),"rw").getChannel();
+        outContainer.writeContainer(fileChannel);
+        fileChannel.close();
+    }
+
+    //--------------------------------------------------------------------------------------------//
+    //--------------------------------------- upload Videos --------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    public void uploadVideo(String storagePath){
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         currentUserID_Notification = user.getUid();
@@ -76,11 +206,6 @@ public class PeriodiclyUpload extends BroadcastReceiver{
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
         Date curDate = new Date(System.currentTimeMillis());
         date = formatter.format(curDate);
-
-        groupNum = intent.getExtras().get("groupNum").toString();
-        mId = intent.getExtras().get("mId").toString();
-        mName = intent.getExtras().get("member").toString();
-        storagePath = intent.getExtras().get("storagePath").toString();
 
         File tmpFile = new File(storagePath);
         Uri filePath = Uri.fromFile(tmpFile);
@@ -91,8 +216,8 @@ public class PeriodiclyUpload extends BroadcastReceiver{
                 .setContentType("video/mp4")
                 .build();
 
-        mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mBuilder = new NotificationCompat.Builder(context)
+        mNotifyManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        mBuilder = new NotificationCompat.Builder(mContext)
                 .setContentTitle("影片上傳")
                 .setSmallIcon(R.drawable.upload)
                 .setPriority(Notification.PRIORITY_HIGH);
@@ -100,7 +225,7 @@ public class PeriodiclyUpload extends BroadcastReceiver{
         if (filePath != null) {
             mStorage = FirebaseStorage.getInstance();
             mStorageRef = mStorage.getReference();
-            StorageReference ref = mStorageRef.child("videos").child(groupNum).child(filePath.getLastPathSegment());
+            StorageReference ref = mStorageRef.child("videos").child(mGroup).child(filePath.getLastPathSegment());
             //Storage upload
             ref.putFile(filePath, metadata)
                     //上傳完畢
@@ -110,7 +235,7 @@ public class PeriodiclyUpload extends BroadcastReceiver{
                             //取得下載的url
                             Uri downloadUri = taskSnapshot.getDownloadUrl();
                             //Database Upload
-                            mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(groupNum).child("mVideo");
+                            mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups").child(mGroup).child("mVideo");
 
                             Map<String, Object> videoData = new HashMap<>();
                             videoData.put("mId", mId);
@@ -120,17 +245,17 @@ public class PeriodiclyUpload extends BroadcastReceiver{
                             mDatabaseRef.push().setValue(videoData);
 
                             //獲取電源管理器對象
-                            PowerManager pm=(PowerManager) context.getSystemService(Context.POWER_SERVICE);
+                            PowerManager pm=(PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
                             if(!pm.isInteractive()){
                                 //獲取PowerManager.WakeLock對象,後面的參數|表示同時傳入兩個值,最後的是LogCat裡用的Tag
                                 PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, "bright");
                                 //點亮屏幕
                                 wl.acquire();
-                                uploadDone(context);
+                                uploadDone(mContext);
                                 //要釋放，否則會非常耗電
                                 wl.release();
                             }else{
-                                uploadDone(context);
+                                uploadDone(mContext);
                             }
 
                         }
@@ -158,7 +283,6 @@ public class PeriodiclyUpload extends BroadcastReceiver{
                     });
         }
     }
-
     //上傳完畢
     public void uploadDone(Context context){
         Intent repeating_intent = new Intent(context, FamilyActivity.class);
@@ -180,32 +304,9 @@ public class PeriodiclyUpload extends BroadcastReceiver{
         Log.d("TESTING", "GETGROUP..... init");
         Test_getGroupsAllMember();
     }
-
     private void Test_getGroupsAllMember() {
-
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("groups");
-        /*
-        mDatabaseRef.child(groupNum).child("mVideo").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // get all of the children at this level.
-                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-
-                videoList.clear();
-                for (DataSnapshot child : children) { // shake hands with each of them.'
-
-                    videoData = child.getValue(VideoData.class); //抓出成員
-                    videoList.add(videoData.getmId()); //存 member.mId 到 arrayList
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        */
-        mDatabaseRef.child(groupNum).child("members").addValueEventListener(new ValueEventListener() {
+        mDatabaseRef.child(mGroup).child("members").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -245,65 +346,8 @@ public class PeriodiclyUpload extends BroadcastReceiver{
 
             }
         });
-        /*
-        if (memberList.size() <= 1 || videoList.size() <= 1) {
-
-            //Toast.makeText(SignIn.this, "You'r the only member, no sendNotification", Toast.LENGTH_SHORT).show();
-            Log.d("TESTING", "You'r the only member, no sendNotification");
-        } else if(memberList.size() > 1 && videoList.size() > 0) {
-
-            //Toast.makeText(SignIn.this, "check send", Toast.LENGTH_SHORT).show();
-            Log.d("TESTING", "check sent");
-            //CheckUpdate();
-            sendNotification();
-        }
-        else {
-            //Toast.makeText(SignIn.this, "memberCount < 2 or no Video , no sendNotification", Toast.LENGTH_SHORT).show();
-            Log.d("TESTING", "memberCount < 2 or no Video , no sendNotification");
-        }
-        */
-
     }
-
-
-    private void CheckUpdate() {
-        mDatabaseRef.child("mVideo").addChildEventListener(new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String PreviousChild) {
-
-                sendNotification();
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                sendNotification();
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-        /*----------------------------------------------------------------------------------------*/
-        /*-------------------------------------Send method----------------------------------------*/
-        /*----------------------------------------------------------------------------------------*/
-
-    public void sendNotification()
-    {
+    public void sendNotification() {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {

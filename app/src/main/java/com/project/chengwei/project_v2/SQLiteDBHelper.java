@@ -32,8 +32,11 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     private final static String FIELD_NOTIFICATION = "notification";
     private static final String IMAGE = "image";
 
-    public SQLiteDBHelper(Context context)
-    {
+    private final static String TABLE_DATE = "date_tbl";
+    private final static String FIELD_HOUR = "hour";
+    private final static String FIELD_MINUTE = "minute";
+
+    public SQLiteDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -41,6 +44,9 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(sql_createTbl);
         db.execSQL(sql_firstRow);
+
+        db.execSQL(sql_createSendTimeTbl);
+        db.execSQL(sql_firstSendTime);
     }
 
     // Method is called during an upgrade of the database,
@@ -115,6 +121,34 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
             mCursor.moveToFirst();
         }
         return mCursor; // iterate to get each value.
+    }
+    //-------------------------------------------------------------------------------------//
+    //-------------------------------- About Send Time ------------------------------------//
+    //-------------------------------------------------------------------------------------//
+    private String sql_createSendTimeTbl;{
+        sql_createSendTimeTbl = "CREATE TABLE IF NOT EXISTS " + TABLE_DATE +
+                "(" + FIELD_ID + " INTEGER PRIMARY KEY autoincrement, " +
+                FIELD_HOUR + " INTEGER, " +
+                FIELD_MINUTE + " INTEGER )";
+    }
+    private String sql_firstSendTime;{
+        sql_firstSendTime = ("INSERT INTO " + TABLE_DATE + " (hour, minute) VALUES (00, 00)");}
+
+    public long setSendTime(int hour, int minute){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(FIELD_HOUR,hour);
+        cv.put(FIELD_MINUTE,minute);
+        return db.update(TABLE_DATE, cv, "_id=1", null);
+    }
+    public Cursor getSendTime() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] cols = new String[] {FIELD_HOUR,FIELD_MINUTE};
+        Cursor mCursor = db.query(true,TABLE_DATE,cols, null, null, null, null, null, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
     }
     //-------------------------------------------------------------------------------------//
     //-------------------------------- About Notification ---------------------------------//

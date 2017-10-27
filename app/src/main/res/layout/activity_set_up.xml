@@ -68,6 +68,17 @@
                 app:layout_constraintGuide_percent="0.5"
                 tools:layout_editor_absoluteX="192dp"
                 tools:layout_editor_absoluteY="0dp" />
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_height="100dp"
+                android:layout_width="100dp"
+                android:src="@drawable/ic_launcher"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="80dp"
+                android:layout_marginRight="8dp"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="8dp"
+                app:layout_constraintLeft_toLeftOf="parent"/>
 
             <TextView
             android:id="@+id/instruction1"
@@ -75,8 +86,8 @@
             android:layout_height="wrap_content"
             android:text="@string/instruction_setup1"
             android:textSize="35sp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="70dp"
+            app:layout_constraintTop_toBottomOf="@+id/logo"
+            android:layout_marginTop="30dp"
             android:layout_marginRight="8dp"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="8dp"
@@ -85,12 +96,13 @@
         <EditText
             android:visibility="visible"
             android:id="@+id/edit_name"
-            android:layout_width="200dp"
+            android:layout_width="220dp"
             android:layout_height="70dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="10dp"
             android:textSize="30sp"
+            android:inputType="text"
             android:hint="姓名"
             android:background="@drawable/edit_text_design"
             android:maxLines="1"
@@ -98,27 +110,22 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/instruction1" />
-        <ImageButton
-            android:id="@+id/btn_elder"
-            android:layout_width="172dp"
-            android:layout_height="280dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="4dp"
-            android:background="@drawable/btn_elder0"
+        <EditText
+            android:visibility="visible"
+            android:id="@+id/edit_phone"
+            android:layout_width="220dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="10dp"
+            android:textSize="30sp"
+            android:inputType="number"
+            android:hint="手機號碼"
+            android:background="@drawable/edit_text_design"
+            android:maxLines="1"
+            android:gravity="center"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/guideline"
-            android:layout_marginTop="10dp"
-            app:layout_constraintTop_toBottomOf="@+id/edit_name" />
-        <ImageButton
-            android:id="@+id/btn_family"
-            android:layout_width="172dp"
-            android:layout_height="280dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="4dp"
-            android:background="@drawable/btn_family0"
-            app:layout_constraintLeft_toLeftOf="@+id/guideline"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="10dp"
             app:layout_constraintTop_toBottomOf="@+id/edit_name" />
         </android.support.constraint.ConstraintLayout>
     </FrameLayout>
@@ -164,7 +171,7 @@
                 android:id="@+id/myPhoto"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                app:srcCompat="@drawable/ic_family"
+                app:srcCompat="@drawable/btn_activity"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="8dp"
