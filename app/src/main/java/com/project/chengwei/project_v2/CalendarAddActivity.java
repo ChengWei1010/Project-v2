@@ -1,7 +1,6 @@
 package com.project.chengwei.project_v2;
 
 import android.app.DatePickerDialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -18,15 +17,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 public class CalendarAddActivity extends AppCompatActivity {
@@ -41,11 +35,9 @@ public class CalendarAddActivity extends AppCompatActivity {
     public String dateHolder,timeHolder, titleHolder, contentHolder;
     private String myGroup, myId;
     private DatabaseReference mDatabaseRef;
-    private String formattedMonth;
-    private String formattedDay;
+    private String formattedMonth,formattedDay,formattedDate;
     private int mYear, mMonth, mDay;
-//    private CalendarDetails calendarDetails = new CalendarDetails();
-    CalendarDetails calendarDetails;
+    private CalendarDetails calendarDetails = new CalendarDetails();
 
     int Year;
     int HourOfDay=30;
@@ -80,11 +72,12 @@ public class CalendarAddActivity extends AppCompatActivity {
                 mYear = c.get(Calendar.YEAR);
                 mMonth = c.get(Calendar.MONTH);
                 mDay = c.get(Calendar.DAY_OF_MONTH);
+
                 new DatePickerDialog(CalendarAddActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int day) {
-                        String format = setDateFormat(year,month,day);
-                        edit_date.setText(format);
+                        setDateFormat(year,month,day);
+                        edit_date.setText(formattedDate);
                     }
 
                 }, mYear,mMonth, mDay).show();
@@ -115,31 +108,22 @@ public class CalendarAddActivity extends AppCompatActivity {
                 String Title = edit_title.getText().toString();
                 String Content = edit_content.getText().toString();
 
-                if(Year==0)
-                    Toast.makeText(context, text1+"1", Toast.LENGTH_SHORT).show();
-
-                else if(HourOfDay==30)
-                    Toast.makeText(context, text1+"2", Toast.LENGTH_SHORT).show();
-
-                else  if(Title.toString().equals("") != false)
-                    Toast.makeText(context, Title+"請填寫標題", Toast.LENGTH_SHORT).show();
-
-                else  if(Year==0&&HourOfDay==30)
-                    Toast.makeText(context, text1+"4", Toast.LENGTH_SHORT).show();
-
-                else  if(Year==0&&Title.toString().equals("") == false)
-                    Toast.makeText(context, text1+"5", Toast.LENGTH_SHORT).show();
-
-                else  if(HourOfDay==30&&Title.toString().equals("") == false)
-                    Toast.makeText(context, text1+"6", Toast.LENGTH_SHORT).show();
-
-                else  if(HourOfDay==30&&Title==null&&Year==0&&Title.toString().equals("") == false)
-                    Toast.makeText(context, text1+"7", Toast.LENGTH_SHORT).show();
-
+                if(formattedDate.length()!=10){
+                    Toast.makeText(context, "日期有誤", Toast.LENGTH_SHORT).show();
+                }
+                else if(Title.toString().equals("")){
+                    Toast.makeText(context, "請填寫標題", Toast.LENGTH_SHORT).show();
+                }
+                else if(Content.toString().equals("")){
+                    Toast.makeText(context, "請填寫活動內容", Toast.LENGTH_SHORT).show();
+                }
+                else if(HourOfDay==30){
+                    Toast.makeText(context, "時間有誤", Toast.LENGTH_SHORT).show();
+                }
                 else {
                     GetDataFromEditText();
 
-                    calendarDetails.setDate(dateHolder);
+                    calendarDetails.setDate(formattedDate);
                     calendarDetails.setTime(timeHolder);
                     calendarDetails.setTitle(titleHolder);
                     calendarDetails.setContent(contentHolder);
@@ -154,17 +138,25 @@ public class CalendarAddActivity extends AppCompatActivity {
             }
         });
     }
-    private String setDateFormat(int year,int monthOfYear,int dayOfMonth){
+    public String setDateFormat(int year,int monthOfYear,int dayOfMonth){
         monthOfYear++;
         if(monthOfYear < 10){
-                formattedMonth = "0" + String.valueOf(monthOfYear);
-            }
-            if(dayOfMonth < 10){
+            formattedMonth = "0" + String.valueOf(monthOfYear);
+        }
+        else{
+            formattedMonth = String.valueOf(monthOfYear);
+        }
+        if(dayOfMonth < 10){
                 formattedDay = "0" + String.valueOf(dayOfMonth);
-            }
-        return String.valueOf(year) + "-"
-                + formattedMonth + "-"
-                + formattedDay;
+        }
+        else{
+            formattedDay = String.valueOf(dayOfMonth);
+        }
+        formattedDate = year + "-" + formattedMonth + "-" + formattedDay;
+        Log.d("year",Integer.toString(year));
+        Log.d("formattedMonth",formattedMonth);
+        Log.d("formattedDay",formattedDay);
+        return formattedDate;
     }
     public void initView(){
         edit_title = findViewById(R.id.edit_title);

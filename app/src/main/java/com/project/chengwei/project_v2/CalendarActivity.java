@@ -7,32 +7,38 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class CalendarActivity extends ListActivity {
-    private TextView content,toolbar_title;
+    private TextView toolbar_title, text_month;
     private Toolbar myToolbar;
     private ImageButton toolbar_btn_guide,toolbar_btn_add;
     private String myGroup, myId;
     private DatabaseReference mDatabaseRef;
     private ListView listView;
-    CalendarDetails calendarDetails = new CalendarDetails();
-    private ArrayList<String> calendarTitleListData = new ArrayList<>();
+    private CalendarDetails calendarDetails = new CalendarDetails();
+    private ArrayList<String> calendarTitleList = new ArrayList<>();
+    private ArrayList<String> calendarContentList = new ArrayList<>();
+    private ArrayList<String> calendarDateList = new ArrayList<>();
+    private ArrayList<String> calendarTimeList = new ArrayList<>();
+    private Button btn_previous,btn_next;
+    int monthId=0;
+    int currentMonth;
+    ProgressBar progressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,42 +52,31 @@ public class CalendarActivity extends ListActivity {
 
         listView = findViewById(android.R.id.list);
         findViews();
+        setListeners();
         setToolbar();
         DateFormat df = new SimpleDateFormat("yyyy" + "/" + "MM" + "/" + "dd");
 
-        searchFunction();
-
-        String[] values = new String[] {
-                "阿公生日", "姿韶生日", "家庭聚餐",
-                "出遊日", "爸爸看牙醫", "家福森七七", };
-
-        // Define a new Adapter
-        // First parameter - Context
-        // Second parameter - Layout for the row
-        // Third - the Array of data
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, values);
-
-        // Assign adapter to List
-        setListAdapter(adapter);
+        //設定ListView未取得內容時顯示的view, empty建構在list.xml中。
+        getListView().setEmptyView(progressbar);
+        searchFunction(monthId);
     }
 
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-
         super.onListItemClick(l, v, position, id);
-
-        // ListView Clicked item index
-        int itemPosition = position;
-
-        // ListView Clicked item value
+        int i = position;
         String itemValue = (String) l.getItemAtPosition(position);
 
-        content.setText("Click : \n  Position :"+itemPosition+"  \n  ListItem : " +itemValue);
-
+        CalendarClickClass ccc = new CalendarClickClass(CalendarActivity.this, calendarTitleList.get(i), calendarContentList.get(i), calendarDateList.get(i), calendarTimeList.get(i));
+        ccc.show();
     }
-    private void searchFunction() {
+    private void searchFunction(final int count) {
+        calendarDetails = new CalendarDetails();
+        calendarTitleList.clear();
+        calendarContentList.clear();
+        calendarTimeList.clear();
+        calendarDateList.clear();
         DateFormat df = new SimpleDateFormat("yyyy" + "/" + "MM" + "/" + "dd");
         final String formattedDate = df.format(new java.util.Date());
         final String formattedDateCutYear = formattedDate.substring(0, 4);
@@ -89,17 +84,21 @@ public class CalendarActivity extends ListActivity {
         //Log.d("Date", formattedDate);
         Log.d("DateCutYear", formattedDateCutYear);
         Log.d("DateCutMon", formattedDateCutMon);
+        currentMonth = Integer.parseInt(formattedDateCutMon);
+        text_month.setText(Integer.toString(currentMonth)+"月");
 
         mDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // get all of the children at this level.
                 Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                int comparedMon = Integer.parseInt(formattedDateCutMon);
+                int comparedMon = Integer.parseInt(formattedDateCutMon)+count;
                 int comparedYear = Integer.parseInt(formattedDateCutYear);
 
-
-                calendarTitleListData.clear();
+                if (comparedMon > 12) {
+                    comparedMon = comparedMon % 12;
+                    comparedYear = comparedYear + 1;
+                }
                 for (DataSnapshot child : children) { // shake hands with each of them.
                     calendarDetails = child.getValue(CalendarDetails.class);
                     int yearINT = Integer.parseInt(calendarDetails.getDate().substring(0, 4));
@@ -109,16 +108,25 @@ public class CalendarActivity extends ListActivity {
                         Log.d("ComparedYear: ", String.valueOf(comparedYear));
                         if (monINT == comparedMon) {
                             Log.d("ComparedMon: ", String.valueOf(comparedMon));
-                            calendarTitleListData.add(calendarDetails.getTitle());
+                            calendarTitleList.add(calendarDetails.getTitle());
+                            calendarContentList.add(calendarDetails.getContent());
+                            calendarTimeList.add(calendarDetails.getTime());
+                            calendarDateList.add(calendarDetails.getDate());
                         }
                     }
                 }
-                for (int i = 0; i < calendarTitleListData.size(); i++) {
-                    Log.d("Jafu", "Calendar Title= " + calendarTitleListData.get(i));
+                for (int i = 0; i < calendarTitleList.size(); i++) {
+                    Log.d("lily", "Calendar Title= " + calendarTitleList.get(i));
                     //Toast.makeText(MainActivity.this, "Calendar Title= " +calendarTitleListData.get(i), Toast.LENGTH_SHORT).show();
                 }
+                if(calendarTitleList.isEmpty()){
+                    progressbar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(CalendarActivity.this,"本月無行程!",Toast.LENGTH_SHORT).show();
+                }else{
+                    progressbar.setVisibility(View.INVISIBLE);
+                    setListAdapter(new CalendarAdapter(CalendarActivity.this, calendarTitleList));
+                }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -129,11 +137,39 @@ public class CalendarActivity extends ListActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     public void findViews(){
-        content = findViewById(R.id.output);
         toolbar_title = findViewById(R.id.toolbar_title);
         myToolbar = findViewById(R.id.toolbar_with_add);
         toolbar_btn_guide = findViewById(R.id.toolbar_btn_guide);
         toolbar_btn_add = findViewById(R.id.toolbar_btn_add);
+        progressbar = findViewById(R.id.progressbar);
+        text_month = findViewById(R.id.text_month);
+        btn_previous = findViewById(R.id.btn_previous);
+        btn_next = findViewById(R.id.btn_next);
+    }
+    //--------------------------------------------------------------------------------------------//
+    //---------------------------------- OnClick Listeners ---------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+    private void setListeners(){
+        btn_previous.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newMonth;
+                monthId--;
+                searchFunction(monthId);
+                newMonth=Integer.toString(currentMonth+monthId);
+                text_month.setText(newMonth+"月");
+            }
+        });
+        btn_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newMonth;
+                monthId++;
+                searchFunction(monthId);
+                newMonth=Integer.toString(currentMonth+monthId);
+                text_month.setText(newMonth+"月");
+            }
+        });
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//

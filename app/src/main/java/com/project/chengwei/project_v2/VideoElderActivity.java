@@ -313,9 +313,6 @@ public class VideoElderActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         });
     }
-    
-    private void setShowBtn() {}
-
 
 //    private void setDownloadBtn() {
 //        downloadBtn.setOnClickListener(new View.OnClickListener() {

@@ -63,10 +63,10 @@ public class ContactListAdapter extends BaseAdapter {
         if(row == null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(layout, null);
-            holder.txtName = (TextView) row.findViewById(R.id.txtName);
+            holder.txtName = row.findViewById(R.id.txtName);
             //holder.txtPhone = (TextView) row.findViewById(R.id.txtPhone);
-            holder.imgPerson = (ImageView) row.findViewById(R.id.imgPerson);
-            holder.progressBar = (ProgressBar) row.findViewById(R.id.progressBar);
+            holder.imgPerson = row.findViewById(R.id.imgPerson);
+            holder.progressBar = row.findViewById(R.id.progressBar);
             row.setTag(holder);
         }
         else {

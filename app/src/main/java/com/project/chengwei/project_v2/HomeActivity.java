@@ -129,8 +129,6 @@ public class HomeActivity extends AppCompatActivity {
         btn_video = findViewById(R.id.btn_video);
         btn_tool = findViewById(R.id.btn_tool);
         btn_sos = findViewById(R.id.btn_sos);
-        btn_guide_ok = findViewById(R.id.btn_guide_ok);
-        help_guide = findViewById(R.id.help_guide);
         btn_sendTime = findViewById(R.id.btn_sendTime);
         btn_record = findViewById(R.id.btn_record);
         btn_calendar = findViewById(R.id.btn_calendar);
@@ -165,7 +163,6 @@ public class HomeActivity extends AppCompatActivity {
         btn_phone.setOnClickListener(ImageBtnListener);
         btn_video.setOnClickListener(ImageBtnListener);
         btn_record.setOnClickListener(ImageBtnListener);
-        btn_guide_ok.setOnClickListener(ImageBtnListener);
         btn_editProfile.setOnClickListener(ImageBtnListener);
         btn_tool.setOnClickListener(ImageBtnListener);
         btn_calendar.setOnClickListener(ImageBtnListener);
@@ -206,15 +203,6 @@ public class HomeActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                     break;
-//                case R.id.btn_map:
-//                    if (hasValidAddress()){
-//                        startActivity(new Intent(HomeActivity.this, NavigationActivity.class));
-//                        finish();
-//                        break;
-//                    } else{
-//                        startActivity(new Intent(HomeActivity.this, NavigationPopUpActivity.class));
-//                        break;
-//                    }
                 case R.id.btn_calendar:
                     Intent intent_calendar = new Intent(getApplicationContext(),CalendarActivity.class);
                     intent_calendar.putExtra("myGroup",myGroup);
@@ -244,10 +232,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     };
 
-    private void SosActivity(){
-        Intent homeIntent = new Intent(HomeActivity.this, SosActivity.class);
-        startActivity(homeIntent);
-    }
     //--------------------------------------------------------------------------------------------//
     //------------------------------- Set firebase send time--------------------------------------//
     //--------------------------------------------------------------------------------------------//
