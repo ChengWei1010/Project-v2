@@ -533,7 +533,7 @@ public class VideoFamilyActivity extends AppCompatActivity{
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mMediaRecorder.setMaxDuration(5000); //500ms 先設定五秒
+        mMediaRecorder.setMaxDuration(15000); //500ms 先設定五秒
         //設定時間到要做什麼
         mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
             @Override
