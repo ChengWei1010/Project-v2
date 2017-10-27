@@ -38,7 +38,7 @@ public class CalendarAdapter extends BaseAdapter{
 
             if(convertView == null){
                 //取得listItem容器 view
-                convertView = myInflater.inflate(R.layout.calendar_adapter, null);
+                convertView = myInflater.inflate(R.layout.calendar_items, null);
 
                 //建構listItem內容view
                 viewTag = new ViewTag(

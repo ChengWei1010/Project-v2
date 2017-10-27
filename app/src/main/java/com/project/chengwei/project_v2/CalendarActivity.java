@@ -37,7 +37,6 @@ public class CalendarActivity extends ListActivity {
     private ArrayList<String> calendarTimeList = new ArrayList<>();
     private Button btn_previous,btn_next;
     int monthId=0;
-    int currentMonth;
     ProgressBar progressbar;
 
     @Override
@@ -84,8 +83,6 @@ public class CalendarActivity extends ListActivity {
         //Log.d("Date", formattedDate);
         Log.d("DateCutYear", formattedDateCutYear);
         Log.d("DateCutMon", formattedDateCutMon);
-        currentMonth = Integer.parseInt(formattedDateCutMon);
-        text_month.setText(Integer.toString(currentMonth)+"月");
 
         mDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -124,13 +121,13 @@ public class CalendarActivity extends ListActivity {
                     Toast.makeText(CalendarActivity.this,"本月無行程!",Toast.LENGTH_SHORT).show();
                 }else{
                     progressbar.setVisibility(View.INVISIBLE);
+                    //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getStringArrayList());
                     setListAdapter(new CalendarAdapter(CalendarActivity.this, calendarTitleList));
                 }
+                text_month.setText(calendarDetails.getDate().substring(5, 7)+"月");
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
     //--------------------------------------------------------------------------------------------//
@@ -153,21 +150,15 @@ public class CalendarActivity extends ListActivity {
         btn_previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String newMonth;
                 monthId--;
                 searchFunction(monthId);
-                newMonth=Integer.toString(currentMonth+monthId);
-                text_month.setText(newMonth+"月");
             }
         });
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String newMonth;
                 monthId++;
                 searchFunction(monthId);
-                newMonth=Integer.toString(currentMonth+monthId);
-                text_month.setText(newMonth+"月");
             }
         });
     }
