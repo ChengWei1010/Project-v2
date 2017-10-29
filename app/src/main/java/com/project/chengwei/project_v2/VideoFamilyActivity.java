@@ -115,13 +115,14 @@ public class VideoFamilyActivity extends AppCompatActivity{
     private String mVideoFileName;
     private boolean mIsRecording = false;
     private static String TAG ="C2VI";
+    private String mCameraType = "back";
     private static final int REQUEST_CAMERA_PERMISSION_RESULT = 0;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT = 1;
     private TextureView mTextureView;
     private TextureView.SurfaceTextureListener mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-            setupCamera(width,height);
+            setupCamera(width,height,mCameraType);
             connectCamera();
         }
 
@@ -182,6 +183,7 @@ public class VideoFamilyActivity extends AppCompatActivity{
     private Size mPreviewSize;
     private Size mVideoSize;
 
+    private Button mChangeCameraButton;
     private MediaRecorder mMediaRecorder; //What does it do?
     private Chronometer mChronometer;
     private int mTotalRotation;
@@ -204,6 +206,22 @@ public class VideoFamilyActivity extends AppCompatActivity{
         setToolbar();
         createVideoFolder();
 
+        mChangeCameraButton = findViewById(R.id.button2);
+        mChangeCameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mCameraType == "back"){
+                    mCameraType = "front";
+                }else{
+                    mCameraType = "back";
+                }
+                mCameraDevice.close();
+                setupCamera(mTextureView.getWidth(),mTextureView.getHeight(),mCameraType);
+                connectCamera();
+
+                Log.d(TAG,"mCameraType is:" + mCameraType);
+            }
+        });
         mMediaRecorder = new MediaRecorder();
         //mRecordImageButton.setImageResource(R.mipmap.video_off);
 
@@ -216,7 +234,7 @@ public class VideoFamilyActivity extends AppCompatActivity{
                     mChronometer.setVisibility(View.INVISIBLE);
                     recordingGif.setVisibility(View.VISIBLE);
                     mIsRecording = false;
-                    //mRecordImageButton.setImageResource(R.mipmap.video_off );
+                    mRecordImageButton.setImageResource(R.mipmap.video_off );
                     mMediaRecorder.stop();
                     mMediaRecorder.reset();
                     //startPreview();
@@ -226,6 +244,8 @@ public class VideoFamilyActivity extends AppCompatActivity{
                 }
             }
         });
+
+
 
 
 //        mSelectButton.setOnClickListener(new View.OnClickListener() {
@@ -271,7 +291,7 @@ public class VideoFamilyActivity extends AppCompatActivity{
         super.onResume();
         startBackgroundThread();
         if(mTextureView.isAvailable()){
-            setupCamera(mTextureView.getWidth(),mTextureView.getHeight());
+            setupCamera(mTextureView.getWidth(),mTextureView.getHeight(),mCameraType);
             connectCamera();
         }else{
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
@@ -287,14 +307,21 @@ public class VideoFamilyActivity extends AppCompatActivity{
     }
 
     //設置相機資源
-    private void setupCamera(int width, int height){
+    private void setupCamera(int width, int height,String cameraType){
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE); //CameraManager用來管理所有的設備
         try {
             for(String cameraId : cameraManager.getCameraIdList()){
                 CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId); //用來控制相機的屬性
-                if(cameraCharacteristics.get(cameraCharacteristics.LENS_FACING) ==   //LENS_FACING是用來取得當前相機的位置
-                        cameraCharacteristics.LENS_FACING_FRONT){
-                    continue;
+                if(cameraType == "back") {
+                    if (cameraCharacteristics.get(cameraCharacteristics.LENS_FACING) ==   //LENS_FACING是用來取得當前相機的型態
+                            cameraCharacteristics.LENS_FACING_FRONT) {
+                        continue;
+                    }
+                }else{
+                    if (cameraCharacteristics.get(cameraCharacteristics.LENS_FACING) ==   //LENS_FACING是用來取得當前相機的型態
+                            cameraCharacteristics.LENS_FACING_BACK) {
+                        continue;
+                    }
                 }
                 StreamConfigurationMap map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                 int deviceRotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -339,6 +366,8 @@ public class VideoFamilyActivity extends AppCompatActivity{
     }
 
     private void startPreview(){
+        mChangeCameraButton.setVisibility(View.VISIBLE);
+
         SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture(); //What's different?
         surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(),mPreviewSize.getHeight()); //預設Surface的欄位大小
         Surface previewSurface = new Surface(surfaceTexture); // What's different with others?
@@ -581,6 +610,8 @@ public class VideoFamilyActivity extends AppCompatActivity{
     }
     private void startRecord(){
         try {
+            mChangeCameraButton.setVisibility(View.INVISIBLE);
+
             setupMediaRecorder();
             SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture(); //What's different?
             surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(),mPreviewSize.getHeight()); //預設Surface的欄位大小
@@ -622,6 +653,7 @@ public class VideoFamilyActivity extends AppCompatActivity{
             e.printStackTrace();
         }
     }
+
 
 //    public static void appendMp4List(List<String> mp4PathList, String outPutPath) throws IOException{
 //        List<Movie> mp4MovieList = new ArrayList<>();
