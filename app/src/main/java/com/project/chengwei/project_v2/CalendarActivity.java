@@ -1,14 +1,19 @@
 package com.project.chengwei.project_v2;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -66,7 +71,7 @@ public class CalendarActivity extends ListActivity {
         super.onListItemClick(l, v, position, id);
         int i = position;
         String itemValue = (String) l.getItemAtPosition(position);
-
+        ImageButton notification = findViewById(R.id.Calendar_notification);
         CalendarClickClass ccc = new CalendarClickClass(CalendarActivity.this, calendarTitleList.get(i), calendarContentList.get(i), calendarDateList.get(i), calendarTimeList.get(i));
         ccc.show();
     }
@@ -106,7 +111,7 @@ public class CalendarActivity extends ListActivity {
                             calendarTitleList.add(calendarDetails.getTitle());
                             calendarContentList.add(calendarDetails.getContent());
                             calendarTimeList.add(calendarDetails.getTime());
-                            calendarDateList.add(calendarDetails.getDate());
+                            calendarDateList.add(calendarDetails.getDate().substring(8, 10));
                         }
                     }
                 }
@@ -212,7 +217,7 @@ public class CalendarActivity extends ListActivity {
 
     private void initAdapter(){
         listView = findViewById(android.R.id.list);
-        setListAdapter(calendarAdapter = new CalendarAdapter(CalendarActivity.this, calendarTitleList));
+        setListAdapter(calendarAdapter = new CalendarAdapter(CalendarActivity.this, calendarDateList, calendarTitleList));
     }
     private void clearLists(){
         calendarDetails = new CalendarDetails();
@@ -221,4 +226,5 @@ public class CalendarActivity extends ListActivity {
         calendarTimeList.clear();
         calendarDateList.clear();
     }
+
 }

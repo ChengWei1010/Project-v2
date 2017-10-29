@@ -135,52 +135,6 @@ public class GalleryAdapter extends BaseAdapter {
                 downloadManager.enqueue(request);
             }
         });
-
-
-//        View row = view;
-//        GalleryAdapter.ViewHolder holder = new GalleryAdapter.ViewHolder();
-//
-//        if(row == null){
-//            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            row = inflater.inflate(layout, null);
-//
-//            holder.imgMember = (ImageView) row.findViewById(R.id.imgMember);
-//            holder.txtMember = (TextView) row.findViewById(R.id.txtMember);
-//            //holder.video = (VideoView) row.findViewById(R.id.videoView);
-//            //holder.btnDownload = (ImageButton) row.findViewById(R.id.btnDownload);
-//
-//            row.setTag(holder);
-//        }else{
-//            holder = (GalleryAdapter.ViewHolder) row.getTag();
-//        }
-//
-//        uri = Uri.parse(storagePathList.get(position));
-//
-//        //顯示成員照片
-//        holder.imgMember.setImageResource(R.drawable.ic_elder);
-//        //顯示成員名字
-//        holder.txtMember.setText(memberList.get(position));
-//        //顯示影片
-////        vidControl = new MediaController(context);
-////        vidControl.setAnchorView(holder.video);
-////        holder.video.setMediaController(vidControl);
-////        holder.video.setVideoURI(uri);
-////        //顯示下載按鈕
-////        holder.btnDownload.setOnClickListener(new View.OnClickListener() {
-////            public void onClick(View v) {
-////                SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
-////                Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
-////                String date = formatter.format(curDate);
-////
-////                downloadManager = (DownloadManager)context.getSystemService(Context.DOWNLOAD_SERVICE);
-////                DownloadManager.Request request = new DownloadManager.Request(uri);
-////                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-////                request.setDestinationInExternalPublicDir("/videoDownload", memberList.get(position) + "/" + date + ".mp4");
-////                request.setTitle(memberList.get(position) + ":" + date);
-////                downloadManager.enqueue(request);
-////            }
-////        });
-//
         return view;
     }
 }

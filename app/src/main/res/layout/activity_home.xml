@@ -62,7 +62,7 @@
             android:scaleType="fitCenter"
             android:layout_marginStart="26dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginTop="34dp"
+            android:layout_marginTop="50dp"
             app:layout_constraintTop_toBottomOf="@+id/include"
             app:layout_constraintRight_toLeftOf="@+id/guideline"
             android:layout_marginRight="8dp"
@@ -81,7 +81,7 @@
             android:scaleType="fitCenter"
             android:layout_marginStart="26dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginTop="23dp"
+            android:layout_marginTop="30dp"
             app:layout_constraintTop_toBottomOf="@+id/include"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="@+id/guideline"
@@ -113,7 +113,7 @@
             app:layout_constraintHorizontal_bias="0.428"
             app:layout_constraintLeft_toLeftOf="@+id/guideline"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="30dp"
             app:layout_constraintTop_toBottomOf="@+id/btn_sos" />
         <ImageButton
             android:id="@+id/btn_calendar"
@@ -125,7 +125,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="30dp"
             app:layout_constraintTop_toBottomOf="@+id/btn_sos" />
         <ImageButton
             android:id="@+id/btn_tool"

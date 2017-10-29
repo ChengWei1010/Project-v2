@@ -74,6 +74,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     private int updata = 0;
     private LatLng gpspos;
     private String HomeAddress;
+    TextView toolbar_title;
 
     //private Button zoom=(Button)findViewById(R.id.zoomin);
     //final Button zoomo=(Button)findViewById(R.id.zoomout);
@@ -581,7 +582,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        myToolbar =  findViewById(R.id.toolbar_home);
+        toolbar_title = findViewById(R.id.toolbar_title);
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
@@ -590,7 +592,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
-
+        toolbar_title.setText("一鍵回家");
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

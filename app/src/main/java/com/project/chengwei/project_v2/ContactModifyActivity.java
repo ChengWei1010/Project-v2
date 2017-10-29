@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -33,6 +34,7 @@ public class ContactModifyActivity extends AppCompatActivity {
     static final String ELDERLY_MODE = "ELDERLY_MODE";
     Toolbar myToolbar;
     EditText modify_name, modify_phone;
+    TextView toolbar_title;
     ImageView modify_imageView;
     Button cameraBtn, chooseBtn, modifyBtn, deleteBtn;
     String uriString, uriString_crop;
@@ -275,14 +277,15 @@ public class ContactModifyActivity extends AppCompatActivity {
     //-------------------------------------- initial Views ---------------------------------------//
     //--------------------------------------------------------------------------------------------//
     private void findViews(){
-        myToolbar = (Toolbar) findViewById(R.id.toolbar_home);
-        modify_name = (EditText) findViewById(R.id.name);
-        modify_phone = (EditText) findViewById(R.id.phone);
-        modify_imageView = (ImageView) findViewById(R.id.imageView);
-        cameraBtn = (Button) findViewById(R.id.cameraBtn);
-        chooseBtn = (Button) findViewById(R.id.chooseBtn);
-        modifyBtn = (Button) findViewById(R.id.editBtn);
-        deleteBtn = (Button) findViewById(R.id.deleteBtn);
+        myToolbar = findViewById(R.id.toolbar_home);
+        modify_name = findViewById(R.id.name);
+        modify_phone = findViewById(R.id.phone);
+        modify_imageView = findViewById(R.id.imageView);
+        cameraBtn = findViewById(R.id.cameraBtn);
+        chooseBtn = findViewById(R.id.chooseBtn);
+        modifyBtn = findViewById(R.id.editBtn);
+        deleteBtn = findViewById(R.id.deleteBtn);
+        toolbar_title = findViewById(R.id.toolbar_title);
     }
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------- Toolbar --------------------------------------------//
@@ -290,18 +293,12 @@ public class ContactModifyActivity extends AppCompatActivity {
     private void setToolbar(){
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        myToolbar.setNavigationIcon(R.drawable.ic_home_white_50dp);
-
+        myToolbar.setNavigationIcon(R.drawable.ic_back_left_white_50dp);
+        toolbar_title.setText("編輯聯絡人");
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isElder()) {
-                    startActivity(new Intent(ContactModifyActivity.this, HomeActivity.class));
-                    finish();
-                }else{
-                    startActivity(new Intent(ContactModifyActivity.this, FamilyActivity.class));
-                    finish();
-                }
+            finish();
             }
         });
     }

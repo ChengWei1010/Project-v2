@@ -84,12 +84,12 @@ public class VideoElderActivity extends AppCompatActivity {
         findViews();
         showVideo();
         setToolbar();
-        btn_list.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listMember();
-            }
-        });
+//        btn_list.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                listMember();
+//            }
+//        });
     }
     //--------------------------------------------------------------------------------------------//
     //-------------------------------------- initial Views ---------------------------------------//
@@ -97,7 +97,7 @@ public class VideoElderActivity extends AppCompatActivity {
     private void findViews(){
         toolbar_btn_guide = findViewById(R.id.toolbar_btn_guide);
         gallery = findViewById(R.id.gallery);
-        btn_list =  findViewById(R.id.btnList);
+        //btn_list =  findViewById(R.id.btnList);
         myToolbar = findViewById(R.id.toolbar_with_guide);
         toolbar_title = findViewById(R.id.toolbar_title);
         toolbar_guide = findViewById(R.id.toolbar_btn_guide);
