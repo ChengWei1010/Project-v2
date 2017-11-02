@@ -42,7 +42,7 @@ public class CalendarAdapter extends BaseAdapter{
     public long getItemId(int position) {return position;}
 
     @Override
-    public View getView(int position,View convertView,ViewGroup parent) {
+    public View getView(final int position,View convertView,ViewGroup parent) {
         //自訂類別，表達個別listItem中的view物件集合。
         //ViewTag viewTag;
 
@@ -54,13 +54,9 @@ public class CalendarAdapter extends BaseAdapter{
             title = convertView.findViewById(R.id.Calendar_title);
             notification = convertView.findViewById(R.id.Calendar_notification);
 
-            //建構listItem內容view
-//            viewTag = new ViewTag(
-//                    (TextView) convertView.findViewById(R.id.Calendar_title),notification
-//            );
+            date.setText(dateList.get(position));
+            title.setText(titleList.get(position));
 
-            notification.setFocusable(false);
-            notification.setTag(position);
             notification.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -68,17 +64,6 @@ public class CalendarAdapter extends BaseAdapter{
                 }
             });
 
-            //設置容器內容
-//            convertView.setTag(viewTag);
-//        }
-//        else{
-//            viewTag = (ViewTag) convertView.getTag();
-//        }
-
-            //設定內容文字
-//        viewTag.title.setText(list.get(position));
-            date.setText(dateList.get(position));
-            title.setText(titleList.get(position));
         }
             return convertView;
 
